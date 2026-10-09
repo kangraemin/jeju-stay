@@ -13,6 +13,9 @@
   const rankOf = (key, d) => [...dongs].sort((a, b) => val(key, b) - val(key, a)).indexOf(d) + 1;
   const sorted = key => [...dongs].sort((a, b) => val(key, b) - val(key, a));
   const total = sum(dongs.map(d => d.visitNative));
+  // 여름(7·8월) 월평균 방문 ÷ 12개월 월평균 방문 - 1 (%)
+  const SUMMER = data.meta.months.map((m, i) => /0[78]$/.test(m) ? i : -1).filter(i => i >= 0);
+  dongs.forEach(d => { d.summerIdx = Math.round((sum(SUMMER.map(i => d.monthly[i])) / SUMMER.length / (sum(d.monthly) / 12) - 1) * 100); });
   $('.eyebrow').textContent = `43개 읍면동 · 관광객 방문 ${man(total)} 회 데이터`;
 
   // validated with dataviz validate_palette.js (ordinal, light #fbfbf9 / dark #131413)
@@ -44,6 +47,12 @@
       insight() {
         const s = sorted('stay');
         return `<div class="big">${val('stay', s[0])}<small>%</small></div><p><strong>${s[0].name}</strong>은 관광객 카드 소비의 ${val('stay', s[0])}%가 숙박입니다. 다음은 ${s[1].name} ${val('stay', s[1])}%, ${s[2].name} ${val('stay', s[2])}%.</p>`;
+      } },
+    summer: { key: 'summerIdx', ramp: 'orange', fmt: d => '여름 ' + (d.summerIdx >= 0 ? '+' : '') + d.summerIdx + '%', lo: '여름에 덜', hi: '여름에 더',
+      insight() {
+        const s = sorted('summerIdx');
+        const big = s.filter(d => rankOf('visitNative', d) <= 10).slice(0, 2);
+        return `<div class="big">+${s[0].summerIdx}<small>%</small></div><p>7·8월 월평균 방문이 1년 평균보다 가장 많이 느는 곳은 <strong>${s[0].name}</strong>입니다. 방문 상위 10곳 중에서는 해변 마을이 있는 <strong>${big.map(d => `${d.name}(+${d.summerIdx}%)`).join('·')}</strong>이 여름에 특히 붐빕니다.</p>`;
       } },
   };
 
@@ -120,7 +129,7 @@
     const pick = m.mid != null ? [s[0], s[1], s.at(-1)] : s.slice(0, 3);
     if (selected && !pick.includes(byName[selected])) pick.push(byName[selected]);
     labels(main, pick.map(d => [d.name, m.fmt(d)]));
-    const f = v => m.key === 'visitNative' ? man(v) : Math.round(v) + '%';
+    const f = v => m.key === 'visitNative' ? man(v) : m.key === 'summerIdx' ? (v >= 0 ? '+' : '') + Math.round(v) + '%' : Math.round(v) + '%';
     $('#legend').innerHTML = `<span>${m.lo}</span><span class="ramp">${ramp.map((c, i) => `<i style="background:${c}" title="${f(breaks[i])}~${f(breaks[i + 1])}"></i>`).join('')}</span><span>${m.hi}</span><span style="margin-left:auto">${f(breaks[0])} ~ ${f(breaks[5])}</span>`;
     $('#insight').innerHTML = m.insight();
   }
