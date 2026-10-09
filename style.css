@@ -128,6 +128,16 @@ button,select{font:inherit;color:inherit}
 .picks .why{font-size:13px;color:var(--ink2);margin-top:2px}
 .picks .go{font-size:20px;color:var(--muted)}
 
+.dec{margin-top:14px;padding:14px;border-radius:14px;background:var(--chip)}
+.dec p{font-size:14px;font-weight:700;margin-bottom:8px}
+.dec.done{font-size:13.5px;color:var(--ink2)}
+.decbtns{display:flex;flex-wrap:wrap;gap:6px}
+.decbtns button{border:1px solid var(--line2);background:var(--surface);border-radius:10px;padding:8px 12px;font-size:13.5px;font-weight:600;cursor:pointer}
+.decbtns button[data-dec="yes"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.decok{font-size:14px;font-weight:700;color:var(--accent-ink)}
+.stay{display:inline-block;margin-top:10px;font-size:13.5px;font-weight:600;color:var(--s-tour);text-decoration:none}
+.picks li.picksdec{display:block;padding:0;border:0;background:none;cursor:default;animation:none}
+.picks li.picksdec .dec{margin-top:0}
 /* stories */
 .stories{display:grid;gap:12px}
 .story{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:18px}

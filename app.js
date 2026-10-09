@@ -148,6 +148,26 @@
     track('metric_change', { metric });
   }));
 
+  // ---------- 숙소 결정 응답 + 숙소 검색 이동 (실사용 성과 측정) ----------
+  const decided = {};
+  const decision = (name, from) => decided[name]
+    ? `<div class="dec done">${name} 응답 고맙습니다. 숙소 고를 때 참고되면 좋겠어요.</div>`
+    : `<div class="dec" data-dong="${name}" data-from="${from}">
+      <p>${name}에 숙소 잡을 건가요?</p>
+      <div class="decbtns"><button type="button" data-dec="yes">이 동네로 정했어요</button><button type="button" data-dec="maybe">고민 중</button><button type="button" data-dec="no">다른 데로</button></div>
+      <a class="stay" data-search href="https://map.naver.com/p/search/${encodeURIComponent('제주 ' + name + ' 숙소')}" target="_blank" rel="noopener">네이버 지도에서 ${name} 숙소 보기 ↗</a></div>`;
+  document.addEventListener('click', e => {
+    const box = e.target.closest('.dec[data-dong]'); if (!box) return;
+    const dong = box.dataset.dong, from = box.dataset.from;
+    const b = e.target.closest('[data-dec]');
+    if (b) {
+      decided[dong] = b.dataset.dec;
+      track('stay_decision', { dong, answer: b.dataset.dec, from });
+      box.querySelector('.decbtns').innerHTML = `<span class="decok">${b.dataset.dec === 'yes' ? '좋은 여행 되세요!' : '응답 고맙습니다'}</span>`;
+    }
+    if (e.target.closest('[data-search]')) track('stay_search', { dong, from });
+  });
+
   // ---------- dong card ----------
   function curveSVG(d, w = 300, h = 96) {
     const pad = { l: 4, r: 42, t: 8, b: 18 };
@@ -181,6 +201,7 @@
       <div class="curve">${curveSVG(d)}<p class="capt">시간대별 카드 소비 비중 · 회색 띠 18~24시</p></div>
       ${d.places && d.places.length ? `<p class="places">차로 많이 가는 곳 <b>${d.places.slice(0, 3).map(p => p[0]).join(' · ')}</b></p>` : ''}
       ${d.ri && d.ri.length ? `<p class="places">관광객이 많이 머문 리 <b>${d.ri.slice(0, 3).map(r => r[0]).join(' · ')}</b></p>` : ''}
+      ${decision(d.name, 'card')}
       <div class="cardbtns"><button class="btn ghost" data-vs="A">왼쪽 비교에 넣기</button><button class="btn ghost" data-vs="B">오른쪽에 넣기</button></div>`;
     $('#card').querySelectorAll('[data-vs]').forEach(b => b.addEventListener('click', () => {
       $('#vs' + b.dataset.vs).value = name; renderVs(true); document.getElementById('vs').scrollIntoView();
@@ -216,8 +237,8 @@
     const u = unit(pin.svg);
     pin.svg.querySelector('.insetlbl').style.fontSize = 11 * u + 'px';
     pin.layer.innerHTML = top.map((d, i) => { const c = geo.shapes[d.name].c; return `<g class="pin"><circle cx="${c[0]}" cy="${c[1]}" r="${13 * u}" style="stroke-width:${2.5 * u}"/><text x="${c[0]}" y="${c[1]}" style="font-size:${14 * u}px">${i + 1}</text></g>`; }).join('');
-    $('#picks').innerHTML = top.map((d, i) => `<li data-n="${d.name}"><span class="rk">${i + 1}</span><div><h3>${d.name}<small>${d.city}</small></h3><p class="why">${why(d, ans)}</p></div><span class="go">›</span></li>`).join('');
-    $('#picks').querySelectorAll('li').forEach(li => li.addEventListener('click', () => {
+    $('#picks').innerHTML = top.map((d, i) => `<li data-n="${d.name}"><span class="rk">${i + 1}</span><div><h3>${d.name}<small>${d.city}</small></h3><p class="why">${why(d, ans)}</p></div><span class="go">›</span></li>`).join('') + `<li class="picksdec">${decision(top[0].name, 'quiz')}</li>`;
+    $('#picks').querySelectorAll('li[data-n]').forEach(li => li.addEventListener('click', () => {
       select(li.dataset.n, false); document.getElementById('map').scrollIntoView(); track('dong_open', { dong: li.dataset.n, from: 'quiz' });
     }));
     if (log) track('quiz_done', { ...ans, top: top.map(d => d.name).join(',') });
