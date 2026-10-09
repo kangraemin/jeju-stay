@@ -18,6 +18,8 @@
 <link rel="stylesheet" href="style.css">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-F0MT1BRZX2"></script>
 <script>
+// 로컬 테스트·자동화 브라우저 접속은 측정에서 뺀다
+if (location.hostname !== 'kangraemin.github.io' || navigator.webdriver) window['ga-disable-G-F0MT1BRZX2'] = true;
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
