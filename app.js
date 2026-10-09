@@ -180,6 +180,7 @@
       </div>
       <div class="curve">${curveSVG(d)}<p class="capt">시간대별 카드 소비 비중 · 회색 띠 18~24시</p></div>
       ${d.places && d.places.length ? `<p class="places">차로 많이 가는 곳 <b>${d.places.slice(0, 3).map(p => p[0]).join(' · ')}</b></p>` : ''}
+      ${d.ri && d.ri.length ? `<p class="places">관광객이 많이 머문 리 <b>${d.ri.slice(0, 3).map(r => r[0]).join(' · ')}</b></p>` : ''}
       <div class="cardbtns"><button class="btn ghost" data-vs="A">왼쪽 비교에 넣기</button><button class="btn ghost" data-vs="B">오른쪽에 넣기</button></div>`;
     $('#card').querySelectorAll('[data-vs]').forEach(b => b.addEventListener('click', () => {
       $('#vs' + b.dataset.vs).value = name; renderVs(true); document.getElementById('vs').scrollIntoView();
@@ -301,6 +302,8 @@
     // 가을 9위 밖인데 1년 내내 찾는 차량이 많은 곳
     const alts = o.slice(8, 40).filter(x => x.year > 0).sort((a, b) => b.year - a.year).slice(0, 4);
     $('#alts').innerHTML = alts.map(x => `<li><b>${x.name}</b><span>가을 ${x.aut.toLocaleString()}대 · 1년 ${x.year.toLocaleString()}대</span></li>`).join('');
+    const g = [...data.gotjawal].sort((a, b) => b.aut - a.aut).slice(0, 3);
+    $('#gotjawal').innerHTML = `숲길을 걷고 싶다면 곶자왈: ${g.map(x => `<b>${x.name}</b> ${x.aut.toLocaleString()}대`).join(' · ')} (같은 기간 티맵 도착)`;
     new IntersectionObserver((es, ob) => { if (es[0].isIntersecting) { track('oreum_view'); ob.disconnect(); } }).observe($('#oreum'));
   }
 

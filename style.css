@@ -171,6 +171,8 @@ button,select{font:inherit;color:inherit}
 .alts b{display:block;font-size:15px}
 .alts span{font-size:12px;color:var(--ink2)}
 
+.gj{font-size:13.5px;color:var(--ink2);margin-top:12px}
+.gj b{color:var(--ink);font-weight:600}
 /* method */
 .how{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:0 18px}
 .how summary{cursor:pointer;font-weight:800;font-size:17px;padding:16px 0;list-style:none;display:flex;justify-content:space-between}
