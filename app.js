@@ -1,33 +1,197 @@
 (async function () {
-  const D = await fetch('data.json').then(r => r.json());
-  const dongs = D.dongs;
-  const byName = Object.fromEntries(dongs.map(d => [d.name, d]));
   const $ = s => document.querySelector(s);
   const track = (name, params) => { try { gtag('event', name, params || {}); } catch (e) {} };
-  const fmt = n => n.toLocaleString('ko-KR');
-  const man = n => n >= 1e8 ? (n / 1e8).toFixed(1) + '억' : n >= 1e4 ? Math.round(n / 1e4).toLocaleString('ko-KR') + '만' : fmt(n);
-  const eok = n => (n / 1e8).toFixed(0) + '억 원';
-  const SPECIAL = { '용담2동': '제주국제공항 포함', '건입동': '제주항 포함' };
-  const MONTH_LABEL = D.meta.months.map(m => +m.slice(4) + '월');
+  const [data, geo] = await Promise.all([fetch('data.json').then(r => r.json()), fetch('geo.json').then(r => r.json())]);
+  const dongs = data.dongs;
+  const byName = Object.fromEntries(dongs.map(d => [d.name, d]));
+  const NS = 'http://www.w3.org/2000/svg';
+  const dark = () => matchMedia('(prefers-color-scheme: dark)').matches && document.documentElement.dataset.theme !== 'light';
 
-  function tags(d) {
-    const t = [];
-    if (d.busyPct >= 80) t.push(['북적', 'busy']);
-    if (d.busyPct <= 30) t.push(['한적', 'quiet']);
-    if (d.nightPct >= 75) t.push(['저녁 활발', '']);
-    if (d.eatPct >= 75) t.push(['먹거리', '']);
-    if (d.stayPct >= 80) t.push(['숙박 밀집', '']);
-    if (d.tourPct >= 80) t.push(['관광지형', '']);
-    if (d.tourPct <= 25) t.push(['생활권', '']);
-    return t;
-  }
-  const tagHtml = d => tags(d).map(([s, c]) => `<span class="tag ${c ? 't-' + c : ''}">${s}</span>`).join('');
-  const rankOf = (key, d, desc = true) => {
-    const s = [...dongs].sort((a, b) => desc ? b[key] - a[key] : a[key] - b[key]);
-    return s.indexOf(d) + 1;
+  const man = n => n >= 1e8 ? (n / 1e8).toFixed(2).replace(/\.?0+$/, '') + '억' : Math.round(n / 1e4).toLocaleString() + '만';
+  const sum = a => a.reduce((x, y) => x + y, 0);
+  const val = (key, d) => key === 'stay' ? d.indShare['숙박업'] : key === 'eat' ? d.indShare['음식점업'] : d[key];
+  const rankOf = (key, d) => [...dongs].sort((a, b) => val(key, b) - val(key, a)).indexOf(d) + 1;
+  const sorted = key => [...dongs].sort((a, b) => val(key, b) - val(key, a));
+  const total = sum(dongs.map(d => d.visitNative));
+  $('.eyebrow').textContent = `43개 읍면동 · 관광객 방문 ${man(total)} 회 데이터`;
+
+  // validated with dataviz validate_palette.js (ordinal, light #fbfbf9 / dark #131413)
+  const RAMP = {
+    blue: { light: ['#86b6ef', '#3987e5', '#256abf', '#184f95', '#0d366b'], dark: ['#184f95', '#256abf', '#3987e5', '#6da7ec', '#b7d3f6'] },
+    orange: { light: ['#f39a6e', '#eb6834', '#c9501f', '#9a3a13', '#682508'], dark: ['#8a3412', '#b9461c', '#eb6834', '#f39a6e', '#fbd0b6'] },
+    div: { light: ['#1c5cab', '#6da7ec', '#e4e3de', '#ef8e8a', '#b8302f'], dark: ['#256abf', '#184f95', '#3a3b38', '#9c3534', '#d34544'] },
   };
 
-  /* 01 퀴즈 */
+  const METRICS = {
+    visit: { key: 'visitNative', ramp: 'blue', fmt: d => man(d.visitNative) + '회', lo: '적음', hi: '많음',
+      insight() {
+        const s = sorted('visitNative');
+        const top5 = sum(s.slice(0, 5).map(d => d.visitNative)) / total * 100;
+        return `<div class="big">${top5.toFixed(1)}<small>%</small></div><p>관광객 방문의 3분의 1 넘게가 <strong>${s.slice(0, 5).map(d => d.name).join('·')}</strong> 다섯 곳에 몰립니다. 1위 ${s[0].name}에는 제주국제공항이 있습니다.</p>`;
+      } },
+    night: { key: 'nightShare', ramp: 'orange', fmt: d => d.nightShare + '%', lo: '낮 위주', hi: '저녁 위주',
+      insight() {
+        const s = sorted('nightShare'), t = s[0], u = byName['우도면'];
+        return `<div class="big">${t.nightShare}<small>%</small></div><p>서귀포 <strong>${t.name}</strong>은 관광객 카드 소비의 ${t.nightShare}%가 저녁 6시 이후입니다. 다음은 ${s[1].name} ${s[1].nightShare}%, ${s[2].name} ${s[2].nightShare}%. 우도는 ${u.nightShare}%로 해가 지면 조용합니다.</p>`;
+      } },
+    tour: { key: 'tourSpendShare', ramp: 'div', mid: 50, fmt: d => '관광객 ' + d.tourSpendShare + '%', lo: '도민 생활권', hi: '관광지',
+      insight() {
+        const s = sorted('tourSpendShare');
+        const n = dongs.filter(d => d.tourSpendShare >= 50).length;
+        return `<div class="big">${n}<small>곳 / 43</small></div><p>카드 매출의 절반 넘게를 관광객이 쓰는 동네입니다. <strong>${s[0].name}</strong> ${s[0].tourSpendShare}%가 가장 높고, <strong>${s.at(-1).name}</strong>은 ${s.at(-1).tourSpendShare}%로 도민 동네입니다.</p>`;
+      } },
+    stay: { key: 'stay', ramp: 'blue', fmt: d => '숙박 ' + d.indShare['숙박업'] + '%', lo: '낮음', hi: '높음',
+      insight() {
+        const s = sorted('stay');
+        return `<div class="big">${val('stay', s[0])}<small>%</small></div><p><strong>${s[0].name}</strong>은 관광객 카드 소비의 ${val('stay', s[0])}%가 숙박입니다. 다음은 ${s[1].name} ${val('stay', s[1])}%, ${s[2].name} ${val('stay', s[2])}%.</p>`;
+      } },
+  };
+
+  // 5 classes: quantiles (~8-9 dongs each); diverging metric uses fixed steps around 50%
+  function classes(key, m) {
+    const vals = dongs.map(d => val(key, d)).sort((a, b) => a - b);
+    if (m.mid != null) {
+      return { breaks: [vals[0], 35, 45, 55, 65, vals.at(-1)], cls: v => v < 35 ? 0 : v < 45 ? 1 : v < 55 ? 2 : v < 65 ? 3 : 4 };
+    }
+    const q = [0.2, 0.4, 0.6, 0.8].map(p => vals[Math.floor(p * vals.length)]);
+    return { breaks: [vals[0], ...q, vals.at(-1)], cls: v => q.filter(x => v >= x).length };
+  }
+
+  // ---------- map ----------
+  function buildMap(svg) {
+    svg.setAttribute('viewBox', `0 0 ${geo.w} ${geo.h}`);
+    const paths = {};
+    for (const [name, s] of Object.entries(geo.shapes)) {
+      const p = document.createElementNS(NS, 'path');
+      p.setAttribute('d', s.d);
+      p.dataset.name = name;
+      svg.appendChild(p);
+      paths[name] = p;
+      if (s.inset) {
+        const [x, y, w, h] = s.inset;
+        const r = document.createElementNS(NS, 'rect');
+        Object.entries({ x, y, width: w, height: h, rx: 8, class: 'inset' }).forEach(([k, v]) => r.setAttribute(k, v));
+        svg.insertBefore(r, svg.firstChild);
+        const t = document.createElementNS(NS, 'text');
+        Object.entries({ x: x + w / 2, y: y + h + 18, 'text-anchor': 'middle', class: 'insetlbl' }).forEach(([k, v]) => t.setAttribute(k, v));
+        t.textContent = '추자면';
+        svg.appendChild(t);
+      }
+    }
+    const layer = document.createElementNS(NS, 'g');
+    svg.appendChild(layer);
+    return { svg, paths, layer };
+  }
+  const unit = svg => geo.w / (svg.clientWidth || geo.w); // viewBox units per CSS px
+
+  const main = buildMap($('#jeju'));
+  let metric = 'visit', selected = null;
+
+  function labels(map, items) {
+    const u = unit(map.svg), fs = 12.5 * u;
+    map.svg.querySelector('.insetlbl').style.fontSize = 11 * u + 'px';
+    map.layer.innerHTML = '';
+    for (const [name, v] of items) {
+      const c = [...geo.shapes[name].c];
+      const half = Math.max(name.length, String(v).length * .6) * fs * .55;
+      c[0] = Math.min(Math.max(c[0], half + 4), geo.w - half - 4);
+      const t = document.createElementNS(NS, 'text');
+      t.setAttribute('class', 'lbl');
+      t.setAttribute('text-anchor', 'middle');
+      t.style.fontSize = fs + 'px';
+      t.style.strokeWidth = 3.5 * u + 'px';
+      t.innerHTML = `<tspan x="${c[0]}" y="${c[1] - fs * .1}">${name}</tspan><tspan class="v" x="${c[0]}" dy="${fs * 1.1}" style="font-size:${fs * .88}px">${v}</tspan>`;
+      map.layer.appendChild(t);
+    }
+  }
+
+  function paint() {
+    const m = METRICS[metric];
+    const ramp = RAMP[m.ramp][dark() ? 'dark' : 'light'];
+    const { breaks, cls } = classes(m.key, m);
+    for (const d of dongs) {
+      const p = main.paths[d.name];
+      if (!p) continue;
+      p.style.fill = ramp[cls(val(m.key, d))];
+      p.classList.toggle('sel', d.name === selected);
+      if (d.name === selected) p.parentNode.insertBefore(p, main.layer);
+    }
+    const s = sorted(m.key);
+    const pick = m.mid != null ? [s[0], s[1], s.at(-1)] : s.slice(0, 3);
+    if (selected && !pick.includes(byName[selected])) pick.push(byName[selected]);
+    labels(main, pick.map(d => [d.name, m.fmt(d)]));
+    const f = v => m.key === 'visitNative' ? man(v) : Math.round(v) + '%';
+    $('#legend').innerHTML = `<span>${m.lo}</span><span class="ramp">${ramp.map((c, i) => `<i style="background:${c}" title="${f(breaks[i])}~${f(breaks[i + 1])}"></i>`).join('')}</span><span>${m.hi}</span><span style="margin-left:auto">${f(breaks[0])} ~ ${f(breaks[5])}</span>`;
+    $('#insight').innerHTML = m.insight();
+  }
+
+  const tip = $('#tip'), box = $('.mapbox');
+  $('#jeju').addEventListener('pointermove', e => {
+    const n = e.target.dataset && e.target.dataset.name;
+    if (!n || e.pointerType === 'touch') { tip.hidden = true; return; }
+    const r = box.getBoundingClientRect();
+    tip.innerHTML = `<b>${n}</b>${METRICS[metric].fmt(byName[n])}`;
+    tip.style.left = e.clientX - r.left + 'px'; tip.style.top = e.clientY - r.top + 'px';
+    tip.hidden = false;
+  });
+  $('#jeju').addEventListener('pointerleave', () => tip.hidden = true);
+  $('#jeju').addEventListener('click', e => {
+    const n = e.target.dataset && e.target.dataset.name;
+    tip.hidden = true;
+    if (n) select(n, true);
+  });
+
+  document.querySelectorAll('.chips button').forEach(b => b.addEventListener('click', () => {
+    metric = b.dataset.m;
+    document.querySelectorAll('.chips button').forEach(x => x.setAttribute('aria-selected', x === b));
+    paint();
+    track('metric_change', { metric });
+  }));
+
+  // ---------- dong card ----------
+  function curveSVG(d, w = 300, h = 96) {
+    const pad = { l: 4, r: 42, t: 8, b: 18 };
+    const norm = a => { const t = sum(a) || 1; return a.map(x => x / t * 100); };
+    const A = norm(d.hourTour), B = norm(d.hourLocal);
+    const max = Math.max(...A, ...B);
+    const X = i => pad.l + i / 23 * (w - pad.l - pad.r), Y = v => pad.t + (1 - v / max) * (h - pad.t - pad.b);
+    const line = a => a.map((v, i) => (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(v).toFixed(1)).join('');
+    const ticks = [0, 6, 12, 18].map(i => `<text class="tk" x="${X(i)}" y="${h - 4}" text-anchor="middle">${i}시</text>`).join('');
+    const ya = Y(A[23]), yb = Y(B[23]), gap = Math.abs(ya - yb) < 12 ? (ya < yb ? [0, 12] : [12, 0]) : [0, 0];
+    return `<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="${d.name} 시간대별 카드 소비">
+      <rect class="band" x="${X(18)}" y="${pad.t}" width="${X(23) - X(18)}" height="${h - pad.t - pad.b}" rx="3"/>
+      <line class="ax" x1="${pad.l}" x2="${w - pad.r}" y1="${h - pad.b}" y2="${h - pad.b}"/>
+      <path class="ln" d="${line(B)}" stroke="var(--s-local)"/>
+      <path class="ln" d="${line(A)}" stroke="var(--s-tour)"/>
+      <text class="dl" x="${X(23) + 5}" y="${ya + 4 + gap[0]}" fill="var(--ink)">관광객</text>
+      <text class="dl" x="${X(23) + 5}" y="${yb + 4 + gap[1]}" fill="var(--ink2)">도민</text>
+      ${ticks}</svg>`;
+  }
+
+  function select(name, fromMap) {
+    selected = name;
+    const d = byName[name];
+    $('#card').innerHTML = `
+      <div class="card-h"><h3>${d.name}</h3><span>${d.city}</span></div>
+      <div class="nums">
+        <div class="num"><b>${rankOf('visitNative', d)}<small>위</small></b><span>관광객 방문<br>43곳 중</span></div>
+        <div class="num"><b>${d.nightShare}<small>%</small></b><span>저녁 6시 이후<br>소비 비중</span></div>
+        <div class="num"><b>${d.tourSpendShare}<small>%</small></b><span>매출 중<br>관광객 몫</span></div>
+      </div>
+      <div class="curve">${curveSVG(d)}<p class="capt">시간대별 카드 소비 비중 · 회색 띠 18~24시</p></div>
+      ${d.places && d.places.length ? `<p class="places">차로 많이 가는 곳 <b>${d.places.slice(0, 3).map(p => p[0]).join(' · ')}</b></p>` : ''}
+      <div class="cardbtns"><button class="btn ghost" data-vs="A">왼쪽 비교에 넣기</button><button class="btn ghost" data-vs="B">오른쪽에 넣기</button></div>`;
+    $('#card').querySelectorAll('[data-vs]').forEach(b => b.addEventListener('click', () => {
+      $('#vs' + b.dataset.vs).value = name; renderVs(true); document.getElementById('vs').scrollIntoView();
+    }));
+    paint();
+    if (fromMap) track('dong_open', { dong: name, metric });
+  }
+  $('#card').innerHTML = '<p class="hint">지도에서 동네를 누르면 핵심 숫자가 나옵니다</p>';
+
+  // ---------- quiz ----------
+  const pin = buildMap($('#pinmap'));
+  const ans = { busy: 0, night: 0, vibe: 0, focus: 'none' };
   function score(d, a) {
     let s = 0;
     s += a.busy * (d.busyPct - 50);
@@ -37,190 +201,117 @@
     if (a.focus === 'stay') s += (d.stayPct - 50) * 1.2;
     return s;
   }
-  function reasons(d, a) {
-    const r = [];
-    r.push(`관광객 방문 ${man(d.visitNative)}회, 43곳 중 ${rankOf('visitNative', d)}위`);
-    if (a.night !== 0) r.push(`관광객 카드 소비의 ${d.nightShare}%가 저녁 6시 이후 (${rankOf('nightShare', d)}위)`);
-    if (a.focus === 'eat') r.push(`관광객 소비 중 음식점 ${d.indShare['음식점업']}%`);
-    if (a.focus === 'stay') r.push(`관광객 소비 중 숙박 ${d.indShare['숙박업']}%`);
-    if (a.vibe !== 0) r.push(`카드 매출의 ${d.tourSpendShare}%가 관광객, 나머지는 도민`);
-    if (d.places && d.places.length) r.push(`차로 많이 찾는 곳: ${d.places.slice(0, 3).map(p => p[0]).join(', ')}`);
-    return r;
+  function why(d, a) {
+    if (a.focus === 'stay') return `관광객 소비 중 숙박 ${val('stay', d)}% · 방문 ${rankOf('visitNative', d)}위`;
+    if (a.focus === 'eat') return `관광객 소비 중 음식점 ${val('eat', d)}% · 저녁 ${d.nightShare}%`;
+    if (a.night) return `저녁 소비 ${d.nightShare}% · 방문 ${rankOf('visitNative', d)}위`;
+    if (a.vibe) return `매출 중 관광객 ${d.tourSpendShare}% · 방문 ${rankOf('visitNative', d)}위`;
+    return `관광객 방문 ${rankOf('visitNative', d)}위 · 저녁 소비 ${d.nightShare}%`;
   }
-  $('#quiz').addEventListener('submit', e => {
-    e.preventDefault();
-    const f = new FormData(e.target);
-    const a = { busy: +f.get('busy'), night: +f.get('night'), vibe: +f.get('vibe'), focus: f.get('focus') };
+  function runQuiz(log) {
     const pool = dongs.filter(d => d.busyPct > 15);
-    const top = pool.map(d => [d, score(d, a)]).sort((x, y) => y[1] - x[1]).slice(0, 3);
-    $('#result').innerHTML = top.map(([d], i) => `
-      <article class="pickcard">
-        <div class="rank">${i + 1}</div>
-        <h3>${d.name}<small>${d.city}${SPECIAL[d.name] ? ' · ' + SPECIAL[d.name] : ''}</small></h3>
-        <ul>${reasons(d, a).map(x => `<li>${x}</li>`).join('')}</ul>
-        <button class="more" data-open="${d.name}" type="button">${d.name} 자세히 보기</button>
-      </article>`).join('');
-    track('quiz_done', { busy: a.busy, night: a.night, vibe: a.vibe, focus: a.focus, pick1: top[0][0].name });
-  });
-
-  /* 02 도감 */
-  let city = '', sortKey = 'visitNative';
-  function renderGrid() {
-    let list = dongs.filter(d => !city || d.city === city);
-    const k = {
-      visitNative: d => -d.visitNative, quiet: d => d.visitNative, nightShare: d => -d.nightShare,
-      eat: d => -d.indShare['음식점업'], tourSpendShare: d => -d.tourSpendShare
-    }[sortKey];
-    list.sort((a, b) => k(a) - k(b));
-    const max = Math.max(...dongs.map(d => d.visitNative));
-    const statLine = d => ({
-      nightShare: `저녁 소비 비중 ${d.nightShare}%`,
-      eat: `음식점 소비 비중 ${d.indShare['음식점업']}%`,
-      tourSpendShare: `관광객 소비 비중 ${d.tourSpendShare}%`
-    }[sortKey] || `관광객 방문 ${man(d.visitNative)}회/년`);
-    $('#grid').innerHTML = list.map((d, i) => `
-      <li data-open="${d.name}" tabindex="0">
-        <span class="n">${String(i + 1).padStart(2, '0')}</span>
-        <h3>${d.name}<small>${d.city}</small></h3>
-        <div class="stat">${statLine(d)}</div>
-        <div class="meter"><i style="width:${(100 * d.visitNative / max).toFixed(1)}%"></i></div>
-        <div class="tags">${tagHtml(d)}</div>
-      </li>`).join('');
+    const top = pool.map(d => [d, score(d, ans)]).sort((x, y) => y[1] - x[1]).slice(0, 3).map(x => x[0]);
+    for (const [n, p] of Object.entries(pin.paths)) p.classList.toggle('hit', top.some(d => d.name === n));
+    const u = unit(pin.svg);
+    pin.svg.querySelector('.insetlbl').style.fontSize = 11 * u + 'px';
+    pin.layer.innerHTML = top.map((d, i) => { const c = geo.shapes[d.name].c; return `<g class="pin"><circle cx="${c[0]}" cy="${c[1]}" r="${13 * u}" style="stroke-width:${2.5 * u}"/><text x="${c[0]}" y="${c[1]}" style="font-size:${14 * u}px">${i + 1}</text></g>`; }).join('');
+    $('#picks').innerHTML = top.map((d, i) => `<li data-n="${d.name}"><span class="rk">${i + 1}</span><div><h3>${d.name}<small>${d.city}</small></h3><p class="why">${why(d, ans)}</p></div><span class="go">›</span></li>`).join('');
+    $('#picks').querySelectorAll('li').forEach(li => li.addEventListener('click', () => {
+      select(li.dataset.n, false); document.getElementById('map').scrollIntoView(); track('dong_open', { dong: li.dataset.n, from: 'quiz' });
+    }));
+    if (log) track('quiz_done', { ...ans, top: top.map(d => d.name).join(',') });
   }
-  $('#cityseg').addEventListener('click', e => {
+  document.querySelectorAll('.quiz .seg').forEach(seg => seg.addEventListener('click', e => {
     const b = e.target.closest('button'); if (!b) return;
-    city = b.dataset.city;
-    $('#cityseg').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
-    renderGrid(); track('filter_city', { city: city || '전체' });
-  });
-  $('#sort').addEventListener('change', e => { sortKey = e.target.value; renderGrid(); track('sort', { key: sortKey }); });
-  renderGrid();
-
-  /* 상세 시트 */
-  function monthlySvg(d) {
-    const w = 600, h = 150, p = 24, v = d.monthly, mx = Math.max(...v);
-    const bw = (w - p * 2) / v.length;
-    return `<svg viewBox="0 0 ${w} ${h + 22}" role="img" aria-label="${d.name} 월별 관광객 방문">
-      ${v.map((x, i) => {
-        const bh = (h - 20) * x / mx, autumn = i === 2 || i === 3;
-        return `<rect x="${p + i * bw + 3}" y="${h - bh}" width="${bw - 6}" height="${bh}" fill="${autumn ? 'var(--tang)' : 'var(--sea2)'}"/>
-        <text x="${p + i * bw + bw / 2}" y="${h + 16}" font-size="12" text-anchor="middle" fill="var(--stone)">${MONTH_LABEL[i]}</text>`;
-      }).join('')}
-    </svg>`;
-  }
-  function hourSvg(d) {
-    const w = 600, h = 140, p = 24, T = d.hourTour, L = d.hourLocal;
-    const st = T.reduce((a, b) => a + b, 0) || 1, sl = L.reduce((a, b) => a + b, 0) || 1;
-    const t = T.map(x => x / st), l = L.map(x => x / sl), mx = Math.max(...t, ...l);
-    const x = i => p + i * (w - p * 2) / 23, y = v => h - (h - 16) * v / mx;
-    const line = arr => arr.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join('');
-    return `<svg viewBox="0 0 ${w} ${h + 22}" role="img" aria-label="${d.name} 시간대별 카드 소비">
-      <rect x="${x(18)}" y="0" width="${x(23) - x(18)}" height="${h}" fill="var(--paper2)"/>
-      <path d="${line(l)}" fill="none" stroke="var(--stone)" stroke-width="2" stroke-dasharray="4 3"/>
-      <path d="${line(t)}" fill="none" stroke="var(--tang)" stroke-width="2.5"/>
-      ${[0, 6, 12, 18, 23].map(i => `<text x="${x(i)}" y="${h + 16}" font-size="12" text-anchor="middle" fill="var(--stone)">${i}시</text>`).join('')}
-    </svg>`;
-  }
-  const IND_COL = { '음식점업': 'var(--tang)', '숙박업': 'var(--sea)', '소매업': 'var(--sea2)', '예술스포츠여가업': 'var(--tang2)', '기타서비스업': 'var(--rule)' };
-  const IND_LBL = { '음식점업': '음식점', '숙박업': '숙박', '소매업': '소매', '예술스포츠여가업': '여가', '기타서비스업': '기타' };
-  function openDong(name, from) {
-    const d = byName[name]; if (!d) return;
-    const ri = (d.ri || []).sort((a, b) => b[1] - a[1]).slice(0, 5);
-    $('#sheetbody').innerHTML = `
-      <h2 class="dh">${d.name}<small>${d.city}${SPECIAL[d.name] ? ' · ' + SPECIAL[d.name] : ''}</small></h2>
-      <div class="tags" style="margin-top:8px">${tagHtml(d)}</div>
-      <div class="kpis">
-        <div class="kpi"><b>${man(d.visitNative)}</b><span>관광객 방문/년</span> <em>${rankOf('visitNative', d)}위</em></div>
-        <div class="kpi"><b>${d.nightShare}%</b><span>저녁 6시 이후 소비</span> <em>${rankOf('nightShare', d)}위</em></div>
-        <div class="kpi"><b>${d.tourSpendShare}%</b><span>매출 중 관광객 몫</span> <em>${rankOf('tourSpendShare', d)}위</em></div>
-        <div class="kpi"><b>${d.foreignShare}%</b><span>방문 중 외국인</span> <em>${rankOf('foreignShare', d)}위</em></div>
-      </div>
-      <div class="chart"><h4>월별 관광객 방문</h4>${monthlySvg(d)}<p class="note">2025년 8월~2026년 7월. 주황은 지난가을(10·11월), 1년 중 ${d.autShare}%.</p></div>
-      <div class="chart"><h4>하루 중 언제 돈을 쓰나</h4>${hourSvg(d)}
-        <div class="legend"><span><i style="background:var(--tang)"></i>내국인 관광객</span><span><i style="background:var(--stone)"></i>도민(점선)</span><span><i style="background:var(--paper2);border:1px solid var(--rule)"></i>18~24시</span></div>
-        <p class="note">시간대별 카드 매출을 각자 하루 합계 대비 비율로 그렸습니다.</p></div>
-      <div class="chart"><h4>관광객은 무엇에 쓰나</h4>
-        <div class="stack">${Object.entries(d.indShare).sort((a, b) => b[1] - a[1]).map(([k, v]) => `<i title="${IND_LBL[k]} ${v}%" style="width:${v}%;background:${IND_COL[k]}"></i>`).join('')}</div>
-        <div class="legend">${Object.entries(d.indShare).sort((a, b) => b[1] - a[1]).map(([k, v]) => `<span><i style="background:${IND_COL[k]}"></i>${IND_LBL[k]} ${v}%</span>`).join('')}</div></div>
-      ${d.places && d.places.length ? `<div class="chart"><h4>차로 많이 찾아간 곳</h4><ol class="places">${d.places.map(p => `<li>${p[0]}<span>${fmt(p[1])}대</span></li>`).join('')}</ol><p class="note">티맵 도착 차량, 2025년 10월~2026년 9월.</p></div>` : ''}
-      ${ri.length ? `<div class="chart"><h4>방문 많은 리</h4><ol class="places">${ri.map(p => `<li>${p[0]}<span>${man(p[1])}회</span></li>`).join('')}</ol></div>` : ''}
-      <button class="btn ghost small" type="button" data-vs="${d.name}">다른 동네와 비교</button>`;
-    $('#sheet').showModal();
-    $('#sheet').scrollTop = 0;
-    track('dong_open', { dong: d.name, from: from || 'grid' });
-  }
-  document.addEventListener('click', e => {
-    const o = e.target.closest('[data-open]');
-    if (o) { openDong(o.dataset.open, o.classList.contains('more') ? 'quiz' : 'grid'); return; }
-    const v = e.target.closest('[data-vs]');
-    if (v) { $('#sheet').close(); $('#vsA').value = v.dataset.vs; renderVs(); location.hash = 'vs'; }
-  });
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && e.target.matches('li[data-open]')) openDong(e.target.dataset.open);
-  });
-  $('#sheet .close').addEventListener('click', () => $('#sheet').close());
-  $('#sheet').addEventListener('click', e => { if (e.target === $('#sheet')) $('#sheet').close(); });
-
-  /* 03 비교 */
-  const names = [...dongs].sort((a, b) => a.name.localeCompare(b.name, 'ko')).map(d => d.name);
-  ['#vsA', '#vsB'].forEach(s => $(s).innerHTML = names.map(n => `<option>${n}</option>`).join(''));
-  const q = new URLSearchParams(location.search);
-  $('#vsA').value = byName[q.get('a')] ? q.get('a') : '애월읍';
-  $('#vsB').value = byName[q.get('b')] ? q.get('b') : '조천읍';
-  const ROWS = [
-    ['관광객 방문/년', d => d.visitNative, man, ''],
-    ['지난가을(10~11월) 방문', d => d.autNative, man, ''],
-    ['저녁 6시 이후 소비 비중', d => d.nightShare, v => v + '%', ''],
-    ['밤 9시~새벽 2시 소비 비중', d => d.lateShare, v => v + '%', ''],
-    ['매출 중 관광객 몫', d => d.tourSpendShare, v => v + '%', '높을수록 관광지, 낮을수록 생활권'],
-    ['관광객 소비 중 음식점', d => d.indShare['음식점업'], v => v + '%', ''],
-    ['관광객 소비 중 숙박', d => d.indShare['숙박업'], v => v + '%', ''],
-    ['방문 중 외국인', d => d.foreignShare, v => v + '%', ''],
-    ['관광객 카드 소비/년', d => d.spendTour, eok, 'BC카드 기준']
-  ];
-  function renderVs() {
-    const A = byName[$('#vsA').value], B = byName[$('#vsB').value];
-    $('#vsout').innerHTML = ROWS.map(([l, f, fm, note]) => {
-      const a = f(A) || 0, b = f(B) || 0, mx = Math.max(a, b) || 1;
-      const cell = (d, v, win) => `<div class="vscell ${win ? 'win' : ''}"><small>${d.name}</small><b>${fm(v)}</b><div class="bar"><i style="width:${(100 * v / mx).toFixed(1)}%"></i></div></div>`;
-      return `<div class="vsrow"><div class="lbl">${l}${note ? ' · ' + note : ''}</div>${cell(A, a, a > b)}${cell(B, b, b > a)}</div>`;
-    }).join('') + `<div class="vsrow"><div class="lbl">차로 많이 찾는 곳</div>
-      <div class="vscell"><small>${(A.places || []).slice(0, 5).map(p => p[0]).join(' · ')}</small></div>
-      <div class="vscell"><small>${(B.places || []).slice(0, 5).map(p => p[0]).join(' · ')}</small></div></div>`;
-  }
-  ['#vsA', '#vsB'].forEach(s => $(s).addEventListener('change', () => {
-    renderVs(); track('compare', { a: $('#vsA').value, b: $('#vsB').value });
+    seg.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+    const k = seg.dataset.k; ans[k] = k === 'focus' ? b.dataset.v : +b.dataset.v;
+    runQuiz(true);
   }));
-  renderVs();
-  if (q.get('a') || q.get('b')) track('shared_visit', { a: $('#vsA').value, b: $('#vsB').value });
+
+  // ---------- stories ----------
+  {
+    const u = byName['우도면'], j = byName['정방동'];
+    const o = data.oreum, ot = sum(o.map(x => x.aut)), top = [...o].sort((a, b) => b.aut - a.aut)[0];
+    const ae = byName['애월읍'], jo = byName['조천읍'];
+    const mini = (d, color) => {
+      const t = sum(d.hourTour) || 1, a = d.hourTour.map(x => x / t * 100), mx = Math.max(...u.hourTour.map(x => x / sum(u.hourTour) * 100), ...j.hourTour.map(x => x / sum(j.hourTour) * 100));
+      const X = i => i / 23 * 136 + 2, Y = v => 40 - v / mx * 36;
+      return `<path d="${a.map((v, i) => (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(v).toFixed(1)).join('')}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>`;
+    };
+    $('#stories').innerHTML = `
+      <article class="story"><p class="k">저녁</p><h3>우도는 해 지면 조용하고,<br>서귀포 정방동은 그때부터</h3>
+        <div class="big">${u.nightShare}%<small>vs</small> ${j.nightShare}%</div>
+        <p>관광객 카드 소비 중 저녁 6시 이후 비중. 우도면 vs 정방동.</p>
+        <svg viewBox="0 0 140 44" style="width:100%;margin-top:10px;overflow:visible" aria-hidden="true"><rect x="${18 / 23 * 136 + 2}" y="2" width="${5 / 23 * 136}" height="40" rx="2" fill="var(--chip)"/>${mini(u, 'var(--s-tour)')}${mini(j, 'var(--accent)')}</svg>
+        <p class="capt"><span style="color:var(--s-tour)">━</span> 우도면 &nbsp;<span style="color:var(--accent)">━</span> 정방동 · 0~23시, 회색 띠 18~24시</p></article>
+      <article class="story"><p class="k">가을 오름</p><h3>오름 95곳 가운데<br>${top.name} 한 곳이</h3>
+        <div class="big">${(top.aut / ot * 100).toFixed(1)}%<small>차량 도착</small></div>
+        <p>2025년 10~11월 티맵 차량 도착 ${ot.toLocaleString()}대 중 ${top.aut.toLocaleString()}대. 덜 붐비는 대안은 아래 오름 섹션에.</p></article>
+      <article class="story"><p class="k">애월 vs 함덕</p><h3>방문은 애월이 많고,<br>숙박 비중은 조천이 높다</h3>
+        <div class="big">${man(ae.visitNative)}<small>vs</small> ${man(jo.visitNative)}</div>
+        <p>1년 관광객 방문 애월읍 vs 조천읍(함덕). 저녁 소비 비중은 ${ae.nightShare}% vs ${jo.nightShare}%, 숙박 비중은 ${val('stay', ae)}% vs ${val('stay', jo)}%.</p></article>`;
+  }
+
+  // ---------- compare (butterfly) ----------
+  const ROWS = [
+    ['관광객 방문(1년)', d => d.visitNative, d => man(d.visitNative)],
+    ['가을(10~11월) 방문 비중', d => d.autShare, d => d.autShare + '%'],
+    ['저녁 6시 이후 소비', d => d.nightShare, d => d.nightShare + '%'],
+    ['매출 중 관광객 몫', d => d.tourSpendShare, d => d.tourSpendShare + '%'],
+    ['관광객 소비 중 음식점', d => val('eat', d), d => val('eat', d) + '%'],
+    ['관광객 소비 중 숙박', d => val('stay', d), d => val('stay', d) + '%'],
+  ];
+  const opts = [...dongs].sort((a, b) => a.name.localeCompare(b.name, 'ko')).map(d => `<option>${d.name}</option>`).join('');
+  $('#vsA').innerHTML = opts; $('#vsB').innerHTML = opts;
+  const qs = new URLSearchParams(location.search);
+  $('#vsA').value = byName[qs.get('a')] ? qs.get('a') : '애월읍';
+  $('#vsB').value = byName[qs.get('b')] ? qs.get('b') : '조천읍';
+  if (qs.get('a')) track('shared_visit', { a: qs.get('a'), b: qs.get('b') });
+  function renderVs(log) {
+    const A = byName[$('#vsA').value], B = byName[$('#vsB').value];
+    $('#fly').innerHTML = ROWS.map(([lb, f, fmt]) => {
+      const mx = Math.max(...dongs.map(f)), a = f(A), b = f(B);
+      return `<div class="fr"><div class="lb">${lb}</div><div class="bars">
+        <div class="l ${a < b ? 'lose' : ''}"><i style="width:${a / mx * 74}%"></i><span>${fmt(A)}</span></div>
+        <div class="r ${b < a ? 'lose' : ''}"><i style="width:${b / mx * 74}%"></i><span>${fmt(B)}</span></div></div></div>`;
+    }).join('') + `<p class="capt" style="padding:4px 0 10px">막대 길이는 43개 동네 중 최댓값 기준</p>`;
+    if (log) track('compare', { a: A.name, b: B.name });
+  }
+  $('#vsA').addEventListener('change', () => renderVs(true));
+  $('#vsB').addEventListener('change', () => renderVs(true));
   $('#share').addEventListener('click', async () => {
     const url = `${location.origin}${location.pathname}?a=${encodeURIComponent($('#vsA').value)}&b=${encodeURIComponent($('#vsB').value)}#vs`;
-    const title = `제주 ${$('#vsA').value} vs ${$('#vsB').value}`;
     try {
-      if (navigator.share) await navigator.share({ title, url });
-      else { await navigator.clipboard.writeText(url); $('#share').textContent = '복사했어요'; }
-      track('share', { a: $('#vsA').value, b: $('#vsB').value, method: navigator.share ? 'native' : 'copy' });
+      if (navigator.share) await navigator.share({ title: '제주 동네 비교', url });
+      else { await navigator.clipboard.writeText(url); $('#share').textContent = '링크를 복사했어요'; }
     } catch (e) {}
+    track('share', { a: $('#vsA').value, b: $('#vsB').value });
   });
 
-  /* 04 오름 */
-  const oreum = [...D.oreum].sort((a, b) => b.aut - a.aut);
-  function renderOreum(mode) {
-    let list = mode === 'top' ? oreum.slice(0, 15) : mode === 'mid' ? oreum.slice(15, 40) : oreum;
-    const mx = oreum[0].aut;
-    $('#oreumlist').innerHTML = list.map(o => `<li class="${o === oreum[0] ? 'hot' : ''}"><span>${o.name}</span><div class="b"><i style="width:${Math.max(.5, 100 * o.aut / mx).toFixed(1)}%"></i></div><span class="v">${fmt(o.aut)}대</span></li>`).join('');
+  // ---------- oreum ----------
+  {
+    const o = [...data.oreum].sort((a, b) => b.aut - a.aut), ot = sum(o.map(x => x.aut));
+    const top = o.slice(0, 8), rest = o.slice(8), rs = sum(rest.map(x => x.aut));
+    const top3 = sum(o.slice(0, 3).map(x => x.aut)) / ot * 100;
+    $('#oreumlede').textContent = `지난가을(2025년 10~11월) 티맵으로 오름 ${o.length}곳에 도착한 차량 ${ot.toLocaleString()}대 중 상위 3곳이 ${top3.toFixed(1)}%입니다.`;
+    const mx = Math.max(o[0].aut, rs);
+    const row = (n, v, cls, sub) => `<div class="ob ${cls}"><span class="n">${n}</span><div class="t"><i style="width:${v / mx * 70}%"></i><span>${v.toLocaleString()}<small>${sub}</small></span></div></div>`;
+    $('#oreumchart').innerHTML = top.map((x, i) => row(x.name, x.aut, i === 0 ? 'hot' : '', (x.aut / ot * 100).toFixed(1) + '%')).join('') +
+      row(`나머지 ${rest.length}곳`, rs, 'rest', (rs / ot * 100).toFixed(1) + '%');
+    // 가을 9위 밖인데 1년 내내 찾는 차량이 많은 곳
+    const alts = o.slice(8, 40).filter(x => x.year > 0).sort((a, b) => b.year - a.year).slice(0, 4);
+    $('#alts').innerHTML = alts.map(x => `<li><b>${x.name}</b><span>가을 ${x.aut.toLocaleString()}대 · 1년 ${x.year.toLocaleString()}대</span></li>`).join('');
+    new IntersectionObserver((es, ob) => { if (es[0].isIntersecting) { track('oreum_view'); ob.disconnect(); } }).observe($('#oreum'));
   }
-  $('#oreumseg').addEventListener('click', e => {
-    const b = e.target.closest('button'); if (!b) return;
-    $('#oreumseg').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
-    renderOreum(b.dataset.o); track('oreum_view', { mode: b.dataset.o });
-  });
-  renderOreum('top');
 
-  /* 피드백 */
+  // ---------- feedback ----------
   document.querySelectorAll('[data-fb]').forEach(b => b.addEventListener('click', () => {
     track('feedback', { answer: b.dataset.fb });
     document.querySelectorAll('[data-fb]').forEach(x => x.disabled = true);
     $('#fbthanks').hidden = false;
   }));
+
+  paint(); runQuiz(false); renderVs(false);
+  let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { paint(); runQuiz(false); }, 150); });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', paint);
 })();

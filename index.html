@@ -2,16 +2,15 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>제주, 어느 동네에 묵을까</title>
-<meta name="description" content="제주관광빅데이터플랫폼의 이동통신·카드·내비게이션 데이터로 제주 43개 읍면동을 비교합니다. 여행 스타일을 고르면 숙소 잡을 동네를 골라 드립니다.">
-<meta property="og:title" content="제주, 어느 동네에 묵을까">
-<meta property="og:description" content="관광객 방문·저녁 소비·인기 장소 데이터로 고르는 제주 숙소 동네">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>제주, 어디에 묵을까</title>
+<meta name="description" content="제주관광빅데이터플랫폼의 이동통신·카드·내비게이션 데이터로 제주 43개 읍면동을 지도로 비교합니다. 관광객이 몰리는 곳, 저녁에 활발한 곳, 도민이 사는 동네를 한눈에.">
+<meta property="og:title" content="제주, 어디에 묵을까 — 43개 동네 데이터 지도">
+<meta property="og:description" content="관광객 방문·저녁 소비·관광지/생활권 데이터로 고르는 제주 숙소 동네">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://kangraemin.github.io/jeju-stay/">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#fbfbf9">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="style.css">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-F0MT1BRZX2"></script>
 <script>
@@ -22,118 +21,117 @@ gtag('config', 'G-F0MT1BRZX2', { page_title: '제주 숙소 동네' });
 </script>
 </head>
 <body>
-<header class="mast">
-  <div class="wrap">
-    <p class="kicker">제주관광빅데이터플랫폼 데이터로 본 43개 읍면동</p>
-    <h1>제주, 어느 동네에<br>묵을까</h1>
-    <p class="lede">애월이냐 함덕이냐, 서귀포냐 성산이냐. 숙소 위치를 못 정했다면 관광객이 실제로 어디에 머물고, 저녁에 어디서 돈을 쓰고, 차를 어디에 세웠는지부터 보세요. 1년 치 이동통신·카드·내비게이션 데이터를 동네별로 정리했습니다.</p>
-    <nav class="jump">
-      <a href="#pick">스타일로 고르기</a>
-      <a href="#book">43개 동네 보기</a>
-      <a href="#vs">두 동네 비교</a>
-      <a href="#oreum">가을 오름</a>
-    </nav>
-  </div>
+<header class="top">
+  <a class="brand" href="#">제주 동네 지도</a>
+  <nav class="topnav"><a href="#pick">추천</a><a href="#vs">비교</a><a href="#oreum">오름</a><a href="#how">데이터</a></nav>
 </header>
 
 <main>
-<section id="pick" class="wrap block">
-  <h2><span class="no">01</span>여행 스타일로 고르기</h2>
-  <p class="sub">네 가지만 고르면 맞는 동네 세 곳을 골라 드려요. 점수 계산식은 맨 아래에 공개했습니다.</p>
-  <form id="quiz" class="quiz">
-    <fieldset>
-      <legend>사람 많은 곳은?</legend>
-      <label><input type="radio" name="busy" value="1">북적여도 좋아요</label>
-      <label><input type="radio" name="busy" value="0" checked>상관없어요</label>
-      <label><input type="radio" name="busy" value="-1">한적한 곳이 좋아요</label>
-    </fieldset>
-    <fieldset>
-      <legend>저녁에는?</legend>
-      <label><input type="radio" name="night" value="1">나가서 먹고 마셔요</label>
-      <label><input type="radio" name="night" value="0" checked>그때그때</label>
-      <label><input type="radio" name="night" value="-1">숙소에서 쉬어요</label>
-    </fieldset>
-    <fieldset>
-      <legend>이번 여행의 중심은?</legend>
-      <label><input type="radio" name="focus" value="eat">맛집</label>
-      <label><input type="radio" name="focus" value="stay">숙소 자체(리조트·호텔)</label>
-      <label><input type="radio" name="focus" value="none" checked>골고루</label>
-    </fieldset>
-    <fieldset>
-      <legend>동네 분위기는?</legend>
-      <label><input type="radio" name="vibe" value="1">관광지 느낌</label>
-      <label><input type="radio" name="vibe" value="0" checked>상관없어요</label>
-      <label><input type="radio" name="vibe" value="-1">도민이 사는 동네</label>
-    </fieldset>
-    <button type="submit" class="btn">동네 골라 주세요</button>
-  </form>
-  <div id="result" class="result" aria-live="polite"></div>
-</section>
+<section class="hero" id="map">
+  <div class="hero-head">
+    <p class="eyebrow">43개 읍면동 · 관광객 1억 5,687만 회 방문 데이터</p>
+    <h1>제주, 어디에 묵을까</h1>
+  </div>
 
-<section id="book" class="wrap block">
-  <h2><span class="no">02</span>43개 동네 보기</h2>
-  <div class="tools">
-    <div class="seg" id="cityseg">
-      <button data-city="" class="on">전체</button><button data-city="제주시">제주시</button><button data-city="서귀포시">서귀포시</button>
+  <div class="chips" role="tablist" aria-label="지도 지표">
+    <button role="tab" data-m="visit" aria-selected="true">관광객 많은 곳</button>
+    <button role="tab" data-m="night">저녁에 활발한 곳</button>
+    <button role="tab" data-m="tour">관광지 vs 생활권</button>
+    <button role="tab" data-m="stay">숙소 몰린 곳</button>
+  </div>
+
+  <div class="stage">
+    <div class="mapbox">
+      <svg id="jeju" class="jeju" role="img" aria-label="제주 읍면동 지도"></svg>
+      <div id="tip" class="tip" hidden></div>
+      <div id="legend" class="legend"></div>
     </div>
-    <select id="sort" aria-label="정렬">
-      <option value="visitNative">관광객 방문 많은 순</option>
-      <option value="quiet">한적한 순</option>
-      <option value="nightShare">저녁 소비 비중 높은 순</option>
-      <option value="eat">음식점 소비 비중 높은 순</option>
-      <option value="tourSpendShare">관광객 소비 비중 높은 순</option>
-    </select>
+    <aside class="side">
+      <div id="insight" class="insight" aria-live="polite"></div>
+      <div id="card" class="card" aria-live="polite"></div>
+    </aside>
   </div>
-  <ol id="grid" class="grid"></ol>
 </section>
 
-<section id="vs" class="wrap block">
-  <h2><span class="no">03</span>두 동네 비교</h2>
-  <div class="vspick">
-    <select id="vsA" aria-label="첫째 동네"></select>
-    <span class="vsmark">vs</span>
-    <select id="vsB" aria-label="둘째 동네"></select>
+<section class="sec" id="pick">
+  <div class="sec-head">
+    <h2>나한테 맞는 동네 3곳</h2>
+    <p>세 가지만 고르면 바로 지도에 찍어 드려요.</p>
   </div>
-  <div id="vsout" class="vsout"></div>
+  <div class="pickgrid">
+    <form id="quiz" class="quiz">
+      <div class="q"><span>사람은</span>
+        <div class="seg" data-k="busy"><button type="button" data-v="1">북적여도 OK</button><button type="button" data-v="0" class="on">상관없음</button><button type="button" data-v="-1">한적하게</button></div></div>
+      <div class="q"><span>저녁엔</span>
+        <div class="seg" data-k="night"><button type="button" data-v="1">나가서 놀기</button><button type="button" data-v="0" class="on">상관없음</button><button type="button" data-v="-1">숙소에서</button></div></div>
+      <div class="q"><span>동네는</span>
+        <div class="seg" data-k="vibe"><button type="button" data-v="1">관광지</button><button type="button" data-v="0" class="on">상관없음</button><button type="button" data-v="-1">도민 동네</button></div></div>
+      <div class="q"><span>중심은</span>
+        <div class="seg" data-k="focus"><button type="button" data-v="eat">맛집</button><button type="button" data-v="none" class="on">골고루</button><button type="button" data-v="stay">리조트·호텔</button></div></div>
+    </form>
+    <div class="pickmap"><svg id="pinmap" class="jeju mini" role="img" aria-label="추천 동네 위치"></svg></div>
+    <ol id="picks" class="picks"></ol>
+  </div>
+</section>
+
+<section class="sec" id="story">
+  <div class="sec-head"><h2>데이터로 보면 다른 제주</h2></div>
+  <div class="stories" id="stories"></div>
+</section>
+
+<section class="sec" id="vs">
+  <div class="sec-head">
+    <h2>두 동네 비교</h2>
+    <p>애월이냐 함덕(조천)이냐, 막대 길이로 바로 보세요.</p>
+  </div>
+  <div class="vspick">
+    <select id="vsA" aria-label="왼쪽 동네"></select>
+    <span>vs</span>
+    <select id="vsB" aria-label="오른쪽 동네"></select>
+  </div>
+  <div id="fly" class="fly"></div>
   <button id="share" class="btn ghost" type="button">이 비교 링크 복사</button>
 </section>
 
-<section id="oreum" class="wrap block">
-  <h2><span class="no">04</span>가을 오름, 덜 붐비는 곳</h2>
-  <p class="sub">지난가을(2025년 10~11월) 티맵 내비게이션으로 오름을 찾아가 도착한 차량 수입니다. 억새로 유명한 새별오름 한 곳에 오름 95곳 전체 도착의 약 30%가 몰렸습니다.</p>
-  <div class="seg" id="oreumseg">
-    <button data-o="top" class="on">많이 간 곳</button><button data-o="mid">중간쯤</button><button data-o="all">전체</button>
+<section class="sec" id="oreum">
+  <div class="sec-head">
+    <h2>가을 오름, 한 곳에 몰린다</h2>
+    <p id="oreumlede"></p>
   </div>
-  <ol id="oreumlist" class="bars"></ol>
+  <div id="oreumchart" class="oreumchart"></div>
+  <h3 class="h3">덜 붐비는 대안</h3>
+  <ul id="alts" class="alts"></ul>
 </section>
 
-<section id="how" class="wrap block how">
-  <h2><span class="no">05</span>데이터와 계산 방법</h2>
-  <dl>
-    <dt>관광객 방문</dt><dd>SKT 이동통신. 관광객이 그 읍면동에 30분 이상 머문 경우를 1회 방문으로 셉니다. 최근 14일 밤(22~04시) 주로 머문 곳이 제주 밖이면 관광객입니다. 2025년 8월~2026년 7월 합계.</dd>
-    <dt>저녁 소비 비중</dt><dd>BC카드 시간대별 매출 중 내국인 관광객이 18~24시에 쓴 금액의 비중. 같은 기간.</dd>
-    <dt>관광객 소비 비중</dt><dd>그 동네 카드 매출에서 내국인 관광객 몫. 나머지는 도민입니다. 높으면 관광지, 낮으면 생활권에 가깝습니다.</dd>
-    <dt>업종 구성</dt><dd>내국인 관광객 카드 매출을 소매·숙박·음식점·예술스포츠여가·기타서비스로 나눈 비율.</dd>
-    <dt>인기 장소</dt><dd>티맵 내비게이션으로 그 동네에 도착한 차량이 많은 목적지 10곳. 2025년 10월~2026년 9월.</dd>
-    <dt>추천 점수</dt><dd>각 지표를 43개 동네 안에서 백분위(0~100)로 바꾼 뒤, 고른 답에 따라 더하거나 뺍니다. 관광객 방문이 하위 15%인 동네(추자면 등)는 추천에서 뺍니다.</dd>
-  </dl>
-  <p class="caveat">카드 데이터는 BC카드 결제만 집계하므로 실제 전체 매출과 다릅니다. 용담2동에는 제주국제공항, 건입동에는 제주항이 있어 방문이 많게 잡힙니다. 리 단위는 읍·면 지역만 제공됩니다.</p>
+<section class="sec" id="how">
+  <details class="how">
+    <summary>데이터와 계산 방법</summary>
+    <dl>
+      <dt>관광객 방문</dt><dd>SKT 이동통신. 관광객이 그 읍면동에 30분 이상 머문 경우를 1회 방문으로 셉니다. 최근 14일 밤(22~04시)에 주로 머문 곳이 제주 밖이면 관광객입니다. 2025년 8월~2026년 7월 합계.</dd>
+      <dt>저녁 소비 비중</dt><dd>BC카드 시간대별 매출 중 내국인 관광객이 18~24시에 쓴 금액의 비중. 같은 기간.</dd>
+      <dt>관광지 vs 생활권</dt><dd>그 동네 카드 매출에서 내국인 관광객 몫. 나머지는 도민입니다. 50%보다 높으면 관광지, 낮으면 생활권에 가깝습니다.</dd>
+      <dt>숙소 몰린 곳</dt><dd>내국인 관광객 카드 매출 중 숙박업 비중.</dd>
+      <dt>인기 장소</dt><dd>티맵 내비게이션으로 그 동네에 도착한 차량이 많은 목적지. 2025년 10월~2026년 9월.</dd>
+      <dt>오름</dt><dd>티맵 차량 도착 수. 가을은 2025년 10~11월.</dd>
+      <dt>추천 점수</dt><dd>지표마다 43개 동네 안에서 백분위(0~100)로 바꾼 뒤 고른 답에 따라 더하거나 뺍니다. 관광객 방문이 하위 15%인 동네는 뺍니다.</dd>
+      <dt>지도 색</dt><dd>43개 동네를 값 순서로 다섯 구간(각 8~9곳)으로 나눴습니다. 경계는 행정안전부 행정동 경계(vuski/admdongkor, 2026.07).</dd>
+    </dl>
+    <p class="caveat">카드는 BC카드 결제만 집계해서 실제 전체 매출과 다릅니다. 용담2동에는 제주국제공항, 건입동에는 제주항이 있어 방문이 많게 잡힙니다.</p>
+  </details>
   <p class="src">출처: 제주관광빅데이터플랫폼(data.ijto.or.kr) 데이터 픽, 제주관광공사 · 원자료 SKT, BC카드, 티맵 · 공공누리 제1유형</p>
   <div class="fb">
     <span>도움이 됐나요?</span>
-    <button class="btn small" data-fb="yes" type="button">네, 동네 정했어요</button>
-    <button class="btn small ghost" data-fb="some" type="button">조금요</button>
-    <button class="btn small ghost" data-fb="no" type="button">아니요</button>
+    <div class="fbbtns">
+      <button class="btn" data-fb="yes" type="button">네, 정했어요</button>
+      <button class="btn ghost" data-fb="some" type="button">조금요</button>
+      <button class="btn ghost" data-fb="no" type="button">아니요</button>
+    </div>
     <span id="fbthanks" class="thanks" hidden>고맙습니다!</span>
   </div>
 </section>
 </main>
 
-<dialog id="sheet" class="sheet"><div id="sheetbody"></div><button class="close" type="button" aria-label="닫기">×</button></dialog>
-
-<footer class="foot wrap">
-  <p>개인이 만든 비영리 페이지입니다. 방문 통계(Google Analytics)를 수집합니다.</p>
-</footer>
+<footer class="foot">개인이 만든 비영리 페이지입니다. 방문 통계(Google Analytics)를 수집합니다.</footer>
 <script src="app.js"></script>
 </body>
 </html>
