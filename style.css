@@ -220,3 +220,4 @@ button,select{font:inherit;color:inherit}
   .jeju .lbl tspan.v{font-size:20px}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+.foot.dongs{line-height:2;font-size:13px}.foot.dongs a{color:var(--ink2)}

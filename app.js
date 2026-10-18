@@ -298,6 +298,7 @@
   $('#vsA').value = byName[qs.get('a')] ? qs.get('a') : '애월읍';
   $('#vsB').value = byName[qs.get('b')] ? qs.get('b') : '조천읍';
   if (qs.get('a')) track('shared_visit', { a: qs.get('a'), b: qs.get('b') });
+  if (byName[qs.get('dong')]) { select(qs.get('dong'), false); track('dong_open', { dong: qs.get('dong'), from: 'page' }); }
   function renderVs(log) {
     const A = byName[$('#vsA').value], B = byName[$('#vsB').value];
     $('#fly').innerHTML = ROWS.map(([lb, f, fmt]) => {
