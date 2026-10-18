@@ -327,8 +327,25 @@
     $('#oreumlede').textContent = `지난가을(2025년 10~11월) 티맵으로 오름 ${o.length}곳에 도착한 차량 ${ot.toLocaleString()}대 중 상위 3곳이 ${top3.toFixed(1)}%입니다.`;
     const mx = Math.max(o[0].aut, rs);
     const row = (n, v, cls, sub) => `<div class="ob ${cls}"><span class="n">${n}</span><div class="t"><i style="width:${v / mx * 70}%"></i><span>${v.toLocaleString()}<small>${sub}</small></span></div></div>`;
-    $('#oreumchart').innerHTML = top.map((x, i) => row(x.name, x.aut, i === 0 ? 'hot' : '', (x.aut / ot * 100).toFixed(1) + '%')).join('') +
+    const cntHtml = top.map((x, i) => row(x.name, x.aut, i === 0 ? 'hot' : '', (x.aut / ot * 100).toFixed(1) + '%')).join('') +
       row(`나머지 ${rest.length}곳`, rs, 'rest', (rs / ot * 100).toFixed(1) + '%');
+    const cntLede = $('#oreumlede').textContent;
+    // 도민 픽: 가을 도착 150대 이상 중 도민(차량 주 사용지역 제주) 비율 높은 순, 비교로 1위 오름
+    const lp = x => x.autIn / x.aut * 100;
+    const loc = o.filter(x => x.aut >= 150).sort((a, b) => lp(b) - lp(a)).slice(0, 8);
+    const lrow = (x, cls) => `<div class="ob ${cls}"><span class="n">${x.name}</span><div class="t"><i style="width:${lp(x) * 0.7}%"></i><span>${lp(x).toFixed(1)}%<small>도민 ${x.autIn.toLocaleString()}/${x.aut.toLocaleString()}대</small></span></div></div>`;
+    const locHtml = loc.map((x, i) => lrow(x, i === 0 ? 'hot' : '')).join('') + lrow(o[0], 'rest');
+    const locLede = `도민 차가 많이 가는 오름은 따로 있습니다. ${loc[0].name}은 도착 차량의 ${lp(loc[0]).toFixed(1)}%가 도민 차, 가장 붐비는 ${o[0].name}은 ${lp(o[0]).toFixed(1)}%입니다.`;
+    let seenLocal = false;
+    const oview = (m, from) => {
+      $('#oreumchart').innerHTML = m === 'local' ? locHtml : cntHtml;
+      $('#oreumlede').textContent = m === 'local' ? locLede : cntLede;
+      $('#oreumnote').hidden = m !== 'local';
+      document.querySelectorAll('.oseg button').forEach(b => b.classList.toggle('on', b.dataset.o === m));
+      if (m === 'local' && !seenLocal) { seenLocal = true; track('oreum_local_view', { from }); }
+    };
+    $('.oseg').addEventListener('click', e => { const b = e.target.closest('button'); if (b) oview(b.dataset.o, 'toggle'); });
+    if (location.hash === '#oreum-local') { oview('local', 'link'); requestAnimationFrame(() => $('#oreum').scrollIntoView()); } else oview('cnt');
     // 가을 9위 밖인데 1년 내내 찾는 차량이 많은 곳
     const alts = o.slice(8, 40).filter(x => x.year > 0).sort((a, b) => b.year - a.year).slice(0, 4);
     $('#alts').innerHTML = alts.map(x => `<li><b>${x.name}</b><span>가을 ${x.aut.toLocaleString()}대 · 1년 ${x.year.toLocaleString()}대</span></li>`).join('');
