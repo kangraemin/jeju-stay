@@ -216,6 +216,7 @@
       $('#vs' + b.dataset.vs).value = name; renderVs(true); document.getElementById('vs').scrollIntoView();
     }));
     paint();
+    try { gtag('event', 'page_view', { page_title: name + ' · 제주 숙소 동네', page_path: '/jeju-stay/d/' + name, page_location: location.origin + '/jeju-stay/d/' + encodeURIComponent(name) }); } catch (e) {}
     if (fromMap) track('dong_open', { dong: name, metric });
   }
   $('#card').innerHTML = '<p class="hint">지도에서 동네를 누르면 핵심 숫자가 나옵니다</p>';
@@ -352,7 +353,7 @@
     $('#alts').innerHTML = alts.map(x => `<li><b>${x.name}</b><span>가을 ${x.aut.toLocaleString()}대 · 1년 ${x.year.toLocaleString()}대</span></li>`).join('');
     const g = [...data.gotjawal].sort((a, b) => b.aut - a.aut).slice(0, 3);
     $('#gotjawal').innerHTML = `숲길을 걷고 싶다면 곶자왈: ${g.map(x => `<b>${x.name}</b> ${x.aut.toLocaleString()}대`).join(' · ')} (같은 기간 티맵 도착)`;
-    new IntersectionObserver((es, ob) => { if (es[0].isIntersecting) { track('oreum_view'); ob.disconnect(); } }).observe($('#oreum'));
+    new IntersectionObserver((es, ob) => { if (es[0].isIntersecting) { track('oreum_view', { oreum: o[0].name }); try { gtag('event', 'page_view', { page_title: '오름 · 제주 숙소 동네', page_path: '/jeju-stay/oreum', page_location: location.origin + '/jeju-stay/oreum' }); } catch (e) {} ob.disconnect(); } }).observe($('#oreum'));
   }
 
   // ---------- feedback ----------
