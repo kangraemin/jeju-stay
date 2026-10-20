@@ -440,8 +440,8 @@
     const peak = x => Math.max(...x.season);
     const sea = o5.filter(x => x.total5 >= 5000).sort((a, b) => peak(b) - peak(a)).slice(0, 9);
     const seaHtml = sea.map((x, i) => `<div class="ob ${i === 0 ? 'hot' : ''}"><span class="n">${nm(x.name)}</span><div class="t"><i style="width:${peak(x) / peak(sea[0]) * 70}%"></i><span>${x.bestMonths.map(MN).join('·')}<small>${O.peak(peak(x).toFixed(1), MN(x.season.indexOf(Math.min(...x.season)) + 1))}</small></span></div></div>`).join('');
-    const spring = sea.filter(x => x.bestMonths[0] >= 3 && x.bestMonths[0] <= 5).map(x => nm(x.name).replace(/ Oreum$/, '')).slice(0, 3);
-    const seaLede = O.seaLede(spring.join(U.list));
+    const spring = sea.filter(x => x.bestMonths[0] >= 3 && x.bestMonths[0] <= 5).map(x => nm(x.name)).slice(0, 3);
+    const seaLede = O.seaLede(U.seaList ? U.seaList(spring) : spring.join(U.list));
     let seenLocal = false;
     const oview = (m, from) => {
       $('#oreumchart').innerHTML = m === 'local' ? locHtml : m === 'season' ? seaHtml : cntHtml;
