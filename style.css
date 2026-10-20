@@ -21,7 +21,7 @@
   --s-tour:#5598e7; --s-local:#9a9c94;
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:60px}
+html{scroll-padding-top:60px}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--font);-webkit-text-size-adjust:100%;letter-spacing:-.01em;word-break:keep-all}
 h1,h2,h3,p{margin:0}
 a{color:inherit}
@@ -209,16 +209,34 @@ button,select{font:inherit;color:inherit}
   .side{position:sticky;top:68px}
   .pickgrid{grid-template-columns:380px 1fr;grid-template-areas:"q m" "p m"}
   .quiz{grid-area:q}.pickmap{grid-area:m;align-self:start}.picks{grid-area:p}
-  .stories{grid-template-columns:repeat(3,1fr)}
+
   .fly{max-width:760px}
   .vspick{max-width:760px}
   .ob{grid-template-columns:120px 1fr}
   .alts{grid-template-columns:repeat(4,1fr)}
 }
 @media (max-width:420px){
-  .topnav a:nth-child(4){display:none}
   .jeju .lbl{font-size:24px}
   .jeju .lbl tspan.v{font-size:20px}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
 .foot.dongs{line-height:2;font-size:13px}.foot.dongs a{color:var(--ink2)}
+
+/* 화면 나누기: 한 번에 한 섹션만 */
+main>.view{display:none}
+main>.view.on{display:block;animation:viewin .18s ease-out}
+@keyframes viewin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+main>.sec.view{padding-top:32px;min-height:calc(100vh - 52px)}
+.topnav a.on{background:var(--ink);color:var(--bg)}
+.foot.dongs{display:none}
+body[data-view="how"] .foot.dongs{display:block}
+@media (min-width:900px){.stories{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:719px){
+  .topnav{position:fixed;left:0;right:0;bottom:0;z-index:30;display:grid;grid-template-columns:repeat(6,1fr);gap:0;
+    padding:6px 6px calc(6px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--bg) 92%,transparent);
+    backdrop-filter:saturate(1.4) blur(10px);-webkit-backdrop-filter:saturate(1.4) blur(10px);border-top:1px solid var(--line)}
+  .topnav a{text-align:center;padding:9px 0;font-size:13px;font-weight:600}
+  body{padding-bottom:64px}
+  .top{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--bg)}
+  main>.sec.view{min-height:calc(100vh - 116px)}
+}

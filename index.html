@@ -32,11 +32,11 @@ gtag('config', 'G-F0MT1BRZX2', { page_title: '제주 숙소 동네' });
 <body>
 <header class="top">
   <a class="brand" href="#">제주 동네 지도</a>
-  <nav class="topnav"><a href="#pick">추천</a><a href="#vs">비교</a><a href="#oreum">오름</a><a href="#how">데이터</a></nav>
+  <nav class="topnav" aria-label="화면"><a href="#map" data-v="map">지도</a><a href="#pick" data-v="pick">추천</a><a href="#vs" data-v="vs">비교</a><a href="#oreum" data-v="oreum">오름</a><a href="#story" data-v="story">이야기</a><a href="#how" data-v="how">데이터</a></nav>
 </header>
 
 <main>
-<section class="hero" id="map">
+<section class="hero view" id="map">
   <div class="hero-head">
     <p class="eyebrow">43개 읍면동 · 관광객 1억 5,687만 회 방문 데이터</p>
     <h1>제주, 어디에 묵을까</h1>
@@ -65,7 +65,7 @@ gtag('config', 'G-F0MT1BRZX2', { page_title: '제주 숙소 동네' });
   </div>
 </section>
 
-<section class="sec" id="pick">
+<section class="sec view" id="pick">
   <div class="sec-head">
     <h2>나한테 맞는 동네 3곳</h2>
     <p>네 가지만 고르면 바로 지도에 찍어 드려요.</p>
@@ -86,12 +86,12 @@ gtag('config', 'G-F0MT1BRZX2', { page_title: '제주 숙소 동네' });
   </div>
 </section>
 
-<section class="sec" id="story">
-  <div class="sec-head"><h2>데이터로 보면 다른 제주</h2></div>
+<section class="sec view" id="story">
+  <div class="sec-head"><h2>데이터로 보면 다른 제주</h2><p>숫자로 보니 예상과 달랐던 다섯 가지.</p></div>
   <div class="stories" id="stories"></div>
 </section>
 
-<section class="sec" id="vs">
+<section class="sec view" id="vs">
   <div class="sec-head">
     <h2>두 동네 비교</h2>
     <p>애월이냐 함덕(조천)이냐, 막대 길이로 바로 보세요.</p>
@@ -105,7 +105,7 @@ gtag('config', 'G-F0MT1BRZX2', { page_title: '제주 숙소 동네' });
   <button id="share" class="btn ghost" type="button">이 비교 링크 복사</button>
 </section>
 
-<section class="sec" id="oreum">
+<section class="sec view" id="oreum">
   <div class="sec-head">
     <h2>오름, 언제 어디가 붐빌까</h2>
     <p id="oreumlede"></p>
@@ -118,9 +118,10 @@ gtag('config', 'G-F0MT1BRZX2', { page_title: '제주 숙소 동네' });
   <p id="gotjawal" class="gj"></p>
 </section>
 
-<section class="sec" id="how">
-  <details class="how">
-    <summary>데이터와 계산 방법</summary>
+<section class="sec view" id="how">
+  <div class="sec-head"><h2>데이터와 계산 방법</h2><p>숫자마다 어디서 왔고 어떻게 셌는지.</p></div>
+  <details class="how" open>
+    <summary>지표별 정의</summary>
     <dl>
       <dt>관광객 방문</dt><dd>SKT 이동통신. 관광객이 그 읍면동에 30분 이상 머문 경우를 1회 방문으로 셉니다. 최근 14일 밤(22~04시)에 주로 머문 곳이 제주 밖이면 관광객입니다. 2025년 8월~2026년 7월 합계.</dd>
       <dt>저녁 소비 비중</dt><dd>BC카드 시간대별 매출 중 내국인 관광객이 18~24시에 쓴 금액의 비중. 같은 기간.</dd>

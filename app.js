@@ -1,6 +1,10 @@
 (async function () {
   const $ = s => document.querySelector(s);
   const track = (name, params) => { try { gtag('event', name, params || {}); } catch (e) {} };
+  // 화면 전환: 주소의 #map·#pick·#vs·#oreum·#story·#how 중 하나만 보인다
+  const VIEWS = ['map', 'pick', 'vs', 'oreum', 'story', 'how'];
+  const go = v => { if (location.hash === '#' + v) show(v); else location.hash = v; };
+  let show = () => {};
   const [data, geo] = await Promise.all([fetch('data.json').then(r => r.json()), fetch('geo.json').then(r => r.json())]);
   const dongs = data.dongs;
   const byName = Object.fromEntries(dongs.map(d => [d.name, d]));
@@ -231,7 +235,7 @@
       ${decision(d.name, 'card')}
       <div class="cardbtns"><button class="btn ghost" data-vs="A">왼쪽 비교에 넣기</button><button class="btn ghost" data-vs="B">오른쪽에 넣기</button></div>`;
     $('#card').querySelectorAll('[data-vs]').forEach(b => b.addEventListener('click', () => {
-      $('#vs' + b.dataset.vs).value = name; renderVs(true); document.getElementById('vs').scrollIntoView();
+      $('#vs' + b.dataset.vs).value = name; renderVs(true); go('vs');
     }));
     paint();
     try { gtag('event', 'page_view', { page_title: name + ' · 제주 숙소 동네', page_path: '/jeju-stay/d/' + name, page_location: location.origin + '/jeju-stay/d/' + encodeURIComponent(name) }); } catch (e) {}
@@ -267,7 +271,7 @@
     pin.layer.innerHTML = top.map((d, i) => { const c = geo.shapes[d.name].c; return `<g class="pin"><circle cx="${c[0]}" cy="${c[1]}" r="${13 * u}" style="stroke-width:${2.5 * u}"/><text x="${c[0]}" y="${c[1]}" style="font-size:${14 * u}px">${i + 1}</text></g>`; }).join('');
     $('#picks').innerHTML = top.map((d, i) => `<li data-n="${d.name}"><span class="rk">${i + 1}</span><div><h3>${d.name}<small>${d.city}</small></h3><p class="why">${why(d, ans)}</p></div><span class="go">›</span></li>`).join('') + `<li class="picksdec">${decision(top[0].name, 'quiz')}</li>`;
     $('#picks').querySelectorAll('li[data-n]').forEach(li => li.addEventListener('click', () => {
-      select(li.dataset.n, false); document.getElementById('map').scrollIntoView(); track('dong_open', { dong: li.dataset.n, from: 'quiz' });
+      select(li.dataset.n, false); go('map'); track('dong_open', { dong: li.dataset.n, from: 'quiz' });
     }));
     if (log) track('quiz_done', { ...ans, top: top.map(d => d.name).join(',') });
   }
@@ -382,7 +386,7 @@
       if (m === 'local' && !seenLocal) { seenLocal = true; track('oreum_local_view', { from }); }
     };
     $('.oseg').addEventListener('click', e => { const b = e.target.closest('button'); if (b) oview(b.dataset.o, 'toggle'); });
-    if (location.hash === '#oreum-local') { oview('local', 'link'); requestAnimationFrame(() => $('#oreum').scrollIntoView()); } else oview('cnt');
+    if (location.hash === '#oreum-local') oview('local', 'link'); else oview('cnt');
     // 가을 9위 밖인데 1년 내내 찾는 차량이 많은 곳
     const alts = o.slice(8, 40).filter(x => x.year > 0).sort((a, b) => b.year - a.year).slice(0, 4);
     $('#alts').innerHTML = alts.map(x => `<li><b>${x.name}</b><span>가을 ${x.aut.toLocaleString()}대 · 1년 ${x.year.toLocaleString()}대</span></li>`).join('');
@@ -399,6 +403,19 @@
   }));
 
   paint(); runQuiz(false); renderVs(false);
+  show = v => {
+    if (!VIEWS.includes(v)) v = 'map';
+    document.querySelectorAll('main>.view').forEach(s => s.classList.toggle('on', s.id === v));
+    document.querySelectorAll('.topnav a').forEach(a => a.classList.toggle('on', a.dataset.v === v));
+    document.body.dataset.view = v;
+    scrollTo(0, 0);
+    if (v === 'map') paint();
+    if (v === 'pick') runQuiz(false);
+    track('view', { view: v });
+  };
+  const fromHash = () => show(location.hash === '#oreum-local' ? 'oreum' : location.hash.slice(1));
+  addEventListener('hashchange', fromHash);
+  fromHash();
   let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { paint(); runQuiz(false); }, 150); });
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', paint);
 })();
