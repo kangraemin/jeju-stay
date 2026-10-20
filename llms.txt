@@ -18,3 +18,8 @@
 - 관광객 방문: 제주 밖에 사는 사람이 그 읍면동에 30분 이상 머문 횟수(SKT).
 - 저녁 소비 비중: 내국인 관광객 BC카드 매출 중 18~24시 비중.
 - 관광객 몫: 그 동네 카드 매출 중 내국인 관광객 몫, 나머지는 도민.
+
+## Other languages
+- English: https://kangraemin.github.io/jeju-stay/en/ (neighborhood pages: https://kangraemin.github.io/jeju-stay/en/d/<name>.html, e.g. https://kangraemin.github.io/jeju-stay/en/d/aewol-eup.html)
+- 简体中文: https://kangraemin.github.io/jeju-stay/zh/ · 繁體中文: https://kangraemin.github.io/jeju-stay/zh-tw/
+- Neighborhood names: 용담2동=Yongdam 2-dong(龍潭二洞), 애월읍=Aewol-eup(涯月邑), 안덕면=Andeok-myeon(安德面), 조천읍=Jocheon-eup(朝天邑), 연동=Yeon-dong(蓮洞), 구좌읍=Gujwa-eup(舊左邑), 한림읍=Hallim-eup(翰林邑), 성산읍=Seongsan-eup(城山邑), 예래동=Yerae-dong(猊來洞), 노형동=Nohyeong-dong(老衡洞), 표선면=Pyoseon-myeon(表善面), 도두동=Dodu-dong(道頭洞), 대정읍=Daejeong-eup(大靜邑), 중문동=Jungmun-dong(中文洞), 남원읍=Namwon-eup(南元邑), 대륜동=Daeryun-dong(大倫洞), 대천동=Daecheon-dong(大川洞), 이도2동=Ido 2-dong(二徒二洞), 한경면=Hangyeong-myeon(翰京面), 건입동=Geonip-dong(健入洞), 아라동=Ara-dong(我羅洞), 삼도2동=Samdo 2-dong(三徒二洞), 송산동=Songsan-dong(松山洞), 중앙동=Jungang-dong(中央洞), 이호동=Iho-dong(梨湖洞), 정방동=Jeongbang-dong(正房洞), 일도1동=Ildo 1-dong(一徒一洞), 오라동=Ora-dong(吾羅洞), 천지동=Cheonji-dong(天地洞), 외도동=Oedo-dong(外都洞), 영천동=Yeongcheon-dong(靈泉洞), 봉개동=Bonggae-dong(奉蓋洞), 동홍동=Donghong-dong(東烘洞), 이도1동=Ido 1-dong(二徒一洞), 우도면=Udo-myeon(牛島面), 일도2동=Ildo 2-dong(一徒二洞), 추자면=Chuja-myeon(楸子面), 삼양동=Samyang-dong(三陽洞), 삼도1동=Samdo 1-dong(三徒一洞), 화북동=Hwabuk-dong(禾北洞), 효돈동=Hyodon-dong(孝敦洞), 용담1동=Yongdam 1-dong(龍潭一洞), 서홍동=Seohong-dong(西烘洞)

@@ -240,3 +240,4 @@ body[data-view="how"] .foot.dongs{display:block}
   .top{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--bg)}
   main>.sec.view{min-height:calc(100vh - 116px)}
 }
+.foot.lang{padding-bottom:0}.foot.lang a{color:var(--ink2)}
