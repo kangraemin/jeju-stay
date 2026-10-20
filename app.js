@@ -361,7 +361,7 @@
     const mx = Math.max(o[0].aut, rs);
     const row = (n, v, cls, sub) => `<div class="ob ${cls}"><span class="n">${n}</span><div class="t"><i style="width:${v / mx * 70}%"></i><span>${v.toLocaleString()}<small>${sub}</small></span></div></div>`;
     const cntHtml = top.map((x, i) => row(nm(x.name), x.aut, i === 0 ? 'hot' : '', (x.aut / ot * 100).toFixed(1) + '%')).join('') +
-      row(O.rest(rest.length), rs, 'rest', (rs / ot * 100).toFixed(1) + '%');
+      row(O.rest(rest.filter(x => x.aut > 0).length), rs, 'rest', (rs / ot * 100).toFixed(1) + '%');
     const cntLede = $('#oreumlede').textContent;
     // 도민 픽: 5년(2021~2025) 도착 5,000대 이상 중 도민(차량 주 사용지역 제주) 비율 높은 순, 비교로 1위 오름
     const o5 = data.oreum.filter(x => x.season);
