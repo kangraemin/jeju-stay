@@ -4,6 +4,8 @@
 - 메인(지도·추천 퀴즈·두 동네 비교): https://kangraemin.github.io/jeju-stay/
 - 43개 읍면동 비교표: https://kangraemin.github.io/jeju-stay/d/
 - 동네별 페이지: https://kangraemin.github.io/jeju-stay/d/<동네이름>.html (예: https://kangraemin.github.io/jeju-stay/d/%EC%95%A0%EC%9B%94%EC%9D%8D.html)
+- 기관·사업자용 표(조건 바꿔 보기, 저녁 체류 공백 동네, 달별 오름 분산 안내 문안, 동네별 붐비는 달과 가까운 대안, CSV): https://kangraemin.github.io/jeju-stay/for-org/ (English https://kangraemin.github.io/jeju-stay/en/for-org/, 简体 https://kangraemin.github.io/jeju-stay/zh/for-org/, 繁體 https://kangraemin.github.io/jeju-stay/zh-tw/for-org/)
+- CSV: https://kangraemin.github.io/jeju-stay/for-org/night-gap.csv · https://kangraemin.github.io/jeju-stay/for-org/oreum-monthly-guide.csv · https://kangraemin.github.io/jeju-stay/for-org/oreum-autumn.csv · https://kangraemin.github.io/jeju-stay/for-org/dongs-43.csv
 
 ## 핵심 숫자 (출처: 제주관광빅데이터플랫폼(data.ijto.or.kr) 데이터 픽, 제주관광공사)
 - 관광객 방문 많은 곳(2025.8~2026.7 (SKT 이동통신, 관광객 30분 이상 체류)): 용담2동(1,935만회), 애월읍(1,130만회), 안덕면(948만회), 조천읍(822만회), 연동(740만회)
