@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>연구자용 — 제주 읍면동 관광 지표 정의·한계, CSV, 야간관광·분산 가설 | 제주, 어디에 묵을까</title>
-<meta name="description" content="제주 43개 읍면동 관광객 방문·저녁 소비·오름 쏠림 지표의 정의와 한계, 동네별 CSV, 야간관광·관광 분산 정책 가설과 검증 질문.">
+<meta name="description" content="제주 43개 읍면동 관광객 방문·저녁 소비·오름 쏠림 지표의 정의와 한계, 행정동 코드가 붙은 CSV, 야간관광·관광 분산 정책 가설과 검증 질문.">
 <link rel="canonical" href="https://kangraemin.github.io/jeju-stay/for-org/research/">
-<meta property="og:title" content="연구자용 — 제주 읍면동 관광 지표 정의·한계, CSV, 야간관광·분산 가설 | 제주, 어디에 묵을까"><meta property="og:description" content="제주 43개 읍면동 관광객 방문·저녁 소비·오름 쏠림 지표의 정의와 한계, 동네별 CSV, 야간관광·관광 분산 정책 가설과 검증 질문.">
+<meta property="og:title" content="연구자용 — 제주 읍면동 관광 지표 정의·한계, CSV, 야간관광·분산 가설 | 제주, 어디에 묵을까"><meta property="og:description" content="제주 43개 읍면동 관광객 방문·저녁 소비·오름 쏠림 지표의 정의와 한계, 행정동 코드가 붙은 CSV, 야간관광·관광 분산 정책 가설과 검증 질문.">
 <meta property="og:type" content="website"><meta property="og:url" content="https://kangraemin.github.io/jeju-stay/for-org/research/"><meta property="og:image" content="https://kangraemin.github.io/jeju-stay/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#fbfbf9">
@@ -65,7 +65,7 @@
 .org .qrs{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 @media(min-width:720px){.org .qrs{grid-template-columns:repeat(4,1fr)}}
 .org .qrs figure{margin:0;border:1px solid var(--line);border-radius:14px;background:#fff;padding:10px;text-align:center}
-.org .qrs svg{width:100%;height:auto;max-width:150px}
+.org .qrs svg{width:100%;height:auto;max-width:150px;display:block;margin:0 auto}
 .org .qrs figcaption{font-size:13px;font-weight:700;color:#222;margin-top:4px}
 .org .qrs figcaption small{display:block;font-weight:500;color:#666;word-break:break-all}
 .org .links{display:grid;gap:8px;margin-top:10px}
@@ -79,6 +79,7 @@
 .org .steps{counter-reset:s;list-style:none;padding:0;margin:10px 0}
 .org .steps li{counter-increment:s;position:relative;padding:10px 12px 10px 42px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;background:var(--surface);font-size:14.5px;line-height:1.6;color:var(--ink2)}
 .org .steps li::before{content:counter(s);position:absolute;left:12px;top:10px;width:22px;height:22px;border-radius:50%;background:var(--ink);color:var(--bg);font-size:12.5px;font-weight:800;text-align:center;line-height:22px}
+.org table.dict3{min-width:560px}.org table.dict3 td{white-space:normal;word-break:keep-all}.org table.picks{min-width:720px}.org table.picks td{white-space:normal;word-break:keep-all;min-width:70px}
 .org .foot{margin:44px 0 32px;padding-top:16px;border-top:1px solid var(--line);font-size:13px;color:var(--muted);line-height:1.8}
 .org .foot a{color:inherit}
 </style>
@@ -91,7 +92,7 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-F0MT1BRZX2', { page_title: '기관용 research' });
 </script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "name": "연구자용 — 제주 읍면동 관광 지표 정의·한계, CSV, 야간관광·분산 가설 | 제주, 어디에 묵을까", "description": "제주 43개 읍면동 관광객 방문·저녁 소비·오름 쏠림 지표의 정의와 한계, 동네별 CSV, 야간관광·관광 분산 정책 가설과 검증 질문.", "url": "https://kangraemin.github.io/jeju-stay/for-org/research/", "inLanguage": "ko", "isPartOf": {"@type": "WebSite", "name": "제주, 어디에 묵을까", "url": "https://kangraemin.github.io/jeju-stay/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "name": "연구자용 — 제주 읍면동 관광 지표 정의·한계, CSV, 야간관광·분산 가설 | 제주, 어디에 묵을까", "description": "제주 43개 읍면동 관광객 방문·저녁 소비·오름 쏠림 지표의 정의와 한계, 행정동 코드가 붙은 CSV, 야간관광·관광 분산 정책 가설과 검증 질문.", "url": "https://kangraemin.github.io/jeju-stay/for-org/research/", "inLanguage": "ko", "isPartOf": {"@type": "WebSite", "name": "제주, 어디에 묵을까", "url": "https://kangraemin.github.io/jeju-stay/"}}</script>
 </head>
 <body>
 <header class="top"><a class="brand" href="../../">제주 동네 지도</a></header>
@@ -102,24 +103,26 @@ gtag('config', 'G-F0MT1BRZX2', { page_title: '기관용 research' });
   <p class="lead">저녁 소비 몫과 오름 쏠림을 어떻게 쟀는지, 어디까지 믿을 수 있는지, 정책 연구로 이어 볼 질문을 정리했습니다.</p>
 
   <h2>이걸로 바로 할 수 있는 일 3가지</h2>
-  <div class="scenes"><section class="scene"><h3>① 지표 정의·한계 확인</h3><p>저녁 소비 몫·관광객 몫·달 지수가 무엇으로 어떻게 계산됐는지, 무엇이 빠졌는지(현금, 외국인 시간대, 계절).</p><a class="btn ghost go" href="#def">정의·한계 보기 ↓</a></section><section class="scene"><h3>② 43개 동네 수치를 바로 분석</h3><p>동네 × 15개 지표 CSV. 기준 기간·출처 열 포함.</p><a class="btn ghost go" href="#csv">CSV 받기 ↓</a></section><section class="scene"><h3>③ 야간관광·분산 가설 검증</h3><p>저녁 공백 5곳이 '자고 가는 곳'과 '들렀다 가는 곳'으로 갈린다는 가설과 검증 질문 5개.</p><a class="btn ghost go" href="#hyp">가설 보기 ↓</a></section></div>
+  <div class="scenes"><section class="scene"><h3>① 지표 정의·한계 확인</h3><p>저녁 몫·관광객 몫·달 지수를 무엇으로 어떻게 계산했는지, 무엇이 빠졌는지(현금, 외국인 시간대, 계절, 온라인 숙박 결제).</p><a class="btn ghost go" href="#def">정의·한계 보기 ↓</a></section><section class="scene"><h3>② 43개 동네 수치를 바로 분석</h3><p>행정동 코드가 붙은 연구용 CSV. 다른 자료와 코드로 붙일 수 있습니다.</p><a class="btn ghost go" href="#csv">CSV 받기 ↓</a></section><section class="scene"><h3>③ 야간관광·분산 가설 검증</h3><p>저녁 몫이 낮은 5곳이 '낮 결제가 큰 곳'과 '저녁 결제가 적은 곳'으로 갈린다는 가설과 검증 질문 5개.</p><a class="btn ghost go" href="#hyp">가설 보기 ↓</a></section></div>
 
   <div class="meta"><div><b>범위:</b> 제주 43개 읍면동(2026년 7월 행정동 경계), 관광객 방문·소비 2025.8~2026.7, 오름 2021~2025년.</div>
-  <div>원자료: 제주관광빅데이터플랫폼 데이터 픽 — SKT(방문), BC카드(소비·시간대), 티맵(오름·목적지). 수치는 플랫폼 화면 값 그대로 집계했고 추정치는 없습니다.</div></div>
+  <div>원자료: 제주관광빅데이터플랫폼 데이터 픽 — SKT(방문), BC카드(소비·시간대), 티맵(오름·목적지). 화면 값을 내려받아 합산·비율·상관만 계산했고 모형 추정은 하지 않았습니다.</div></div>
 
   <h2 id="def">① 지표 정의와 한계</h2>
-  <div class="wrap"><table class="dict"><thead><tr><th>지표</th><th>정의</th><th>원자료·기간</th></tr></thead><tbody><tr><td>관광객 방문(회)</td><td>제주 밖에 사는 사람이 그 읍면동에 30분 이상 머문 횟수. 같은 사람이 여러 번 셀 수 있음</td><td>SKT 이동통신, 2025.8~2026.7</td></tr><tr><td>저녁 6시 이후 소비(%)</td><td>내국인 관광객 카드 결제 금액 중 18~24시 몫</td><td>BC카드, 2025.8~2026.7</td></tr><tr><td>밤 9시 이후 소비(%)</td><td>같은 금액 중 21시~새벽 2시 몫</td><td>BC카드, 2025.8~2026.7</td></tr><tr><td>매출 중 관광객 몫(%)</td><td>관광객 결제 ÷ (관광객 + 도민 결제)</td><td>BC카드, 2025.8~2026.7</td></tr><tr><td>관광객 소비 중 숙박·음식점(%)</td><td>내국인 관광객 결제 금액 중 숙박업·음식점업 몫</td><td>BC카드, 2025.8~2026.7</td></tr><tr><td>달 지수(×)</td><td>그 달 값 ÷ 그 해 월평균의 해 평균. 1.0이 평소 한 달</td><td>SKT 2019·2022~2025년 / 티맵 2021~2025년</td></tr></tbody></table></div>
+  <div class="wrap"><table class="dict"><thead><tr><th>지표</th><th>정의</th><th>원자료·기간</th></tr></thead><tbody><tr><td>관광객 방문(회)</td><td>제주 밖에 사는 사람이 그 읍면동에 30분 이상 머문 횟수. 같은 사람이 여러 번 셀 수 있음</td><td>SKT 이동통신, 2025.8~2026.7</td></tr><tr><td>저녁 6시 이후 소비(%)</td><td>내국인 관광객 카드 결제 금액 중 18~24시 몫. 자정 넘은 결제는 넣지 않음</td><td>BC카드, 2025.8~2026.7</td></tr><tr><td>밤 9시 이후 소비(%)</td><td>같은 금액 중 21시~새벽 2시 몫. 늦은 밤 영업을 보려고 자정 뒤 2시간을 넣음</td><td>BC카드, 2025.8~2026.7</td></tr><tr><td>매출 중 관광객 몫(%)</td><td>관광객 결제 ÷ (관광객 + 도민 결제)</td><td>BC카드, 2025.8~2026.7</td></tr><tr><td>방문 1회당 저녁 결제(원)</td><td>18~24시 관광객 카드 결제 ÷ 관광객 방문. 출처가 다른 두 값의 비라 동네끼리 견주는 용도</td><td>BC카드 ÷ SKT</td></tr><tr><td>관광객 소비 중 숙박·음식점(%)</td><td>내국인 관광객 카드 결제 금액 중 숙박업·음식점업 몫</td><td>BC카드, 2025.8~2026.7</td></tr><tr><td>달 지수(×)</td><td>그 달 값이 그 해 월평균의 몇 배인지를 해마다 구해 평균 낸 값. 1.3이면 평소보다 30% 많음</td><td>SKT 2019·2022~2025년 / 티맵 2021~2025년</td></tr></tbody></table></div>
   <h3 style="margin-top:20px">한계</h3>
-  <ul class="lines"><li>카드 소비는 BC카드 결제만 집계합니다. 현금·다른 카드는 빠져 전체 매출과 다릅니다.</li><li>저녁 소비 지표는 내국인 관광객만입니다. 외국인 관광객의 시간대별 소비는 넣지 않았습니다.</li><li>저녁 몫은 1년 합계(2025.8~2026.7)라 계절별 차이는 보이지 않습니다.</li><li>관광객 방문은 휴대폰 신호 기준이라 같은 사람이 여러 번 셀 수 있고, 숙박 여부는 알 수 없습니다.</li><li>오름은 내비게이션을 켜고 차로 온 경우만 셉니다. 버스·도보·단체 관광은 빠집니다.</li><li>섬(우도면)·공항(용담2동)은 구조적 요인이 커서 저녁 공백 비교에서 뺐습니다.</li><li>플랫폼 집계 기준 변경 공지(2026-05-15, 2026-09-07)로 전년 대비 비교는 하지 않았습니다.</li></ul>
+  <ul class="lines"><li>카드 소비는 BC카드 결제만 집계합니다. 현금·다른 카드는 빠져 전체 매출과 다릅니다.</li><li>숙박 몫은 숙박 여부가 아니라 현장에서 카드로 결제한 숙박 비중에 가깝습니다. 온라인 예약 앱 선결제는 잘 잡히지 않습니다.</li><li>저녁 소비 지표는 내국인 관광객만입니다. 외국인 관광객의 시간대별 소비는 넣지 않았습니다.</li><li>저녁 몫은 1년 합계(2025.8~2026.7)라 계절별 차이는 보이지 않습니다.</li><li>관광객 방문은 휴대폰 신호 기준이라 같은 사람이 여러 번 셀 수 있고, 그 동네에서 잤는지는 알 수 없습니다.</li><li>오름은 내비게이션을 켜고 차로 온 경우만 셉니다. 버스·도보·단체 관광은 빠집니다.</li><li>섬(우도면)·공항(용담2동)은 구조적 요인이 커서 저녁 공백 비교에서 뺐습니다.</li><li>플랫폼 집계 기준 변경 공지(2026-05-15, 2026-09-07)로 전년 같은 달 비교는 하지 않았습니다. 2019→2025 증감 열도 같은 시점(2026년 10월)에 내려받은 값끼리 비교했지만, 기준 변경이 과거 값에 소급됐는지는 확인하지 못했습니다.</li><li>문턱값(관광객 몫 50%, 저녁 몫 30%)은 &#x27;관광객 중심 상권&#x27;을 고르려고 정한 값이고 통계적 근거는 없습니다. 이 때문에 저녁 몫이 더 낮은 화북동(14.4%)·효돈동(16.5%)·이호동(20.7%)은 관광객 몫이 50% 아래라 빠졌습니다.</li></ul>
 
   <h2 id="csv">② 동네별 수치 CSV</h2>
-  <ul class="lines"><li>43개 동네 × 15개 지표(방문, 가을 비중, 저녁·밤 소비 몫, 관광객 몫, 업종 몫, 여름 증감, 2019→2025 증감, 외국인 비중, 붐비는·한산한 달).</li><li>모든 CSV는 UTF-8(엑셀에서 바로 열림)이고, 끝의 두 열에 기준 기간과 출처가 있습니다.</li></ul>
-  <div class="row"><a class="btn ghost" href="../dongs-43.csv" download data-dl="dongs-43.csv">43개 동네 전체 지표 ↓</a><a class="btn ghost" href="../night-gap.csv" download data-dl="night-gap.csv">저녁 공백 동네 ↓</a><a class="btn ghost" href="../oreum-autumn.csv" download data-dl="oreum-autumn.csv">가을 오름 95곳 ↓</a><a class="btn ghost" href="../oreum-monthly-guide.csv" download data-dl="oreum-monthly-guide.csv">달별 오름 안내 문구 ↓</a></div>
+  <ul class="lines"><li>연구용 CSV: 43개 동네 × 행정동 코드 2종, 방문, 관광객 몫, 저녁·밤 몫, 방문 1회당 저녁·그 밖 결제액, 숙박·음식점 몫.</li><li>전체 지표 CSV: 43개 동네 × 13개 지표(가을 비중, 여름 증감, 2019→2025 증감, 외국인 비중, 붐비는·한산한 달 포함).</li><li>모두 UTF-8(엑셀에서 바로 열림)이고, 끝의 두 열에 기준 기간과 출처가 있습니다. 결측은 없습니다.</li></ul>
+  <div class="row"><a class="btn ghost" href="research-dongs.csv" download data-dl="research-dongs.csv">연구용 43개 동네(행정동 코드 포함) ↓</a>
+  <a class="btn ghost" href="../dongs-43.csv" download data-dl="dongs-43.csv">43개 동네 전체 지표 ↓</a>
+  <a class="btn ghost" href="../oreum-autumn.csv" download data-dl="oreum-autumn.csv">가을 오름 95곳 ↓</a></div>
 
   <h2 id="hyp">③ 야간관광·관광 분산 정책 가설과 더 검증할 질문</h2>
-  <div class="scenes"><section class="scene"><h3>가설 1. 저녁 공백 동네는 두 종류로 갈린다</h3><ul class="lines"><li>관광객 결제가 절반 이상이고 저녁 6시 이후 몫이 30% 미만인 5곳(섬·공항 제외) 중, 관광객 소비에서 숙박 몫이 10% 이상인 곳은 안덕면(17.8%)·표선면(25.9%)입니다.</li><li>나머지 구좌읍(1.1%)·일도1동(0.9%)·도두동(1.7%)은 숙박 몫이 10% 아래입니다.</li><li>앞쪽은 &#x27;자고 가는데 저녁 소비는 동네 밖에서&#x27; 하는 유형, 뒤쪽은 &#x27;낮에 들렀다 떠나는&#x27; 유형일 수 있습니다. 야간관광 처방이 다를 수 있다는 가설입니다.</li></ul></section><section class="scene"><h3>가설 2. 저녁 몫과 업종 구성의 관계는 약하다</h3><ul class="lines"><li>43개 동네에서 저녁 6시 이후 몫과 관광객 소비 중 숙박 몫의 상관계수는 0.25, 음식점 몫과는 0.34입니다(피어슨, 단순 상관).</li><li>업종 구성만으로는 저녁 공백이 설명되지 않아, 야간 유동 인구·숙박 인원·영업시간 같은 자료를 더해 볼 필요가 있습니다.</li></ul></section><section class="scene"><h3>가설 3. 오름 쏠림은 안내로 줄일 수 있는가</h3><ul class="lines"><li>지난가을(2025.10~11) 오름 95곳 차량 도착 28,186대 중 56.8%가 새별·금·용눈이오름 3곳입니다.</li><li>달별 안내 문구(붐비는 오름 + 덜 붐비는 대안)를 숙소·안내소에 붙인 뒤, 대안 오름 도착이 대조 오름보다 늘었는지 티맵 월별 도착으로 볼 수 있습니다.</li></ul></section></div>
+  <div class="scenes"><section class="scene"><h3>가설 1. 저녁 몫이 낮은 이유가 동네마다 다르다</h3><ul class="lines"><li>관광객 결제가 절반 이상이고 저녁 6시 이후 몫이 30% 미만인 5곳(섬·공항 제외)을 방문 1회당 결제액으로 나눠 봤습니다. 43곳 중앙값은 저녁 4,039원, 그 밖의 시간 7,806원입니다.</li><li>안덕면(저녁 3,924원, 그 밖 12,321원)·일도1동(저녁 6,283원, 그 밖 16,577원)·표선면(저녁 4,702원, 그 밖 11,380원): 저녁 결제는 중앙값 수준인데 낮 결제가 커서 몫이 낮게 나왔습니다.</li><li>구좌읍(저녁 2,669원, 그 밖 7,639원)·도두동(저녁 2,536원, 그 밖 6,384원): 저녁 결제 자체가 중앙값보다 적습니다.</li><li>앞쪽은 저녁을 늘리기보다 낮 수요가 큰 곳, 뒤쪽은 저녁 소비가 실제로 비는 곳일 수 있습니다. 야간관광 대상지를 고를 때 몫만 보면 둘이 섞인다는 가설입니다.</li></ul></section><section class="scene"><h3>가설 2. 업종 구성으로는 저녁 공백이 설명되지 않는다</h3><ul class="lines"><li>43개 동네에서 저녁 6시 이후 몫과 관광객 소비 중 숙박 몫의 상관계수는 0.25입니다(피어슨, n=43, 유의수준 5%에서 유의하지 않음).</li><li>숙박 몫은 현장 결제 숙박 비중이라 숙박 여부의 대리 지표로 약합니다. 숙박업 등록 객실 수 같은 자료를 붙여 봐야 합니다.</li></ul></section><section class="scene"><h3>가설 3. 오름 쏠림은 안내로 줄일 수 있는가</h3><ul class="lines"><li>지난가을(2025.10~11) 오름 95곳 차량 도착 28,186대 중 56.8%가 새별·금·용눈이오름 3곳입니다(티맵, 차로 온 경우만).</li><li>달별 안내 문구(붐비는 오름과 덜 붐비는 대안)를 숙소·안내소에 붙인 뒤, 대안 오름 도착이 비교 오름보다 늘었는지 티맵 월별 도착으로 볼 수 있습니다. 안내 게시가 실제로 일어나야 검증할 수 있습니다.</li></ul></section></div>
   <h3 style="margin-top:20px">더 검증할 질문</h3>
-  <ul class="lines"><li>현금·타 카드 결제 비중이 큰 시장 권역(일도1동 등)의 저녁 몫을 어떻게 보정할까?</li><li>외국인 관광객의 시간대별 소비(플랫폼 픽 61)로 같은 분석을 하면 저녁 공백 동네가 달라질까?</li><li>저녁 몫을 달별로 나누면 여름 성수기에만 저녁이 차는 동네가 있을까?</li><li>숙박업 등록 객실 수와 결합하면 &#x27;자는 곳 대비 저녁 소비&#x27;가 낮은 동네가 더 정확히 보일까?</li><li>오름 안내 문구 게시 전후로 대안 오름 도착이 실제로 늘었을까(차이의 차이)?</li></ul>
+  <ul class="lines"><li>숙박업 등록 객실 수를 붙이면 &#x27;자는 사람 대비 저녁 소비&#x27;가 낮은 동네가 달라질까?</li><li>현금·다른 카드 결제 비중이 큰 시장 권역(일도1동 등)의 저녁 몫은 어떻게 보정할까?</li><li>외국인 관광객의 시간대별 소비(플랫폼 데이터 픽 61)로 같은 분석을 하면 저녁 공백 동네가 달라질까?</li><li>저녁 몫을 달별로 나누면 여름 성수기에만 저녁이 차는 동네가 있을까?</li><li>오름 안내 문구 게시 전후로 대안 오름 도착이 실제로 늘었을까(차이의 차이)?</li></ul>
 
   <div class="foot">
     <div>출처: 제주관광빅데이터플랫폼(data.ijto.or.kr) 데이터 픽, 제주관광공사 · 공공누리 제1유형. 원자료 SKT(이동통신)·BC카드·티맵.</div>
@@ -127,6 +130,7 @@ gtag('config', 'G-F0MT1BRZX2', { page_title: '기관용 research' });
     <div>이 화면은 「2026 제주 관광 데이터 활용사례 공모전」 출품작의 일부입니다.</div>
   </div>
 </main>
+
 <script>
 (() => {
 const $ = s => document.querySelector(s);
