@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>제주, 어디에 묵을까</title>
-<meta name="description" content="제주관광빅데이터플랫폼의 이동통신·카드·내비게이션 데이터로 제주 43개 읍면동을 지도로 비교합니다. 관광객이 몰리는 곳, 저녁에 활발한 곳, 도민이 사는 동네를 한눈에.">
+<meta name="description" content="제주관광빅데이터플랫폼의 이동통신·카드·내비게이션 데이터(2019~2026)로 제주 43개 읍면동을 지도로 비교합니다. 관광객이 몰리는 곳, 저녁에 활발한 곳, 덜 붐비는 달, 2019년보다 뜬 동네, 외국인 많은 곳을 한눈에.">
 <meta property="og:title" content="제주, 어디에 묵을까 — 43개 동네 데이터 지도">
 <meta property="og:description" content="관광객 방문·저녁 소비·관광지/생활권 데이터로 고르는 제주 숙소 동네">
 <meta property="og:type" content="website">
@@ -15,7 +15,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://kangraemin.github.io/jeju-stay/">
-<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "WebApplication", "name": "제주, 어디에 묵을까", "url": "https://kangraemin.github.io/jeju-stay/", "applicationCategory": "TravelApplication", "operatingSystem": "Web", "inLanguage": "ko", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "KRW"}, "description": "제주관광빅데이터플랫폼의 이동통신·카드·내비게이션 데이터로 제주 43개 읍면동을 지도로 비교해 숙소 동네를 고르는 페이지."}, {"@context": "https://schema.org", "@type": "Dataset", "name": "제주 43개 읍면동 관광객 방문·소비 지표", "url": "https://kangraemin.github.io/jeju-stay/d/", "license": "https://www.kogl.or.kr/info/license.do", "isBasedOn": "https://data.ijto.or.kr", "temporalCoverage": "2025-08/2026-07", "spatialCoverage": "제주특별자치도", "description": "제주 43개 읍면동의 관광객 방문(SKT 이동통신), 시간대·업종별 카드 소비(BC카드), 오름·곶자왈 차량 도착(티맵) 지표를 동네 단위로 정리한 데이터입니다. 2025년 8월부터 2026년 7월까지 제주관광공사 빅데이터를 바탕으로 숙소 동네 고르기에 쓰도록 만들었습니다.", "creator": {"@type": "Person", "name": "강래민", "url": "https://kangraemin.github.io/"}, "keywords": ["제주", "관광", "숙소", "읍면동", "소비", "오름"], "isAccessibleForFree": true, "inLanguage": "ko", "distribution": [{"@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": "https://kangraemin.github.io/jeju-stay/data.json"}]}]</script>
+<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "WebApplication", "name": "제주, 어디에 묵을까", "url": "https://kangraemin.github.io/jeju-stay/", "applicationCategory": "TravelApplication", "operatingSystem": "Web", "inLanguage": "ko", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "KRW"}, "description": "제주관광빅데이터플랫폼의 이동통신·카드·내비게이션 데이터로 제주 43개 읍면동을 지도로 비교해 숙소 동네를 고르는 페이지."}, {"@context": "https://schema.org", "@type": "Dataset", "name": "제주 43개 읍면동 관광객 방문·소비 지표", "url": "https://kangraemin.github.io/jeju-stay/d/", "license": "https://www.kogl.or.kr/info/license.do", "isBasedOn": "https://data.ijto.or.kr", "temporalCoverage": "2019-01/2026-09", "spatialCoverage": "제주특별자치도", "description": "제주 43개 읍면동의 관광객 방문(SKT 이동통신), 시간대·업종별 카드 소비(BC카드), 오름·곶자왈 차량 도착(티맵) 지표를 동네 단위로 정리한 데이터입니다. 2025년 8월부터 2026년 7월까지 제주관광공사 빅데이터를 바탕으로 숙소 동네 고르기에 쓰도록 만들었습니다.", "creator": {"@type": "Person", "name": "강래민", "url": "https://kangraemin.github.io/"}, "keywords": ["제주", "관광", "숙소", "읍면동", "소비", "오름"], "isAccessibleForFree": true, "inLanguage": "ko", "distribution": [{"@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": "https://kangraemin.github.io/jeju-stay/data.json"}]}]</script>
 <meta name="theme-color" content="#fbfbf9">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="style.css">
@@ -48,6 +48,8 @@ gtag('config', 'G-F0MT1BRZX2', { page_title: '제주 숙소 동네' });
     <button role="tab" data-m="tour">관광지 vs 생활권</button>
     <button role="tab" data-m="stay">숙소 몰린 곳</button>
     <button role="tab" data-m="summer">여름에 붐비는 곳</button>
+    <button role="tab" data-m="trend">2019년보다 뜬 곳</button>
+    <button role="tab" data-m="foreign">외국인 많은 곳</button>
   </div>
 
   <div class="stage">
@@ -105,12 +107,12 @@ gtag('config', 'G-F0MT1BRZX2', { page_title: '제주 숙소 동네' });
 
 <section class="sec" id="oreum">
   <div class="sec-head">
-    <h2>가을 오름, 한 곳에 몰린다</h2>
+    <h2>오름, 언제 어디가 붐빌까</h2>
     <p id="oreumlede"></p>
   </div>
-  <div class="seg seg2 oseg" role="tablist"><button type="button" data-o="cnt" class="on">관광객 많은 순</button><button type="button" data-o="local">도민 비율 높은 순</button></div>
+  <div class="seg seg2 oseg" role="tablist"><button type="button" data-o="cnt" class="on">가을에 많은 순</button><button type="button" data-o="season">오름별 붐비는 철</button><button type="button" data-o="local">도민 비율 높은 순</button></div>
   <div id="oreumchart" class="oreumchart"></div>
-  <p id="oreumnote" class="onote" hidden>티맵 차량 도착 기준(2025.10~11). 도민 = 차량 주 사용지역이 제주. 가을 도착 150대 이상 오름만. 걷거나 버스로 온 사람은 세지 않았어요.</p>
+  <p id="oreumnote" class="onote" hidden>티맵 차량 도착 기준(2021~2025년 5년 합계). 도민 = 차량 주 사용지역이 제주. 5년 도착 5,000대 이상 오름만. 걷거나 버스로 온 사람은 세지 않았어요.</p>
   <h3 class="h3">덜 붐비는 대안</h3>
   <ul id="alts" class="alts"></ul>
   <p id="gotjawal" class="gj"></p>
@@ -124,9 +126,11 @@ gtag('config', 'G-F0MT1BRZX2', { page_title: '제주 숙소 동네' });
       <dt>저녁 소비 비중</dt><dd>BC카드 시간대별 매출 중 내국인 관광객이 18~24시에 쓴 금액의 비중. 같은 기간.</dd>
       <dt>관광지 vs 생활권</dt><dd>그 동네 카드 매출에서 내국인 관광객 몫. 나머지는 도민입니다. 50%보다 높으면 관광지, 낮으면 생활권에 가깝습니다.</dd>
       <dt>숙소 몰린 곳</dt><dd>내국인 관광객 카드 매출 중 숙박업 비중.</dd>
-      <dt>여름에 붐비는 곳</dt><dd>7·8월(2025년 8월, 2026년 7월) 월평균 관광객 방문이 12개월 월평균보다 몇 % 많은지. SKT 이동통신.</dd>
+      <dt>여름에 붐비는 곳</dt><dd>해마다 월평균 방문을 1로 놓고 7·8월이 몇 % 많은지를 5년(2019·2022~2025) 평균한 값. 코로나로 여행 흐름이 달랐던 2020~2021년은 뺐습니다. 덜 붐비는 달·붐비는 달도 같은 5년 평균입니다. SKT 이동통신.</dd>
+      <dt>2019년보다 뜬 곳</dt><dd>2025년 관광객 방문 ÷ 2019년 관광객 방문 - 1. SKT 이동통신.</dd>
+      <dt>외국인 많은 곳</dt><dd>2025년 그 동네 방문 중 외국인(SKT 로밍 등) 비중. 국가별 비중은 최근 1년(2025.8~2026.7) BC카드 외국인 결제 금액 기준이라 방문자 수와 다릅니다.</dd>
       <dt>인기 장소</dt><dd>티맵 내비게이션으로 그 동네에 도착한 차량이 많은 목적지. 2025년 10월~2026년 9월.</dd>
-      <dt>오름·곶자왈</dt><dd>티맵 차량 도착 수. 가을은 2025년 10~11월. 도민 비율은 도착 차량 중 주 사용지역이 제주인 차량의 비율(가을 150대 이상 오름만).</dd>
+      <dt>오름·곶자왈</dt><dd>티맵 차량 도착 수. 가을 순위는 2025년 10~11월. 붐비는 철은 해마다 월평균=1로 놓은 월별 지수의 5년(2021~2025) 평균. 도민 비율은 5년 도착 차량 중 주 사용지역이 제주인 차량의 비율(5,000대 이상 오름만).</dd>
       <dt>리 단위 방문</dt><dd>SKT 이동통신, 읍·면 지역만 제공. 동네 카드에 관광객이 많이 머문 리 3곳을 보여 줍니다.</dd>
       <dt>추천 점수</dt><dd>지표마다 43개 동네 안에서 백분위(0~100)로 바꾼 뒤 고른 답에 따라 더하거나 뺍니다. 관광객 방문이 하위 15%인 동네는 뺍니다.</dd>
       <dt>지도 색</dt><dd>43개 동네를 값 순서로 다섯 구간(각 8~9곳)으로 나눴습니다. 경계는 행정동 경계 오픈데이터(vuski/admdongkor, 2026.07 행정동 기준).</dd>
