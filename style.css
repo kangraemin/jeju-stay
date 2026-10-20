@@ -118,7 +118,7 @@ button,select{font:inherit;color:inherit}
 .seg button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
 .pickmap{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:6px 4px}
 .picks{list-style:none;margin:0;padding:0;display:grid;gap:10px}
-.picks li{display:grid;grid-template-columns:36px 1fr auto;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;cursor:pointer;animation:rise .4s both}
+.picks li{display:grid;grid-template-columns:32px 1fr auto;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;cursor:pointer;animation:rise .4s both}
 .picks li:nth-child(2){animation-delay:.06s}.picks li:nth-child(3){animation-delay:.12s}
 .picks li:hover{border-color:var(--line2)}
 @keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
@@ -128,16 +128,51 @@ button,select{font:inherit;color:inherit}
 .picks .why{font-size:13px;color:var(--ink2);margin-top:2px}
 .picks .go{font-size:20px;color:var(--muted)}
 
-.dec{margin-top:14px;padding:14px;border-radius:14px;background:var(--chip)}
-.dec p{font-size:14px;font-weight:700;margin-bottom:8px}
+.dec{margin-top:14px}
 .dec.done{font-size:13.5px;color:var(--ink2)}
+.dec.done .decmain{margin-top:8px}
+.decmain{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.decmain .btn{display:flex;align-items:center;justify-content:center;min-height:48px;padding:10px 8px;font-size:15px;text-decoration:none;text-align:center;border-radius:12px}
+.btn.stay{background:var(--accent);border-color:var(--accent);color:#fff}
+.dec.done .decmain{grid-template-columns:1fr}
+.decsub{display:flex;flex-wrap:wrap;align-items:center;gap:4px 14px;margin-top:8px;font-size:13.5px}
+.decsub>button{border:0;background:none;padding:6px 0;color:var(--ink2);font-weight:600;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.decq{font-size:14.5px;font-weight:700;width:100%;margin:2px 0 4px}
 .decbtns{display:flex;flex-wrap:wrap;gap:6px}
-.decbtns button{border:1px solid var(--line2);background:var(--surface);border-radius:10px;padding:8px 12px;font-size:13.5px;font-weight:600;cursor:pointer}
-.decbtns button[data-dec="yes"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.decbtns button{border:1px solid var(--line2);background:var(--surface);border-radius:10px;padding:9px 14px;font-size:14px;font-weight:600;cursor:pointer}
+.decbtns button[data-book="booked"],.decbtns button[data-fu="booked"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
 .decok{font-size:14px;font-weight:700;color:var(--accent-ink)}
-.stay{display:inline-block;margin-top:10px;font-size:13.5px;font-weight:600;color:var(--s-tour);text-decoration:none}
-.picks li.picksdec{display:block;padding:0;border:0;background:none;cursor:default;animation:none}
-.picks li.picksdec .dec{margin-top:0}
+.stay.sm{flex:none;font-size:13px;font-weight:700;color:var(--accent-ink);text-decoration:none;border:1px solid var(--line2);border-radius:999px;padding:7px 11px;background:var(--surface)}
+
+/* 첫 화면 추천 버튼 */
+.cta{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;padding:16px 20px;border-radius:16px;background:#c24a17;color:#fff;font-size:18px;font-weight:800;letter-spacing:-.02em;text-decoration:none;box-shadow:0 6px 18px color-mix(in srgb,var(--accent) 30%,transparent)}
+.cta span{font-size:22px}
+.cta:hover{filter:brightness(1.05)}
+.cta.small{display:block;margin:0 auto 6px;max-width:320px;padding:12px 16px;font-size:15px;text-align:center;box-shadow:none}
+.follow{position:relative;margin-top:12px;padding:14px 40px 14px 14px;border-radius:14px;background:var(--chip);border:1px solid var(--line2)}
+.follow p{font-size:15px;font-weight:700;margin-bottom:8px}
+.follow .x{position:absolute;top:6px;right:6px;border:0!important;background:none!important;font-size:20px;color:var(--muted)}
+
+/* 질문 한 장씩 */
+.wiz{max-width:560px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:20px 16px;box-shadow:var(--shadow)}
+.wstep{display:none}
+.wstep.on{display:block;animation:rise .25s both}
+.wprog{font-size:13px;font-weight:700;color:var(--accent-ink)}
+.wstep h3{font-size:22px;font-weight:800;letter-spacing:-.03em;margin:4px 0 14px}
+.wopts{display:grid;gap:8px}
+.wopts button{min-height:56px;border:1px solid var(--line2);background:var(--surface);border-radius:14px;font-size:17px;font-weight:700;cursor:pointer;text-align:left;padding:0 18px}
+.wopts button:hover{border-color:var(--ink2)}
+.wopts button.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,var(--surface))}
+.wopts button:last-child{color:var(--ink2);font-weight:600}
+.wback{margin-top:12px;border:0;background:none;color:var(--ink2);font-size:14px;font-weight:600;cursor:pointer;padding:6px 0}
+.best{background:var(--surface);border:2px solid var(--accent);border-radius:20px;padding:16px;box-shadow:var(--shadow)}
+.best .k{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800;color:var(--accent-ink)}
+.best .rk{width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;font-weight:800;display:grid;place-items:center;font-size:13px}
+.best h3{font-size:28px;font-weight:800;letter-spacing:-.035em;margin-top:6px}
+.best h3 small{font-size:13px;font-weight:500;color:var(--muted);margin-left:8px}
+.best .why{font-size:14px;color:var(--ink2);margin-top:2px}
+.more{margin-top:12px;border:0;background:none;padding:4px 0;color:var(--ink2);font-size:14px;font-weight:600;cursor:pointer}
+.redo{margin-top:4px;border:0;background:none;color:var(--ink2);font-size:14px;font-weight:600;text-decoration:underline;text-underline-offset:3px;cursor:pointer;justify-self:start;padding:4px 0}
 /* stories */
 .stories{display:grid;gap:12px}
 .story{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:18px}
@@ -207,8 +242,9 @@ button,select{font:inherit;color:inherit}
   .hero{padding-top:36px}
   .stage{grid-template-columns:minmax(0,1fr) 340px;align-items:start}
   .side{position:sticky;top:68px}
-  .pickgrid{grid-template-columns:380px 1fr;grid-template-areas:"q m" "p m"}
-  .quiz{grid-area:q}.pickmap{grid-area:m;align-self:start}.picks{grid-area:p}
+  .pickgrid{grid-template-columns:420px 1fr;grid-template-areas:"b m" "p m" "q m";align-items:start}
+  .best{grid-area:b}.quiz{grid-area:q}.pickmap{grid-area:m;align-self:start}.picks{grid-area:p}
+  .cta{display:inline-flex;min-width:420px;margin-top:18px}
 
   .fly{max-width:760px}
   .vspick{max-width:760px}
@@ -241,3 +277,5 @@ body[data-view="how"] .foot.dongs{display:block}
   main>.sec.view{min-height:calc(100vh - 116px)}
 }
 .foot.lang{padding-bottom:0}.foot.lang a{color:var(--ink2)}
+[hidden]{display:none!important}
+.orglink{margin-top:14px;font-size:14.5px;font-weight:700}.orglink a{color:var(--accent-ink)}

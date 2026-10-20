@@ -44,7 +44,9 @@ gtag('config', 'G-F0MT1BRZX2', { page_title: 'en map' });
   <div class="hero-head">
     <p class="eyebrow">43 neighborhoods · 156.9M tourist visits</p>
     <h1>Where to stay in Jeju</h1>
+    <a class="cta" href="#pick" data-cta="hero">Find where to stay in 3 questions <span aria-hidden="true">→</span></a>
   </div>
+  <div id="follow" class="follow" hidden></div>
 
   <div class="chips" role="tablist" aria-label="Map metric">
     <button role="tab" data-m="visit" aria-selected="true">Most visited</button>
@@ -72,21 +74,32 @@ gtag('config', 'G-F0MT1BRZX2', { page_title: 'en map' });
 <section class="sec view" id="pick">
   <div class="sec-head">
     <h2>3 neighborhoods for you</h2>
-    <p>Pick four answers and we will pin them on the map.</p>
+    <p>Answer 3 questions and we will pick where to stay.</p>
   </div>
-  <div class="pickgrid">
+  <div id="wiz" class="wiz">
+    <div class="wstep on">
+      <p class="wprog">1 / 3</p><h3>Are crowds OK?</h3>
+      <div class="wopts" data-k="busy"><button type="button" data-v="1">Busy is OK</button><button type="button" data-v="-1">I prefer quiet</button><button type="button" data-v="0">Either</button></div>
+    </div>
+    <div class="wstep">
+      <p class="wprog">2 / 3</p><h3>What about evenings?</h3>
+      <div class="wopts" data-k="night"><button type="button" data-v="1">Go out to eat and play</button><button type="button" data-v="-1">Rest at the hotel</button><button type="button" data-v="0">Either</button></div>
+    </div>
+    <div class="wstep">
+      <p class="wprog">3 / 3</p><h3>What kind of area?</h3>
+      <div class="wopts" data-k="vibe"><button type="button" data-v="1">Right in the tourist area</button><button type="button" data-v="-1">Where locals live</button><button type="button" data-v="0">Either</button></div>
+    </div>
+    <button type="button" class="wback" hidden>← Back</button>
+  </div>
+  <div id="result" class="pickgrid" hidden>
+    <div id="best" class="best"></div>
+    <ol id="picks" class="picks"></ol>
     <form id="quiz" class="quiz">
-      <div class="q"><span>Crowds</span>
-        <div class="seg" data-k="busy"><button type="button" data-v="1">Busy is OK</button><button type="button" data-v="0" class="on">Either</button><button type="button" data-v="-1">Quiet</button></div></div>
-      <div class="q"><span>Evenings</span>
-        <div class="seg" data-k="night"><button type="button" data-v="1">Go out</button><button type="button" data-v="0" class="on">Either</button><button type="button" data-v="-1">Stay in</button></div></div>
-      <div class="q"><span>Vibe</span>
-        <div class="seg" data-k="vibe"><button type="button" data-v="1">Touristy</button><button type="button" data-v="0" class="on">Either</button><button type="button" data-v="-1">Local</button></div></div>
       <div class="q"><span>Focus</span>
         <div class="seg" data-k="focus"><button type="button" data-v="eat">Food</button><button type="button" data-v="none" class="on">Balanced</button><button type="button" data-v="stay">Resorts &amp; hotels</button></div></div>
+      <button type="button" class="redo" id="redo">Start over</button>
     </form>
     <div class="pickmap"><svg id="pinmap" class="jeju mini" role="img" aria-label="Recommended neighborhoods"></svg></div>
-    <ol id="picks" class="picks"></ol>
   </div>
 </section>
 
@@ -145,6 +158,7 @@ gtag('config', 'G-F0MT1BRZX2', { page_title: 'en map' });
     </dl>
     <p class="caveat">Card data covers BC Card payments only, so it differs from total sales. Yongdam 2-dong has Jeju International Airport and Geonip-dong has Jeju Port, so their visits run high. Spending shares do not directly measure opening hours or crowding. Visit, card and navigation data are separate aggregates of the same area and were not joined at the individual level.</p>
   </details>
+  <p class="orglink"><a href="../for-org/">Tables and CSV for tourism organizations (Korean) →</a></p>
   <p class="src">Source: Jeju Tourism Big Data Platform (data.ijto.or.kr) Data Pick, Jeju Tourism Organization · raw data SKT, BC Card, T map · KOGL Type 1</p>
   <div class="fb">
     <span>Was this helpful?</span>

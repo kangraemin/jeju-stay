@@ -21,7 +21,9 @@ const KO = {
   dec: {
     done: n => `${n} 응답 고맙습니다. 숙소 고를 때 참고되면 좋겠어요.`,
     ask: n => `${n}에 숙소 잡을 건가요?`,
-    yes: '이 동네로 정했어요', maybe: '고민 중', no: '다른 데로',
+    yes: '여기로 정했어요', maybe: '아직 고민 중', no: '다른 데로', stay: '숙소 보기 ↗',
+    book: '좋아요! 숙소 예약까지 했나요?', booked: '예약했어요', notyet: '아직이에요', bookThanks: '알려 주셔서 고맙습니다. 좋은 여행 되세요!',
+    follow: n => `지난번에 고른 ${n}, 숙소 예약했나요?`, changed: '다른 데로 바꿨어요', close: '닫기',
     search: (ko, n) => [`https://map.naver.com/p/search/${encodeURIComponent('제주 ' + ko + ' 숙소')}`, `네이버 지도에서 ${n} 숙소 보기 ↗`],
     ok: '좋은 여행 되세요!', thanks: '응답 고맙습니다',
   },
@@ -32,7 +34,7 @@ const KO = {
     months: (q, b) => `덜 붐비는 달 <b>${q}</b> · 붐비는 달 <b>${b}</b> <span class="capt">(5년 평균)</span>`,
     trend: (t, f, c) => `2019년보다 방문 <b>${t}</b> · 외국인 <b>${f}%</b>${c ? ` · 외국인 카드 소비 1위 <b>${c}</b>` : ''}`,
     places: p => `차로 많이 가는 곳 <b>${p}</b>`, ri: r => `관광객이 많이 머문 리 <b>${r}</b>`,
-    left: '왼쪽 비교에 넣기', right: '오른쪽에 넣기', hint: '지도에서 동네를 누르면 핵심 숫자가 나옵니다',
+    left: '왼쪽 비교에 넣기', right: '오른쪽에 넣기', hint: '지도에서 동네를 누르면 핵심 숫자가 나옵니다', cta: '질문 3개로 내 동네 찾기 →', best: '1순위', more: '이 동네 숫자 자세히 ›',
   },
   month: m => m + '월',
   why: {
@@ -88,7 +90,9 @@ const EN = {
   dec: {
     done: n => `Thanks for answering about ${n}. Hope it helps you pick a place.`,
     ask: n => `Will you stay in ${n}?`,
-    yes: 'Yes, staying here', maybe: 'Still deciding', no: 'Somewhere else',
+    yes: 'Staying here', maybe: 'Still deciding', no: 'Somewhere else', stay: 'See hotels ↗',
+    book: 'Great! Have you booked a place yet?', booked: 'Booked', notyet: 'Not yet', bookThanks: 'Thanks for letting us know. Have a great trip!',
+    follow: n => `You picked ${n} last time. Did you book a place?`, changed: 'Changed my mind', close: 'Close',
     search: (ko, n) => [`https://www.google.com/maps/search/${encodeURIComponent(n + ', Jeju hotels')}`, `Hotels in ${n} on Google Maps ↗`],
     ok: 'Have a great trip!', thanks: 'Thanks for answering',
   },
@@ -99,7 +103,7 @@ const EN = {
     months: (q, b) => `Quietest month <b>${q}</b> · busiest <b>${b}</b> <span class="capt">(5-yr avg)</span>`,
     trend: (t, f, c) => `Visits vs 2019 <b>${t}</b> · foreign <b>${f}%</b>${c ? ` · top country in foreign card spending <b>${c}</b>` : ''}`,
     places: p => `Top car destinations <b>${p}</b>`, ri: r => `Villages where tourists stay longest <b>${r}</b>`,
-    left: 'Compare (left)', right: 'Compare (right)', hint: 'Tap a neighborhood on the map to see its key numbers',
+    left: 'Compare (left)', right: 'Compare (right)', hint: 'Tap a neighborhood on the map to see its key numbers', cta: 'Find your area in 3 questions →', best: 'Top pick', more: 'See the numbers ›',
   },
   month: m => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][m - 1],
   why: {
@@ -155,7 +159,9 @@ const EN = {
   dec: {
     done: n => `谢谢你关于${n}的回答，希望对选住处有帮助。`,
     ask: n => `你会住在${n}吗？`,
-    yes: '就住这里', maybe: '还在考虑', no: '住别的地方',
+    yes: '就住这里', maybe: '还在考虑', no: '住别的地方', stay: '看住宿 ↗',
+    book: '太好了！已经订好住处了吗？', booked: '订好了', notyet: '还没有', bookThanks: '谢谢告诉我们，旅途愉快！',
+    follow: n => `上次选了${n}，订好住处了吗？`, changed: '换地方了', close: '关闭',
     search: (ko, n, en) => [`https://www.google.com/maps/search/${encodeURIComponent(en + ', Jeju hotels')}`, `在Google地图查看${n}的住宿 ↗`],
     ok: '祝旅途愉快！', thanks: '谢谢你的回答',
   },
@@ -166,7 +172,7 @@ const EN = {
     months: (q, b) => `最清静 <b>${q}</b> · 最拥挤 <b>${b}</b> <span class="capt">（5年平均）</span>`,
     trend: (t, f, c) => `到访比2019年 <b>${t}</b> · 外国人 <b>${f}%</b>${c ? ` · 外国人刷卡消费第1 <b>${c}</b>` : ''}`,
     places: p => `开车常去 <b>${p}</b>`, ri: r => `游客停留多的里 <b>${r}</b>`,
-    left: '放入左侧对比', right: '放入右侧', hint: '点击地图上的地区查看主要数据',
+    left: '放入左侧对比', right: '放入右侧', hint: '点击地图上的地区查看主要数据', cta: '回答3个问题找到适合的地区 →', best: '首选', more: '查看详细数据 ›',
   },
   month: m => m + '月',
   why: {
@@ -222,7 +228,9 @@ const ZHTW = {
   dec: {
     done: n => `謝謝你關於${n}的回答，希望對選住處有幫助。`,
     ask: n => `你會住在${n}嗎？`,
-    yes: '就住這裡', maybe: '還在考慮', no: '住別的地方',
+    yes: '就住這裡', maybe: '還在考慮', no: '住別的地方', stay: '看住宿 ↗',
+    book: '太好了！已經訂好住處了嗎？', booked: '訂好了', notyet: '還沒有', bookThanks: '謝謝告訴我們，旅途愉快！',
+    follow: n => `上次選了${n}，訂好住處了嗎？`, changed: '換地方了', close: '關閉',
     search: (ko, n, en) => [`https://www.google.com/maps/search/${encodeURIComponent(en + ', Jeju hotels')}`, `在Google地圖檢視${n}的住宿 ↗`],
     ok: '祝旅途愉快！', thanks: '謝謝你的回答',
   },
@@ -233,7 +241,7 @@ const ZHTW = {
     months: (q, b) => `最清靜 <b>${q}</b> · 最擁擠 <b>${b}</b> <span class="capt">（5年平均）</span>`,
     trend: (t, f, c) => `到訪比2019年 <b>${t}</b> · 外國人 <b>${f}%</b>${c ? ` · 外國人刷卡消費第1 <b>${c}</b>` : ''}`,
     places: p => `開車常去 <b>${p}</b>`, ri: r => `遊客停留多的裡 <b>${r}</b>`,
-    left: '放入左側對比', right: '放入右側', hint: '點選地圖上的地區檢視主要資料',
+    left: '放入左側對比', right: '放入右側', hint: '點選地圖上的地區檢視主要資料', cta: '回答3個問題找到適合的地區 →', best: '首選', more: '檢視詳細資料 ›',
   },
   month: m => m + '月',
   why: {

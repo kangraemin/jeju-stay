@@ -181,25 +181,57 @@
     track('metric_change', { metric });
   }));
 
-  // ---------- 숙소 결정 응답 + 숙소 검색 이동 (실사용 성과 측정) ----------
+  // ---------- 숙소 결정 응답 + 숙소 검색 이동 + 예약 되묻기 (실사용 성과 측정) ----------
   const decided = {};
-  const decision = (name, from) => { const D = U.dec, [href, txt] = D.search(name, nm(name), enm(name)); return decided[name]
-    ? `<div class="dec done">${D.done(nm(name))}</div>`
+  const store = { get() { try { return JSON.parse(localStorage.getItem('jejuStayDec') || 'null'); } catch (e) { return null; } },
+    set(v) { try { localStorage.setItem('jejuStayDec', JSON.stringify(v)); } catch (e) {} } };
+  const stayLink = (name, from, cls, rank) => { const [href, txt] = U.dec.search(name, nm(name), enm(name));
+    return `<a class="${cls}" data-search data-dong="${name}" data-from="${from}"${rank ? ` data-rank="${rank}"` : ''} href="${href}" target="_blank" rel="noopener" title="${txt}">${U.dec.stay}</a>`; };
+  const bookAsk = () => `<p class="decq">${U.dec.book}</p><div class="decbtns"><button type="button" data-book="booked">${U.dec.booked}</button><button type="button" data-book="not_yet">${U.dec.notyet}</button></div>`;
+  const decision = (name, from) => { const D = U.dec; return decided[name]
+    ? `<div class="dec done">${D.done(nm(name))}<div class="decmain">${stayLink(name, from, 'btn stay')}</div></div>`
     : `<div class="dec" data-dong="${name}" data-from="${from}">
-      <p>${D.ask(nm(name))}</p>
-      <div class="decbtns"><button type="button" data-dec="yes">${D.yes}</button><button type="button" data-dec="maybe">${D.maybe}</button><button type="button" data-dec="no">${D.no}</button></div>
-      <a class="stay" data-search href="${href}" target="_blank" rel="noopener">${txt}</a></div>`; };
+      <div class="decmain">${stayLink(name, from, 'btn stay')}<button type="button" class="btn decyes" data-dec="yes">${D.yes}</button></div>
+      <div class="decsub"><button type="button" data-dec="maybe">${D.maybe}</button><button type="button" data-dec="no">${D.no}</button></div></div>`; };
   document.addEventListener('click', e => {
+    const s = e.target.closest('[data-search]');
+    if (s) track('stay_search', s.dataset.rank ? { dong: s.dataset.dong, from: s.dataset.from, rank: +s.dataset.rank } : { dong: s.dataset.dong, from: s.dataset.from });
     const box = e.target.closest('.dec[data-dong]'); if (!box) return;
     const dong = box.dataset.dong, from = box.dataset.from;
     const b = e.target.closest('[data-dec]');
     if (b) {
       decided[dong] = b.dataset.dec;
       track('stay_decision', { dong, answer: b.dataset.dec, from });
-      box.querySelector('.decbtns').innerHTML = `<span class="decok">${b.dataset.dec === 'yes' ? U.dec.ok : U.dec.thanks}</span>`;
+      const sub = box.querySelector('.decsub'), yes = box.querySelector('.decyes');
+      if (yes) yes.remove();
+      if (b.dataset.dec === 'yes') { sub.innerHTML = bookAsk(); store.set({ dong, t: Date.now() }); }
+      else sub.innerHTML = `<span class="decok">${U.dec.thanks}</span>`;
     }
-    if (e.target.closest('[data-search]')) track('stay_search', { dong, from });
+    const k = e.target.closest('[data-book]');
+    if (k) {
+      track('stay_booked', { dong, answer: k.dataset.book, from });
+      const v = store.get(); if (v && v.dong === dong) store.set({ ...v, booked: k.dataset.book });
+      box.querySelector('.decsub').innerHTML = `<span class="decok">${U.dec.bookThanks}</span>`;
+    }
   });
+  // 다시 들어온 사람: 지난번에 '여기로 정했어요'를 누르고 아직 예약 전이면(답 없음·아직) 한 번만 되묻기
+  {
+    const v = store.get(), hrs = v && (Date.now() - v.t) / 36e5;
+    if (v && byName[v.dong] && v.booked !== 'booked' && !v.asked && hrs >= 0.5) {
+      const f = $('#follow');
+      f.innerHTML = `<p>${U.dec.follow(nm(v.dong))}</p><div class="decbtns"><button type="button" data-fu="booked">${U.dec.booked}</button><button type="button" data-fu="not_yet">${U.dec.notyet}</button><button type="button" data-fu="changed">${U.dec.changed}</button><button type="button" class="x" data-fu="close" aria-label="${U.dec.close}">×</button></div>`;
+      f.hidden = false;
+      track('stay_followup_view', { dong: v.dong, hours: Math.round(hrs) });
+      f.addEventListener('click', e => {
+        const b = e.target.closest('[data-fu]'); if (!b) return;
+        const a = b.dataset.fu;
+        store.set({ ...v, asked: true, booked: a === 'close' ? undefined : a });
+        if (a === 'close') { f.hidden = true; return; }
+        track('stay_followup', { dong: v.dong, answer: a, hours: Math.round(hrs) });
+        f.innerHTML = `<p class="decok">${U.dec.bookThanks}</p>`;
+      });
+    }
+  }
 
   // ---------- dong card ----------
   function curveSVG(d, w = 300, h = 96) {
@@ -232,12 +264,12 @@
         <div class="num"><b>${d.nightShare}<small>%</small></b><span>${C.night}</span></div>
         <div class="num"><b>${d.tourSpendShare}<small>%</small></b><span>${C.tour}</span></div>
       </div>
+      ${decision(d.name, 'card')}
       <div class="curve">${curveSVG(d)}<p class="capt">${C.capt}</p></div>
       <p class="places">${C.months(U.month(d.quietMonth), U.month(d.busyMonth))}</p>
       <p class="places">${C.trend(sgn(d.trend), d.foreignShare2025, c1)}</p>
       ${d.places && d.places.length ? `<p class="places">${C.places(d.places.slice(0, 3).map(p => nm(p[0])).join(' · '))}</p>` : ''}
       ${d.ri && d.ri.length ? `<p class="places">${C.ri(d.ri.slice(0, 3).map(r => nm(r[0])).join(' · '))}</p>` : ''}
-      ${decision(d.name, 'card')}
       <div class="cardbtns"><button class="btn ghost" data-vs="A">${C.left}</button><button class="btn ghost" data-vs="B">${C.right}</button></div>`;
     $('#card').querySelectorAll('[data-vs]').forEach(b => b.addEventListener('click', () => {
       $('#vs' + b.dataset.vs).value = name; renderVs(true); go('vs');
@@ -246,7 +278,9 @@
     try { gtag('event', 'page_view', { page_title: name + ' · 제주 숙소 동네', page_path: '/jeju-stay/d/' + name, page_location: location.origin + '/jeju-stay/d/' + encodeURIComponent(name) }); } catch (e) {}
     if (fromMap) track('dong_open', { dong: name, metric });
   }
-  $('#card').innerHTML = `<p class="hint">${U.card.hint}</p>`;
+  $('#card').innerHTML = `<p class="hint">${U.card.hint}</p><a class="cta small" href="#pick" data-cta="card">${U.card.cta}</a>`;
+  // 첫 화면·빈 카드의 추천 버튼
+  document.addEventListener('click', e => { const c = e.target.closest('[data-cta]'); if (c) track('cta_click', { from: c.dataset.cta }); });
 
   // ---------- quiz ----------
   const pin = buildMap($('#pinmap'));
@@ -268,6 +302,13 @@
     if (a.vibe) return W.vibe(d.tourSpendShare, r);
     return W.base(r, d.nightShare);
   }
+  // 끝나면 다른 화면으로 옮긴 뒤 할 일(예: 카드로 스크롤). show()가 맨 위로 올린 다음 부른다
+  let after = null;
+  const openCard = (n, from) => {
+    select(n, false); track('dong_open', { dong: n, from });
+    after = () => { if (innerWidth < 900) $('#card').scrollIntoView({ block: 'start' }); };
+    go('map');
+  };
   function runQuiz(log) {
     const pool = dongs.filter(d => d.busyPct > 15);
     const top = pool.map(d => [d, score(d, ans)]).sort((x, y) => y[1] - x[1]).slice(0, 3).map(x => x[0]);
@@ -275,12 +316,36 @@
     const u = unit(pin.svg);
     pin.svg.querySelector('.insetlbl').style.fontSize = 11 * u + 'px';
     pin.layer.innerHTML = top.map((d, i) => { const c = geo.shapes[d.name].c; return `<g class="pin"><circle cx="${c[0]}" cy="${c[1]}" r="${13 * u}" style="stroke-width:${2.5 * u}"/><text x="${c[0]}" y="${c[1]}" style="font-size:${14 * u}px">${i + 1}</text></g>`; }).join('');
-    $('#picks').innerHTML = top.map((d, i) => `<li data-n="${d.name}"><span class="rk">${i + 1}</span><div><h3>${nm(d.name)}<small>${nm(d.city)}</small></h3><p class="why">${why(d, ans)}</p></div><span class="go">›</span></li>`).join('') + `<li class="picksdec">${decision(top[0].name, 'quiz')}</li>`;
-    $('#picks').querySelectorAll('li[data-n]').forEach(li => li.addEventListener('click', () => {
-      select(li.dataset.n, false); go('map'); track('dong_open', { dong: li.dataset.n, from: 'quiz' });
-    }));
+    const b = top[0];
+    // 1순위 바로 아래에 숙소 보기·여기로 정했어요
+    $('#best').innerHTML = `<p class="k"><span class="rk">1</span>${U.card.best}</p><h3>${nm(b.name)}<small>${nm(b.city)}</small></h3><p class="why">${why(b, ans)}</p>${decision(b.name, 'quiz')}<button type="button" class="more" data-n="${b.name}">${U.card.more}</button>`;
+    $('#picks').innerHTML = top.slice(1).map((d, i) => `<li data-n="${d.name}"><span class="rk">${i + 2}</span><div><h3>${nm(d.name)}<small>${nm(d.city)}</small></h3><p class="why">${why(d, ans)}</p></div>${stayLink(d.name, 'quiz', 'stay sm', i + 2)}</li>`).join('');
+    $('#best .more').addEventListener('click', () => openCard(b.name, 'quiz'));
+    $('#picks').querySelectorAll('li[data-n]').forEach(li => li.addEventListener('click', e => { if (!e.target.closest('[data-search]')) openCard(li.dataset.n, 'quiz'); }));
     if (log) track('quiz_done', { ...ans, top: top.map(d => d.name).join(',') });
   }
+  // 질문 3개를 한 장씩: 사람 → 저녁 → 동네. 중심(맛집·숙박)은 결과 화면에서 바꾼다
+  const steps = [...document.querySelectorAll('.wstep')], wback = $('.wback');
+  let step = 0, done = false;
+  const setStep = i => {
+    step = i;
+    steps.forEach((x, j) => x.classList.toggle('on', j === i));
+    wback.hidden = i === 0;
+    $('#wiz').hidden = done; $('#result').hidden = !done;
+  };
+  steps.forEach((st, i) => st.querySelector('.wopts').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    const k = st.querySelector('.wopts').dataset.k;
+    ans[k] = +b.dataset.v;
+    st.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+    if (i === 0) track('quiz_start', { from: document.referrer ? 'ref' : 'direct' });
+    track('quiz_step', { step: i + 1, [k]: ans[k] });
+    if (i < steps.length - 1) { setStep(i + 1); return; }
+    done = true; setStep(i); runQuiz(true);
+    scrollTo(0, 0);
+  }));
+  wback.addEventListener('click', () => setStep(Math.max(0, step - 1)));
+  $('#redo').addEventListener('click', () => { done = false; setStep(0); scrollTo(0, 0); track('quiz_redo', {}); });
   document.querySelectorAll('.quiz .seg').forEach(seg => seg.addEventListener('click', e => {
     const b = e.target.closest('button'); if (!b) return;
     seg.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
@@ -402,7 +467,7 @@
     $('#fbthanks').hidden = false;
   }));
 
-  paint(); runQuiz(false); renderVs(false);
+  paint(); runQuiz(false); setStep(0); renderVs(false);
   show = v => {
     if (!VIEWS.includes(v)) v = 'map';
     document.querySelectorAll('main>.view').forEach(s => s.classList.toggle('on', s.id === v));
@@ -410,12 +475,14 @@
     document.body.dataset.view = v;
     scrollTo(0, 0);
     if (v === 'map') paint();
+    if (after) { const f = after; after = null; requestAnimationFrame(f); }
     if (v === 'pick') runQuiz(false);
     track('view', { view: v });
   };
   const fromHash = () => show(location.hash === '#oreum-local' ? 'oreum' : location.hash.slice(1));
   addEventListener('hashchange', fromHash);
   fromHash();
-  let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { paint(); runQuiz(false); }, 150); });
+  // 모바일은 스크롤만 해도 높이가 바뀌어 resize가 온다 → 폭이 바뀔 때만 다시 그린다(결과 화면의 응답 상태 유지)
+  let rt, lw = innerWidth; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (innerWidth === lw) return; lw = innerWidth; paint(); runQuiz(false); }, 150); });
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', paint);
 })();
