@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>연구자용 — 제주 읍면동 관광 지표 정의·한계, CSV, 야간관광·분산 가설 | 제주, 어디에 묵을까</title>
+<meta name="description" content="제주 43개 읍면동 관광객 방문·저녁 소비·오름 쏠림 지표의 정의와 한계, 동네별 CSV, 야간관광·관광 분산 정책 가설과 검증 질문.">
+<link rel="canonical" href="https://kangraemin.github.io/jeju-stay/for-org/research/">
+<meta property="og:title" content="연구자용 — 제주 읍면동 관광 지표 정의·한계, CSV, 야간관광·분산 가설 | 제주, 어디에 묵을까"><meta property="og:description" content="제주 43개 읍면동 관광객 방문·저녁 소비·오름 쏠림 지표의 정의와 한계, 동네별 CSV, 야간관광·관광 분산 정책 가설과 검증 질문.">
+<meta property="og:type" content="website"><meta property="og:url" content="https://kangraemin.github.io/jeju-stay/for-org/research/"><meta property="og:image" content="https://kangraemin.github.io/jeju-stay/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#fbfbf9">
+<link rel="icon" href="../../favicon.ico" sizes="any"><link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="../../style.css">
+<style>
+.org{max-width:920px;margin:0 auto;padding:24px 16px 0}
+.org .lang{font-size:13px;color:var(--muted);margin-bottom:14px}.org .lang a{color:inherit}
+.org h1{font-size:clamp(24px,6vw,34px);font-weight:800;letter-spacing:-.035em;line-height:1.25}
+.org .lead{font-size:17px;font-weight:600;margin:10px 0 0;line-height:1.55}
+.org h2{font-size:21px;font-weight:800;letter-spacing:-.03em;margin:40px 0 8px}
+.org h3{font-size:16.5px;font-weight:800;margin:0 0 6px;letter-spacing:-.02em}
+.org ul.lines{margin:8px 0 12px;padding-left:18px;color:var(--ink2);font-size:15px;line-height:1.7}
+.org .meta{margin:16px 0 0;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--surface);font-size:13.5px;line-height:1.75;color:var(--ink2)}
+.org .meta b{color:var(--ink)}
+.org .wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;background:var(--surface);border:1px solid var(--line);border-radius:14px}
+.org table{border-collapse:separate;border-spacing:0;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+.org th,.org td{border-bottom:1px solid var(--line);padding:9px 10px;text-align:left;white-space:nowrap;background:var(--surface)}
+.org th{font-size:12.5px;color:var(--ink2);font-weight:700;background:var(--chip);white-space:normal;min-width:64px;vertical-align:bottom}
+.org tbody tr:last-child td{border-bottom:0}
+.org th:first-child,.org td:first-child{position:sticky;left:0;z-index:1;border-right:1px solid var(--line)}
+.org th:first-child{background:var(--chip)}
+.org td.hi,.org th.hi{background:color-mix(in srgb,var(--accent) 10%,var(--surface))}
+.org td a{color:var(--s-tour);font-weight:700;text-decoration:none}
+.org .scenes{display:grid;gap:12px}
+@media(min-width:860px){.org .scenes{grid-template-columns:repeat(3,1fr)}}
+.org .scene{border:1px solid var(--line);border-radius:16px;padding:16px;background:var(--surface);display:flex;flex-direction:column;gap:10px;min-width:0}
+.org .scene p{font-size:14.5px;color:var(--ink2);line-height:1.6;margin:0}
+.org .scene .go{margin-top:auto;align-self:flex-start}
+.org .copy{font-size:14.5px;line-height:1.7;padding:12px 14px;border-radius:12px;background:var(--chip);border-left:3px solid var(--accent);color:var(--ink)}
+.org .ctrl{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px 14px;margin:12px 0}
+.org .ctrl label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:700;color:var(--ink2)}
+.org select,.org input[type=range]{font:inherit;font-size:15px;width:100%}
+.org select{padding:9px 10px;border:1px solid var(--line2);border-radius:10px;background:var(--surface);color:var(--ink)}
+.org .presets{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
+.org .presets button{border:1px solid var(--line2);background:var(--surface);border-radius:999px;padding:7px 12px;font-size:13.5px;font-weight:600;cursor:pointer;color:var(--ink)}
+.org .presets button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.org .count{font-size:15px;font-weight:700;margin:10px 0 8px}
+.org .row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.org .row .btn{text-decoration:none;display:inline-block}
+.org .note{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.6}
+.org .use{margin-top:40px;padding:16px;border-radius:16px;background:var(--chip)}
+.org .use p{font-weight:700;margin-bottom:10px}
+.org .use .decbtns button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.org .ok{color:var(--accent-ink);font-weight:700;font-size:13.5px}
+.org table.mini td,.org table.mini th{padding:7px 9px;font-size:13.5px}
+.org table.dict{width:100%;table-layout:fixed}
+.org table.dict td{white-space:normal;overflow-wrap:anywhere}
+.org table.dict th:nth-child(1){width:30%}.org table.dict th:nth-child(2){width:44%}
+.org .swipe{font-size:12px;color:var(--muted);margin:6px 2px 0;text-align:right}
+.org .gn{font-size:12px;color:var(--muted);white-space:normal;display:inline-block;min-width:110px}
+.org .ctrl label.chk{flex-direction:row;align-items:center;gap:8px;font-weight:600}
+.org .ctrl label.chk input{width:18px;height:18px;flex:none}
+
+.org .qrs{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:720px){.org .qrs{grid-template-columns:repeat(4,1fr)}}
+.org .qrs figure{margin:0;border:1px solid var(--line);border-radius:14px;background:#fff;padding:10px;text-align:center}
+.org .qrs svg{width:100%;height:auto;max-width:150px}
+.org .qrs figcaption{font-size:13px;font-weight:700;color:#222;margin-top:4px}
+.org .qrs figcaption small{display:block;font-weight:500;color:#666;word-break:break-all}
+.org .links{display:grid;gap:8px;margin-top:10px}
+.org .links div{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:14px}
+.org .links code{font-size:12.5px;word-break:break-all;background:var(--chip);padding:4px 8px;border-radius:8px;flex:1;min-width:0}
+.org .links b{min-width:64px}
+.org .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:10px 0}
+.org .kv div{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface)}
+.org .kv small{display:block;font-size:12.5px;color:var(--muted)}
+.org .kv b{font-size:18px}
+.org .steps{counter-reset:s;list-style:none;padding:0;margin:10px 0}
+.org .steps li{counter-increment:s;position:relative;padding:10px 12px 10px 42px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;background:var(--surface);font-size:14.5px;line-height:1.6;color:var(--ink2)}
+.org .steps li::before{content:counter(s);position:absolute;left:12px;top:10px;width:22px;height:22px;border-radius:50%;background:var(--ink);color:var(--bg);font-size:12.5px;font-weight:800;text-align:center;line-height:22px}
+.org .foot{margin:44px 0 32px;padding-top:16px;border-top:1px solid var(--line);font-size:13px;color:var(--muted);line-height:1.8}
+.org .foot a{color:inherit}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-F0MT1BRZX2"></script>
+<script>
+// 로컬 테스트·자동화 브라우저 접속은 측정에서 뺀다
+if (location.hostname !== 'kangraemin.github.io' || navigator.webdriver) window['ga-disable-G-F0MT1BRZX2'] = true;
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-F0MT1BRZX2', { page_title: '기관용 research' });
+</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "name": "연구자용 — 제주 읍면동 관광 지표 정의·한계, CSV, 야간관광·분산 가설 | 제주, 어디에 묵을까", "description": "제주 43개 읍면동 관광객 방문·저녁 소비·오름 쏠림 지표의 정의와 한계, 동네별 CSV, 야간관광·관광 분산 정책 가설과 검증 질문.", "url": "https://kangraemin.github.io/jeju-stay/for-org/research/", "inLanguage": "ko", "isPartOf": {"@type": "WebSite", "name": "제주, 어디에 묵을까", "url": "https://kangraemin.github.io/jeju-stay/"}}</script>
+</head>
+<body>
+<header class="top"><a class="brand" href="../../">제주 동네 지도</a></header>
+<main class="org">
+  <p class="lang"><a href="../">← 기관·사업자용 전체 화면</a></p>
+  <p class="eyebrow">제주연구원 연구진용</p>
+  <h1>제주 읍면동 관광 지표 — 정의, 수치, 검증할 가설</h1>
+  <p class="lead">저녁 소비 몫과 오름 쏠림을 어떻게 쟀는지, 어디까지 믿을 수 있는지, 정책 연구로 이어 볼 질문을 정리했습니다.</p>
+
+  <h2>이걸로 바로 할 수 있는 일 3가지</h2>
+  <div class="scenes"><section class="scene"><h3>① 지표 정의·한계 확인</h3><p>저녁 소비 몫·관광객 몫·달 지수가 무엇으로 어떻게 계산됐는지, 무엇이 빠졌는지(현금, 외국인 시간대, 계절).</p><a class="btn ghost go" href="#def">정의·한계 보기 ↓</a></section><section class="scene"><h3>② 43개 동네 수치를 바로 분석</h3><p>동네 × 15개 지표 CSV. 기준 기간·출처 열 포함.</p><a class="btn ghost go" href="#csv">CSV 받기 ↓</a></section><section class="scene"><h3>③ 야간관광·분산 가설 검증</h3><p>저녁 공백 5곳이 '자고 가는 곳'과 '들렀다 가는 곳'으로 갈린다는 가설과 검증 질문 5개.</p><a class="btn ghost go" href="#hyp">가설 보기 ↓</a></section></div>
+
+  <div class="meta"><div><b>범위:</b> 제주 43개 읍면동(2026년 7월 행정동 경계), 관광객 방문·소비 2025.8~2026.7, 오름 2021~2025년.</div>
+  <div>원자료: 제주관광빅데이터플랫폼 데이터 픽 — SKT(방문), BC카드(소비·시간대), 티맵(오름·목적지). 수치는 플랫폼 화면 값 그대로 집계했고 추정치는 없습니다.</div></div>
+
+  <h2 id="def">① 지표 정의와 한계</h2>
+  <div class="wrap"><table class="dict"><thead><tr><th>지표</th><th>정의</th><th>원자료·기간</th></tr></thead><tbody><tr><td>관광객 방문(회)</td><td>제주 밖에 사는 사람이 그 읍면동에 30분 이상 머문 횟수. 같은 사람이 여러 번 셀 수 있음</td><td>SKT 이동통신, 2025.8~2026.7</td></tr><tr><td>저녁 6시 이후 소비(%)</td><td>내국인 관광객 카드 결제 금액 중 18~24시 몫</td><td>BC카드, 2025.8~2026.7</td></tr><tr><td>밤 9시 이후 소비(%)</td><td>같은 금액 중 21시~새벽 2시 몫</td><td>BC카드, 2025.8~2026.7</td></tr><tr><td>매출 중 관광객 몫(%)</td><td>관광객 결제 ÷ (관광객 + 도민 결제)</td><td>BC카드, 2025.8~2026.7</td></tr><tr><td>관광객 소비 중 숙박·음식점(%)</td><td>내국인 관광객 결제 금액 중 숙박업·음식점업 몫</td><td>BC카드, 2025.8~2026.7</td></tr><tr><td>달 지수(×)</td><td>그 달 값 ÷ 그 해 월평균의 해 평균. 1.0이 평소 한 달</td><td>SKT 2019·2022~2025년 / 티맵 2021~2025년</td></tr></tbody></table></div>
+  <h3 style="margin-top:20px">한계</h3>
+  <ul class="lines"><li>카드 소비는 BC카드 결제만 집계합니다. 현금·다른 카드는 빠져 전체 매출과 다릅니다.</li><li>저녁 소비 지표는 내국인 관광객만입니다. 외국인 관광객의 시간대별 소비는 넣지 않았습니다.</li><li>저녁 몫은 1년 합계(2025.8~2026.7)라 계절별 차이는 보이지 않습니다.</li><li>관광객 방문은 휴대폰 신호 기준이라 같은 사람이 여러 번 셀 수 있고, 숙박 여부는 알 수 없습니다.</li><li>오름은 내비게이션을 켜고 차로 온 경우만 셉니다. 버스·도보·단체 관광은 빠집니다.</li><li>섬(우도면)·공항(용담2동)은 구조적 요인이 커서 저녁 공백 비교에서 뺐습니다.</li><li>플랫폼 집계 기준 변경 공지(2026-05-15, 2026-09-07)로 전년 대비 비교는 하지 않았습니다.</li></ul>
+
+  <h2 id="csv">② 동네별 수치 CSV</h2>
+  <ul class="lines"><li>43개 동네 × 15개 지표(방문, 가을 비중, 저녁·밤 소비 몫, 관광객 몫, 업종 몫, 여름 증감, 2019→2025 증감, 외국인 비중, 붐비는·한산한 달).</li><li>모든 CSV는 UTF-8(엑셀에서 바로 열림)이고, 끝의 두 열에 기준 기간과 출처가 있습니다.</li></ul>
+  <div class="row"><a class="btn ghost" href="../dongs-43.csv" download data-dl="dongs-43.csv">43개 동네 전체 지표 ↓</a><a class="btn ghost" href="../night-gap.csv" download data-dl="night-gap.csv">저녁 공백 동네 ↓</a><a class="btn ghost" href="../oreum-autumn.csv" download data-dl="oreum-autumn.csv">가을 오름 95곳 ↓</a><a class="btn ghost" href="../oreum-monthly-guide.csv" download data-dl="oreum-monthly-guide.csv">달별 오름 안내 문구 ↓</a></div>
+
+  <h2 id="hyp">③ 야간관광·관광 분산 정책 가설과 더 검증할 질문</h2>
+  <div class="scenes"><section class="scene"><h3>가설 1. 저녁 공백 동네는 두 종류로 갈린다</h3><ul class="lines"><li>관광객 결제가 절반 이상이고 저녁 6시 이후 몫이 30% 미만인 5곳(섬·공항 제외) 중, 관광객 소비에서 숙박 몫이 10% 이상인 곳은 안덕면(17.8%)·표선면(25.9%)입니다.</li><li>나머지 구좌읍(1.1%)·일도1동(0.9%)·도두동(1.7%)은 숙박 몫이 10% 아래입니다.</li><li>앞쪽은 &#x27;자고 가는데 저녁 소비는 동네 밖에서&#x27; 하는 유형, 뒤쪽은 &#x27;낮에 들렀다 떠나는&#x27; 유형일 수 있습니다. 야간관광 처방이 다를 수 있다는 가설입니다.</li></ul></section><section class="scene"><h3>가설 2. 저녁 몫과 업종 구성의 관계는 약하다</h3><ul class="lines"><li>43개 동네에서 저녁 6시 이후 몫과 관광객 소비 중 숙박 몫의 상관계수는 0.25, 음식점 몫과는 0.34입니다(피어슨, 단순 상관).</li><li>업종 구성만으로는 저녁 공백이 설명되지 않아, 야간 유동 인구·숙박 인원·영업시간 같은 자료를 더해 볼 필요가 있습니다.</li></ul></section><section class="scene"><h3>가설 3. 오름 쏠림은 안내로 줄일 수 있는가</h3><ul class="lines"><li>지난가을(2025.10~11) 오름 95곳 차량 도착 28,186대 중 56.8%가 새별·금·용눈이오름 3곳입니다.</li><li>달별 안내 문구(붐비는 오름 + 덜 붐비는 대안)를 숙소·안내소에 붙인 뒤, 대안 오름 도착이 대조 오름보다 늘었는지 티맵 월별 도착으로 볼 수 있습니다.</li></ul></section></div>
+  <h3 style="margin-top:20px">더 검증할 질문</h3>
+  <ul class="lines"><li>현금·타 카드 결제 비중이 큰 시장 권역(일도1동 등)의 저녁 몫을 어떻게 보정할까?</li><li>외국인 관광객의 시간대별 소비(플랫폼 픽 61)로 같은 분석을 하면 저녁 공백 동네가 달라질까?</li><li>저녁 몫을 달별로 나누면 여름 성수기에만 저녁이 차는 동네가 있을까?</li><li>숙박업 등록 객실 수와 결합하면 &#x27;자는 곳 대비 저녁 소비&#x27;가 낮은 동네가 더 정확히 보일까?</li><li>오름 안내 문구 게시 전후로 대안 오름 도착이 실제로 늘었을까(차이의 차이)?</li></ul>
+
+  <div class="foot">
+    <div>출처: 제주관광빅데이터플랫폼(data.ijto.or.kr) 데이터 픽, 제주관광공사 · 공공누리 제1유형. 원자료 SKT(이동통신)·BC카드·티맵.</div>
+    <div>만든 사람: 강래민(개인, 비영리) · 문의 <a href="mailto:remin1994@gmail.com">remin1994@gmail.com</a> · 업데이트 2026-10-21</div>
+    <div>이 화면은 「2026 제주 관광 데이터 활용사례 공모전」 출품작의 일부입니다.</div>
+  </div>
+</main>
+<script>
+(() => {
+const $ = s => document.querySelector(s);
+const track = (n, p) => { try { gtag('event', n, Object.assign({ org: "research" }, p || {})); } catch (e) {} };
+const flash = (id, t) => { const el = document.getElementById(id); if (!el) return; el.textContent = t; el.hidden = false; setTimeout(() => el.hidden = true, 2200); };
+const copy = (txt, id) => { (navigator.clipboard ? navigator.clipboard.writeText(txt) : Promise.reject()).then(() => flash(id, '복사했어요'), () => flash(id, '복사가 안 되면 글을 길게 눌러 복사해 주세요')); };
+
+track('org_view', { ref: document.referrer ? new URL(document.referrer).hostname : '(direct)', lang: 'ko' });
+document.querySelectorAll('.scene .go').forEach(a => a.addEventListener('click', () => track('org_scene', { scene: a.getAttribute('href').slice(1) })));
+document.querySelectorAll('[data-dl]').forEach(a => a.addEventListener('click', () => track('org_download', { file: a.dataset.dl })));
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>관광 데이터 활용 사례 — 이동통신·카드·내비 데이터를 읍면동으로 묶은 방법 | 제주, 어디에 묵을까</title>
+<meta name="description" content="제주 43개 읍면동에 SKT 방문·BC카드 시간대 소비·티맵 목적지를 합친 방법, 처리 규칙, 계산식, CSV, 실제 이용 지표, 다른 지역으로 옮기는 순서.">
+<link rel="canonical" href="https://kangraemin.github.io/jeju-stay/for-org/datalab/">
+<meta property="og:title" content="관광 데이터 활용 사례 — 이동통신·카드·내비 데이터를 읍면동으로 묶은 방법 | 제주, 어디에 묵을까"><meta property="og:description" content="제주 43개 읍면동에 SKT 방문·BC카드 시간대 소비·티맵 목적지를 합친 방법, 처리 규칙, 계산식, CSV, 실제 이용 지표, 다른 지역으로 옮기는 순서.">
+<meta property="og:type" content="website"><meta property="og:url" content="https://kangraemin.github.io/jeju-stay/for-org/datalab/"><meta property="og:image" content="https://kangraemin.github.io/jeju-stay/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#fbfbf9">
+<link rel="icon" href="../../favicon.ico" sizes="any"><link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="../../style.css">
+<style>
+.org{max-width:920px;margin:0 auto;padding:24px 16px 0}
+.org .lang{font-size:13px;color:var(--muted);margin-bottom:14px}.org .lang a{color:inherit}
+.org h1{font-size:clamp(24px,6vw,34px);font-weight:800;letter-spacing:-.035em;line-height:1.25}
+.org .lead{font-size:17px;font-weight:600;margin:10px 0 0;line-height:1.55}
+.org h2{font-size:21px;font-weight:800;letter-spacing:-.03em;margin:40px 0 8px}
+.org h3{font-size:16.5px;font-weight:800;margin:0 0 6px;letter-spacing:-.02em}
+.org ul.lines{margin:8px 0 12px;padding-left:18px;color:var(--ink2);font-size:15px;line-height:1.7}
+.org .meta{margin:16px 0 0;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--surface);font-size:13.5px;line-height:1.75;color:var(--ink2)}
+.org .meta b{color:var(--ink)}
+.org .wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;background:var(--surface);border:1px solid var(--line);border-radius:14px}
+.org table{border-collapse:separate;border-spacing:0;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+.org th,.org td{border-bottom:1px solid var(--line);padding:9px 10px;text-align:left;white-space:nowrap;background:var(--surface)}
+.org th{font-size:12.5px;color:var(--ink2);font-weight:700;background:var(--chip);white-space:normal;min-width:64px;vertical-align:bottom}
+.org tbody tr:last-child td{border-bottom:0}
+.org th:first-child,.org td:first-child{position:sticky;left:0;z-index:1;border-right:1px solid var(--line)}
+.org th:first-child{background:var(--chip)}
+.org td.hi,.org th.hi{background:color-mix(in srgb,var(--accent) 10%,var(--surface))}
+.org td a{color:var(--s-tour);font-weight:700;text-decoration:none}
+.org .scenes{display:grid;gap:12px}
+@media(min-width:860px){.org .scenes{grid-template-columns:repeat(3,1fr)}}
+.org .scene{border:1px solid var(--line);border-radius:16px;padding:16px;background:var(--surface);display:flex;flex-direction:column;gap:10px;min-width:0}
+.org .scene p{font-size:14.5px;color:var(--ink2);line-height:1.6;margin:0}
+.org .scene .go{margin-top:auto;align-self:flex-start}
+.org .copy{font-size:14.5px;line-height:1.7;padding:12px 14px;border-radius:12px;background:var(--chip);border-left:3px solid var(--accent);color:var(--ink)}
+.org .ctrl{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px 14px;margin:12px 0}
+.org .ctrl label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:700;color:var(--ink2)}
+.org select,.org input[type=range]{font:inherit;font-size:15px;width:100%}
+.org select{padding:9px 10px;border:1px solid var(--line2);border-radius:10px;background:var(--surface);color:var(--ink)}
+.org .presets{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
+.org .presets button{border:1px solid var(--line2);background:var(--surface);border-radius:999px;padding:7px 12px;font-size:13.5px;font-weight:600;cursor:pointer;color:var(--ink)}
+.org .presets button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.org .count{font-size:15px;font-weight:700;margin:10px 0 8px}
+.org .row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.org .row .btn{text-decoration:none;display:inline-block}
+.org .note{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.6}
+.org .use{margin-top:40px;padding:16px;border-radius:16px;background:var(--chip)}
+.org .use p{font-weight:700;margin-bottom:10px}
+.org .use .decbtns button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.org .ok{color:var(--accent-ink);font-weight:700;font-size:13.5px}
+.org table.mini td,.org table.mini th{padding:7px 9px;font-size:13.5px}
+.org table.dict{width:100%;table-layout:fixed}
+.org table.dict td{white-space:normal;overflow-wrap:anywhere}
+.org table.dict th:nth-child(1){width:30%}.org table.dict th:nth-child(2){width:44%}
+.org .swipe{font-size:12px;color:var(--muted);margin:6px 2px 0;text-align:right}
+.org .gn{font-size:12px;color:var(--muted);white-space:normal;display:inline-block;min-width:110px}
+.org .ctrl label.chk{flex-direction:row;align-items:center;gap:8px;font-weight:600}
+.org .ctrl label.chk input{width:18px;height:18px;flex:none}
+
+.org .qrs{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:720px){.org .qrs{grid-template-columns:repeat(4,1fr)}}
+.org .qrs figure{margin:0;border:1px solid var(--line);border-radius:14px;background:#fff;padding:10px;text-align:center}
+.org .qrs svg{width:100%;height:auto;max-width:150px}
+.org .qrs figcaption{font-size:13px;font-weight:700;color:#222;margin-top:4px}
+.org .qrs figcaption small{display:block;font-weight:500;color:#666;word-break:break-all}
+.org .links{display:grid;gap:8px;margin-top:10px}
+.org .links div{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:14px}
+.org .links code{font-size:12.5px;word-break:break-all;background:var(--chip);padding:4px 8px;border-radius:8px;flex:1;min-width:0}
+.org .links b{min-width:64px}
+.org .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:10px 0}
+.org .kv div{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface)}
+.org .kv small{display:block;font-size:12.5px;color:var(--muted)}
+.org .kv b{font-size:18px}
+.org .steps{counter-reset:s;list-style:none;padding:0;margin:10px 0}
+.org .steps li{counter-increment:s;position:relative;padding:10px 12px 10px 42px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;background:var(--surface);font-size:14.5px;line-height:1.6;color:var(--ink2)}
+.org .steps li::before{content:counter(s);position:absolute;left:12px;top:10px;width:22px;height:22px;border-radius:50%;background:var(--ink);color:var(--bg);font-size:12.5px;font-weight:800;text-align:center;line-height:22px}
+.org .foot{margin:44px 0 32px;padding-top:16px;border-top:1px solid var(--line);font-size:13px;color:var(--muted);line-height:1.8}
+.org .foot a{color:inherit}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-F0MT1BRZX2"></script>
+<script>
+// 로컬 테스트·자동화 브라우저 접속은 측정에서 뺀다
+if (location.hostname !== 'kangraemin.github.io' || navigator.webdriver) window['ga-disable-G-F0MT1BRZX2'] = true;
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-F0MT1BRZX2', { page_title: '기관용 datalab' });
+</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "name": "관광 데이터 활용 사례 — 이동통신·카드·내비 데이터를 읍면동으로 묶은 방법 | 제주, 어디에 묵을까", "description": "제주 43개 읍면동에 SKT 방문·BC카드 시간대 소비·티맵 목적지를 합친 방법, 처리 규칙, 계산식, CSV, 실제 이용 지표, 다른 지역으로 옮기는 순서.", "url": "https://kangraemin.github.io/jeju-stay/for-org/datalab/", "inLanguage": "ko", "isPartOf": {"@type": "WebSite", "name": "제주, 어디에 묵을까", "url": "https://kangraemin.github.io/jeju-stay/"}}</script>
+</head>
+<body>
+<header class="top"><a class="brand" href="../../">제주 동네 지도</a></header>
+<main class="org">
+  <p class="lang"><a href="../">← 기관·사업자용 전체 화면</a></p>
+  <p class="eyebrow">한국관광 데이터랩 담당자용</p>
+  <h1>관광 빅데이터 3종을 동네 단위로 묶어 서비스로 낸 사례</h1>
+  <p class="lead">어떤 데이터를 어떤 규칙으로 합쳤고, 실제로 얼마나 쓰였는지, 다른 지역에 어떻게 옮기는지를 정리했습니다.</p>
+
+  <h2>이걸로 바로 할 수 있는 일 3가지</h2>
+  <div class="scenes"><section class="scene"><h3>① 민간 데이터 3종을 읍면동으로 묶은 사례 보기</h3><p>SKT 방문·BC카드 시간대 소비·티맵 목적지를 한 키로 붙인 방법과 처리 규칙(이름 변경 병합, 휴식년 제외).</p><a class="btn ghost go" href="#data">데이터·규칙 보기 ↓</a></section><section class="scene"><h3>② 같은 방법을 다른 지역에 옮기기</h3><p>계산식 5개와 순서 5단계, 기준 기간·출처가 들어 있는 CSV 4개.</p><a class="btn ghost go" href="#move">순서·CSV 받기 ↓</a></section><section class="scene"><h3>③ 실제로 쓰였는지 숫자로 보기</h3><p>공개 뒤 열흘 실측(들어온 사람 54명, 국내 37명)과 4개 언어·구조화 데이터 대응.</p><a class="btn ghost go" href="#use">이용 지표 보기 ↓</a></section></div>
+
+  <div class="meta"><div><b>사례 한 줄:</b> 제주관광빅데이터플랫폼 데이터 픽 6종(SKT·BC카드·티맵)을 읍면동 단위로 합쳐, 여행자에게는 숙소 동네 추천을, 기관·업체에는 저녁 공백 동네·오름 분산 안내를 주는 무료 웹 서비스로 만들었습니다.</div>
+  <div>운영: 2026년 10월 10일 공개 · 개인 비영리 · 한국어·영어·중국어 간체·번체 · 페이지 181개.</div></div>
+
+  <h2 id="data">① 어떤 데이터를 어떻게 합쳤나</h2>
+  <div class="wrap"><table class="dict"><thead><tr><th>픽 번호</th><th>데이터</th><th>원자료</th><th>기간</th><th>어디에 썼나</th></tr></thead><tbody><tr><td>21</td><td>제주 지역별 방문객(읍면동)</td><td>SKT</td><td>2025.8~2026.7 월별 12개 · 2019·2022~2025년 월별</td><td>동네별 관광객 방문, 붐비는 달(5년 달 지수), 2019→2025 증감, 외국인 비중</td></tr><tr><td>27</td><td>제주 지역별 소비</td><td>BC카드</td><td>2025.8~2026.7</td><td>동네 매출 중 관광객 몫(관광객·도민·외국인 구분), 업종(숙박·음식점 등)별 몫</td></tr><tr><td>39</td><td>시간대별 카드 소비 패턴</td><td>BC카드</td><td>2025.8~2026.7, 읍면동 43곳 각각</td><td>저녁 6시 이후·밤 9시 이후 관광객 소비 몫</td></tr><tr><td>48</td><td>제주 지역별 인기 장소</td><td>티맵</td><td>2025.10~2026.9</td><td>동네 카드의 가 볼 만한 곳(차량 목적지 순위)</td></tr><tr><td>60</td><td>국가별 외국인 소비</td><td>BC카드</td><td>2025.8~2026.7</td><td>동네별 외국인 소비 상위 국가</td></tr><tr><td>91</td><td>오름별 차량 도착 수</td><td>티맵</td><td>2025.10~11 · 2025.10~2026.9 · 2021~2025년 월별</td><td>오름 쏠림, 오름별 달 지수, 달별 대안 오름</td></tr></tbody></table></div>
+  <h3 style="margin-top:20px">처리 규칙</h3>
+  <ul class="lines"><li>읍면동 이름을 기준 키로 세 데이터(SKT 방문·BC카드 소비·티맵 목적지)를 붙였습니다. 2026년 7월 행정동 경계(43곳)에 맞췄습니다.</li><li>오름 이름 변경: 이승악오름은 2024년 5월부터 이승이오름으로 집계돼 두 이름을 하나로 합쳤습니다.</li><li>자연휴식년: 용눈이오름은 휴식년(2021.2~2023.6)이 걸친 해를 달 지수에서 빼고 2024~2025년만 썼고, 분산 대안 목록에서도 뺐습니다.</li><li>한 달이라도 도착이 0대인 해(이름 변경 전후 등)는 그 오름의 달 지수 계산에서 뺐습니다.</li><li>계절 지수는 코로나 기간(2020~21년)을 빼고 2019·2022~2025년 5개 해의 평균으로 냈습니다.</li><li>전년 대비 비교는 하지 않았습니다. 플랫폼의 집계 기준 변경 공지(2026-05-15, 2026-09-07) 때문입니다.</li></ul>
+  <h3 style="margin-top:20px">계산식</h3>
+  <div class="wrap"><table class="dict"><thead><tr><th>지표</th><th>계산</th><th>픽</th></tr></thead><tbody><tr><td>저녁 6시 이후 소비(%)</td><td>내국인 관광객 카드 결제 금액 중 18~24시 몫</td><td>39</td></tr><tr><td>밤 9시 이후 소비(%)</td><td>같은 금액 중 21시~새벽 2시 몫</td><td>39</td></tr><tr><td>매출 중 관광객 몫(%)</td><td>관광객 결제 ÷ (관광객 + 도민 결제)</td><td>27</td></tr><tr><td>달 지수(×)</td><td>그 달 값 ÷ 그 해 월평균, 해마다 낸 값의 평균. 1.0이 평소 한 달</td><td>21·91</td></tr><tr><td>오름 쏠림(%)</td><td>가을 두 달 상위 3곳 차량 도착 ÷ 전체 오름 도착</td><td>91</td></tr></tbody></table></div>
+
+  <h2 id="move">② 다시 만들거나 다른 지역으로 옮기는 법</h2>
+  <ol class="steps"><li>같은 지역의 읍면동(또는 시군구) 단위 이동통신 방문, 시간대별 카드 소비, 내비게이션 목적지 데이터를 받습니다.</li><li>지역 이름을 하나의 키로 맞춥니다. 행정동 경계가 바뀐 곳과 이름이 바뀐 장소는 먼저 합칩니다.</li><li>위 계산식으로 저녁 몫·관광객 몫·달 지수를 냅니다. 휴장·휴식년 같은 운영 이력이 있는 해는 뺍니다.</li><li>기준(관광객 몫 50% 이상, 저녁 몫 30% 미만 등)을 바꿔 가며 후보 동네를 뽑고, 조건과 기준 기간을 CSV 열에 같이 남깁니다.</li><li>정적 페이지(서버 없음)로 올리면 운영비가 들지 않습니다. 이 사이트는 GitHub Pages로 운영합니다.</li></ol>
+  <ul class="lines"><li>아래 CSV는 끝의 두 열에 기준 기간과 출처가 들어 있어, 파일만 받아도 어디서 온 숫자인지 압니다.</li><li>이 기준으로 뽑은 결과: 관광객 결제가 절반 이상인 동네 15곳 → 저녁 6시 이후 몫 30% 미만 7곳 → 섬·공항 빼면 5곳.</li><li>오름: 지난가을(2025.10~11) 오름 95곳에 도착한 차량 28,186대 중 56.8%가 새별·금·용눈이오름 3곳.</li></ul>
+  <div class="row"><a class="btn ghost" href="../dongs-43.csv" download data-dl="dongs-43.csv">43개 동네 전체 지표 ↓</a><a class="btn ghost" href="../night-gap.csv" download data-dl="night-gap.csv">저녁 공백 동네 ↓</a><a class="btn ghost" href="../oreum-autumn.csv" download data-dl="oreum-autumn.csv">가을 오름 95곳 ↓</a><a class="btn ghost" href="../oreum-monthly-guide.csv" download data-dl="oreum-monthly-guide.csv">달별 오름 안내 문구 ↓</a></div>
+
+  <h2 id="use">③ 실제 이용과 외국인·검색 대응</h2>
+  <p class="note" style="font-size:14px">GA4 실측, 2026년 10월 10일~20일. 공개 직후라 숫자가 작고, 부풀리지 않으려고 집계한 그대로 적습니다.</p>
+  <div class="kv"><div><small>들어온 사람</small><b>54명</b></div><div><small>그중 국내</small><b>37명</b></div><div><small>Threads 글로 들어옴</small><b>18명</b></div><div><small>디시인사이드 글로 들어옴</small><b>8명</b></div><div><small>오름 화면 본 사람</small><b>25명</b></div><div><small>'여기로 정했어요' 누름</small><b>3명(4건)</b></div></div>
+  <ul class="lines"><li>유입은 직접 쓴 공유 글(Threads·디시인사이드·페이스북)로 확인되는 것만 셌습니다.</li><li>해외 접속 일부는 공개 당일 자동 접속으로 보여 '국내' 숫자를 따로 적었습니다.</li><li>외국인 관광객용으로 영어·중국어 간체·번체 화면을 따로 두었습니다(동네 43곳 × 4개 언어).</li><li>검색·AI 검색에서 찾히도록 구조화 데이터(Dataset 5·Place 172·FAQPage 172)와 llms.txt를 넣고, 구글·네이버·빙에 sitemap을 내고 IndexNow로 알렸습니다.</li></ul>
+
+  <div class="foot">
+    <div>출처: 제주관광빅데이터플랫폼(data.ijto.or.kr) 데이터 픽, 제주관광공사 · 공공누리 제1유형. 원자료 SKT(이동통신)·BC카드·티맵.</div>
+    <div>만든 사람: 강래민(개인, 비영리) · 문의 <a href="mailto:remin1994@gmail.com">remin1994@gmail.com</a> · 업데이트 2026-10-21</div>
+    <div>이 화면은 「2026 제주 관광 데이터 활용사례 공모전」 출품작의 일부입니다.</div>
+  </div>
+</main>
+<script>
+(() => {
+const $ = s => document.querySelector(s);
+const track = (n, p) => { try { gtag('event', n, Object.assign({ org: "datalab" }, p || {})); } catch (e) {} };
+const flash = (id, t) => { const el = document.getElementById(id); if (!el) return; el.textContent = t; el.hidden = false; setTimeout(() => el.hidden = true, 2200); };
+const copy = (txt, id) => { (navigator.clipboard ? navigator.clipboard.writeText(txt) : Promise.reject()).then(() => flash(id, '복사했어요'), () => flash(id, '복사가 안 되면 글을 길게 눌러 복사해 주세요')); };
+
+track('org_view', { ref: document.referrer ? new URL(document.referrer).hostname : '(direct)', lang: 'ko' });
+document.querySelectorAll('.scene .go').forEach(a => a.addEventListener('click', () => track('org_scene', { scene: a.getAttribute('href').slice(1) })));
+document.querySelectorAll('[data-dl]').forEach(a => a.addEventListener('click', () => track('org_download', { file: a.dataset.dl })));
+})();
+</script>
+</body>
+</html>
