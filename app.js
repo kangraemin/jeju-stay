@@ -304,7 +304,7 @@
     $('#stories').innerHTML = U.story({
       u: u.nightShare, j: j.nightShare,
       svg: `<svg viewBox="0 0 140 44" style="width:100%;margin-top:10px;overflow:visible" aria-hidden="true"><rect x="${18 / 23 * 136 + 2}" y="2" width="${5 / 23 * 136}" height="40" rx="2" fill="var(--chip)"/>${mini(u, 'var(--s-tour)')}${mini(j, 'var(--accent)')}</svg>`,
-      on: o.length, top: nm(top.name), tp: (top.aut / ot * 100).toFixed(1), ot: ot.toLocaleString(), ta: top.aut.toLocaleString(),
+      on: o.filter(x => x.aut > 0).length, top: nm(top.name), tp: (top.aut / ot * 100).toFixed(1), ot: ot.toLocaleString(), ta: top.aut.toLocaleString(),
       aev: man(ae.visitNative), jov: man(jo.visitNative), aen: ae.nightShare, jon: jo.nightShare, aes: val('stay', ae), jos: val('stay', jo),
       up: nm(up.name), dn: nm(dn.name), upv: sgn(up.trend), dnv: sgn(dn.trend), udo: sgn(byName['우도면'].trend), ss: sgn(byName['성산읍'].trend),
       cn: pct(nh, '중국'), tw: pct(ih, '대만'),
@@ -357,7 +357,7 @@
     const top = o.slice(0, 8), rest = o.slice(8), rs = sum(rest.map(x => x.aut));
     const top3 = sum(o.slice(0, 3).map(x => x.aut)) / ot * 100;
     const O = U.oreum;
-    $('#oreumlede').textContent = O.lede(o.length, ot.toLocaleString(), top3.toFixed(1));
+    $('#oreumlede').textContent = O.lede(o.filter(x => x.aut > 0).length, ot.toLocaleString(), top3.toFixed(1));
     const mx = Math.max(o[0].aut, rs);
     const row = (n, v, cls, sub) => `<div class="ob ${cls}"><span class="n">${n}</span><div class="t"><i style="width:${v / mx * 70}%"></i><span>${v.toLocaleString()}<small>${sub}</small></span></div></div>`;
     const cntHtml = top.map((x, i) => row(nm(x.name), x.aut, i === 0 ? 'hot' : '', (x.aut / ot * 100).toFixed(1) + '%')).join('') +
