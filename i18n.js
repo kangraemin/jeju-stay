@@ -34,7 +34,8 @@ const KO = {
     months: (q, b) => `덜 붐비는 달 <b>${q}</b> · 붐비는 달 <b>${b}</b> <span class="capt">(5년 평균)</span>`,
     trend: (t, f, c) => `2019년보다 방문 <b>${t}</b> · 외국인 <b>${f}%</b>${c ? ` · 외국인 카드 소비 1위 <b>${c}</b>` : ''}`,
     places: p => `차로 많이 가는 곳 <b>${p}</b>`, ri: r => `관광객이 많이 머문 리 <b>${r}</b>`,
-    left: '왼쪽 비교에 넣기', right: '오른쪽에 넣기', hint: '지도에서 동네를 누르면 핵심 숫자가 나옵니다', cta: '질문 3개로 내 동네 찾기 →', best: '1순위', more: '이 동네 숫자 자세히 ›',
+    left: '왼쪽 비교에 넣기', right: '오른쪽에 넣기', vs: '다른 동네와 비교 ⇄',
+    sheet: '동네 정보', sheetN: '43곳', sheetHint: '지도에서 동네를 누르면 숫자가 여기 나와요', open: '펼치기', close: '접기', sheetSub: (r, n) => `관광객 방문 ${r}위 · 저녁 소비 ${n}%`, hint: '지도에서 동네를 누르면 핵심 숫자가 나옵니다', cta: '질문 3개로 내 동네 찾기 →', best: '1순위', more: '이 동네 숫자 자세히 ›',
   },
   month: m => m + '월',
   why: {
@@ -103,7 +104,8 @@ const EN = {
     months: (q, b) => `Quietest month <b>${q}</b> · busiest <b>${b}</b> <span class="capt">(5-yr avg)</span>`,
     trend: (t, f, c) => `Visits vs 2019 <b>${t}</b> · foreign <b>${f}%</b>${c ? ` · top country in foreign card spending <b>${c}</b>` : ''}`,
     places: p => `Top car destinations <b>${p}</b>`, ri: r => `Where tourists linger: <b>${r}</b>`,
-    left: 'Compare (left)', right: 'Compare (right)', hint: 'Tap a neighborhood on the map to see its key numbers', cta: 'Find your area in 3 questions →', best: 'Top pick', more: 'See the numbers ›',
+    left: 'Compare (left)', right: 'Compare (right)', vs: 'Compare with another ⇄',
+    sheet: 'Neighborhood info', sheetN: '43 areas', sheetHint: 'Tap an area on the map to see its numbers here', open: 'Expand', close: 'Collapse', sheetSub: (r, n) => `Tourist visits #${r} · evening spending ${n}%`, hint: 'Tap a neighborhood on the map to see its key numbers', cta: 'Find your area in 3 questions →', best: 'Top pick', more: 'See the numbers ›',
   },
   month: m => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][m - 1],
   why: {
@@ -172,7 +174,8 @@ const EN = {
     months: (q, b) => `最清静 <b>${q}</b> · 最拥挤 <b>${b}</b> <span class="capt">（5年平均）</span>`,
     trend: (t, f, c) => `到访比2019年 <b>${t}</b> · 外国人 <b>${f}%</b>${c ? ` · 外国人刷卡消费第1 <b>${c}</b>` : ''}`,
     places: p => `开车常去 <b>${p}</b>`, ri: r => `游客停留多的里 <b>${r}</b>`,
-    left: '放入左侧对比', right: '放入右侧', hint: '点击地图上的地区查看主要数据', cta: '回答3个问题找到适合的地区 →', best: '首选', more: '查看详细数据 ›',
+    left: '放入左侧对比', right: '放入右侧', vs: '和其他地区对比 ⇄',
+    sheet: '地区信息', sheetN: '43个', sheetHint: '点击地图上的地区，数据会显示在这里', open: '展开', close: '收起', sheetSub: (r, n) => `游客到访第${r}名 · 晚间消费${n}%`, hint: '点击地图上的地区查看主要数据', cta: '回答3个问题找到适合的地区 →', best: '首选', more: '查看详细数据 ›',
   },
   month: m => m + '月',
   why: {
@@ -241,7 +244,8 @@ const ZHTW = {
     months: (q, b) => `最清靜 <b>${q}</b> · 最擁擠 <b>${b}</b> <span class="capt">（5年平均）</span>`,
     trend: (t, f, c) => `到訪比2019年 <b>${t}</b> · 外國人 <b>${f}%</b>${c ? ` · 外國人刷卡消費第1 <b>${c}</b>` : ''}`,
     places: p => `開車常去 <b>${p}</b>`, ri: r => `遊客停留多的里 <b>${r}</b>`,
-    left: '放入左側對比', right: '放入右側', hint: '點選地圖上的地區檢視主要資料', cta: '回答3個問題找到適合的地區 →', best: '首選', more: '檢視詳細資料 ›',
+    left: '放入左側對比', right: '放入右側', vs: '和其他地區對比 ⇄',
+    sheet: '地區資訊', sheetN: '43個', sheetHint: '點選地圖上的地區，資料會顯示在這裡', open: '展開', close: '收起', sheetSub: (r, n) => `遊客到訪第${r}名 · 晚間消費${n}%`, hint: '點選地圖上的地區檢視主要資料', cta: '回答3個問題找到適合的地區 →', best: '首選', more: '檢視詳細資料 ›',
   },
   month: m => m + '月',
   why: {

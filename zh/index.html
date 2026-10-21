@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>用数据选济州地区 — 住哪里·两地对比·火山锥人少的月份</title>
+<title>用数据选济州地区 — 地区地图·两地对比·住哪里·火山锥人少的月份</title>
 <meta name="description" content="用济州观光公社的移动通信、刷卡和导航数据比较济州43个邑面洞（乡镇和街区）：回答3个问题找住宿地区、对比两个地区、查看火山锥哪个月人少，还有给机构用的表格和CSV。">
-<meta property="og:title" content="用数据选济州地区 — 住哪里·两地对比·火山锥人少的月份">
+<meta property="og:title" content="用数据选济州地区 — 地区地图·两地对比·住哪里·火山锥人少的月份">
 <meta property="og:description" content="用济州观光公社的移动通信、刷卡和导航数据比较济州43个邑面洞（乡镇和街区）：回答3个问题找住宿地区、对比两个地区、查看火山锥哪个月人少，还有给机构用的表格和CSV。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://kangraemin.github.io/jeju-stay/zh/">
@@ -45,16 +45,16 @@ gtag('config', 'G-F0MT1BRZX2', { page_title: 'zh map' });
   <div class="hero-head">
     <p class="eyebrow">43个邑面洞 · 游客到访1.57亿次</p>
     <h1>用数据选济州地区</h1>
-    <p class="lede">用济州观光公社的通信访问、刷卡消费和导航到达数据比较43个地区，帮你选住的地方和出行时间。</p>
+    <p class="lede">用济州观光公社的通信访问、刷卡消费和导航到达数据，在地图上看43个地区、并排对比两个地区，再选住的地方和去火山锥的时间。</p>
   </div>
   <nav class="doors" aria-label="可以做什么">
-    <a class="door main" href="#pick" data-hero="pick" data-cta="hero"><b>找住宿地区</b><span>回答3个问题，选出适合你的3个地区</span></a>
-    <a class="door" href="#vs" data-hero="vs"><b>两个地区对比</b><span>涯月还是咸德，用条形图对比</span></a>
-    <a class="door" href="#oreum" data-hero="oreum"><b>火山锥何时人少</b><span>每月拥挤程度和人少的火山锥</span></a>
     <a class="door" href="#map" data-hero="map"><b>43个地区地图</b><span>7个指标上色，各地区详情</span></a>
+    <a class="door" href="#vs" data-hero="vs"><b>两个地区对比</b><span>涯月还是咸德，用条形图对比</span></a>
+    <a class="door" href="#pick" data-hero="pick" data-cta="hero"><b>找住宿地区</b><span>回答3个问题，选出适合你的3个地区</span></a>
+    <a class="door" href="#oreum" data-hero="oreum"><b>火山锥何时人少</b><span>每月拥挤程度和人少的火山锥</span></a>
     <a class="door" href="#story" data-hero="story"><b>数字看济州</b><span>数据里发现的5个意外事实</span></a>
+    <p class="doorlinks"><a href="d/" data-hero="dongs">43个地区对比表</a> · <a href="for-org/" data-hero="org">机构·企业用表格和CSV</a></p>
   </nav>
-  <p class="doorlinks"><a href="d/" data-hero="dongs">43个地区对比表</a> · <a href="for-org/" data-hero="org">机构·企业用表格和CSV</a></p>
   <div id="follow" class="follow" hidden></div>
 
   <div class="chips" role="tablist" aria-label="地图指标">
@@ -73,9 +73,12 @@ gtag('config', 'G-F0MT1BRZX2', { page_title: 'zh map' });
       <div id="tip" class="tip" hidden></div>
       <div id="legend" class="legend"></div>
     </div>
-    <aside class="side">
-      <div id="insight" class="insight" aria-live="polite"></div>
-      <div id="card" class="card" aria-live="polite"></div>
+    <aside class="side" id="side">
+      <div id="sheethead" class="sheethead"></div>
+      <div class="sheetbody">
+        <div id="insight" class="insight" aria-live="polite"></div>
+        <div id="card" class="card" aria-live="polite"></div>
+      </div>
     </aside>
   </div>
 </section>

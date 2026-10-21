@@ -41,16 +41,15 @@ button,select{font:inherit;color:inherit}
 .eyebrow{font-size:13px;color:var(--accent-ink);font-weight:600;margin-bottom:6px}
 .hero h1{font-size:clamp(28px,7.4vw,44px);line-height:1.15;font-weight:800;letter-spacing:-.035em}
 .hero .lede{margin-top:8px;font-size:15px;line-height:1.5;color:var(--ink2);max-width:640px}
-.doors{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.doors{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:1fr;gap:8px;margin-top:14px}
+.door{min-width:0;overflow-wrap:anywhere}
+:lang(zh) .door,:lang(zh) .doorlinks,:lang(zh) .sheethead{word-break:normal}
 .door{display:flex;flex-direction:column;gap:2px;padding:11px 13px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--ink);text-decoration:none;box-shadow:var(--shadow);min-height:44px}
 .door b{font-size:15px;font-weight:700;letter-spacing:-.02em}
+.door b::after{content:"\00a0→";color:var(--muted);font-weight:600}
 .door span{font-size:12.5px;line-height:1.35;color:var(--ink2)}
 .door:hover{border-color:var(--line2)}
-.door.main{grid-column:1/-1;background:#c24a17;border-color:#c24a17;color:#fff;padding:13px 16px}
-.door.main b{font-size:17px}
-.door.main b::after{content:" →"}
-.door.main span{color:#fff;opacity:.9}
-.doorlinks{margin-top:10px;font-size:13px;color:var(--muted)}
+.doorlinks{display:block;align-self:center;padding:8px 12px;border:1px dashed var(--line2);border-radius:14px;font-size:12.5px;line-height:1.5;color:var(--muted)}
 .doorlinks a{color:var(--ink2)}
 .chips{scroll-margin-top:60px;display:flex;gap:8px;overflow-x:auto;margin:16px -16px 0;padding:2px 16px 4px;scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
@@ -259,8 +258,8 @@ button,select{font:inherit;color:inherit}
   .cta{display:inline-flex;min-width:420px;margin-top:18px}
   .cta.small{display:block;min-width:0}
   .side{grid-template-columns:minmax(0,1fr)}
-  .doors{grid-template-columns:1.3fr repeat(4,1fr);margin-top:18px}
-  .door.main{grid-column:auto}
+  .doors{grid-template-columns:repeat(5,minmax(0,1fr));grid-auto-rows:auto;margin-top:18px}
+  .doorlinks{grid-column:1/-1;border:0;padding:2px 2px 0;font-size:13px}
 
   .fly{max-width:760px}
   .vspick{max-width:760px}
@@ -295,3 +294,40 @@ body[data-view="how"] .foot.dongs{display:block}
 .foot.lang{padding-bottom:0}.foot.lang a{color:var(--ink2)}
 [hidden]{display:none!important}
 .orglink{margin-top:14px;font-size:14.5px;font-weight:700}.orglink a{color:var(--accent-ink)}
+
+/* 동네 카드 '다른 동네와 비교' */
+.card-h{flex-wrap:wrap}
+.card-h .vsgo{margin-left:auto;align-self:center}
+.vsgo{border:1px solid var(--ink);background:var(--ink);color:var(--bg);border-radius:999px;padding:7px 12px;font-size:13.5px;font-weight:700;cursor:pointer;white-space:nowrap}
+.vspick select.ask{outline:3px solid var(--accent);outline-offset:2px}
+/* 아래 패널: 900px 이상은 오른쪽 열, 그 밑은 화면 아래에 붙는 시트 */
+.sheethead{display:none}
+@media (max-width:899px){
+  .side{position:fixed;left:0;right:0;bottom:0;z-index:25;display:block;background:var(--surface);border-top:1px solid var(--line2);
+    border-radius:20px 20px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.14);max-width:720px;margin:0 auto}
+  .sheethead{display:grid;grid-template-columns:1fr auto;align-items:center;gap:4px 10px;padding:6px 16px 10px;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+  .grip{grid-column:1/-1;justify-self:center;width:44px;height:5px;border-radius:3px;background:var(--line2);margin-bottom:4px}
+  .shtoggle{grid-column:1;border:0;background:none;padding:0;text-align:left;cursor:pointer;min-width:0}
+  .shtoggle b{font-size:17px;font-weight:800;letter-spacing:-.02em}
+  .shtoggle small{margin-left:6px;font-size:12.5px;color:var(--muted);font-weight:600}
+  .shsub{display:block;font-size:13px;line-height:1.4;color:var(--ink2)}
+  .side:not(.has-dong) .card .hint{display:none}
+  .sheethead .vsgo{grid-column:2;grid-row:2 / span 2}
+  .shmore{grid-column:2;grid-row:2;font-size:12.5px;font-weight:700;color:var(--accent-ink);white-space:nowrap}
+  .sheethead .vsgo+.shmore{grid-column:1;grid-row:3;justify-self:start}
+  .sheetbody{display:flex;flex-direction:column;max-height:0;overflow:hidden;transition:max-height .25s ease;padding:0 16px}
+  .side.open .sheetbody{max-height:62vh;overflow-y:auto;overscroll-behavior:contain;padding-bottom:16px}
+  .side .card{border:0;box-shadow:none;padding:4px 0 0;border-radius:0}
+  .side .card-h{display:none}
+  .side .insight{padding:0 0 8px;border-bottom:1px solid var(--line)}
+  .side.has-dong .card{order:-1;padding-bottom:12px;border-bottom:1px solid var(--line);margin-bottom:10px}
+  .side.has-dong .insight{border-bottom:0}
+  .side.bump .sheethead{animation:bump .5s ease}
+  body[data-view="map"]{padding-bottom:110px}
+  body[data-view="map"] .foot{padding-bottom:24px}
+}
+@media (max-width:719px){
+  .side{bottom:calc(51px + env(safe-area-inset-bottom))}
+  body[data-view="map"]{padding-bottom:180px}
+}
+@keyframes bump{0%{transform:none}35%{transform:translateY(-6px)}70%{transform:translateY(1px)}100%{transform:none}}

@@ -258,7 +258,7 @@
     const d = byName[name];
     const C = U.card, c1 = top1(d) && d.foreignSpend > 1e9 ? `${nm(top1(d)[0])} ${top1(d)[1]}%` : '';
     $('#card').innerHTML = `
-      <div class="card-h"><h3>${nm(d.name)}</h3><span>${nm(d.city)}</span></div>
+      <div class="card-h"><h3>${nm(d.name)}</h3><span>${nm(d.city)}</span><button class="btn vsgo" type="button" data-vsgo="${d.name}">${C.vs}</button></div>
       <div class="nums">
         <div class="num"><b>${C.rank ? '' : '#'}${rankOf('visitNative', d)}<small>${C.rank}</small></b><span>${C.visit}</span></div>
         <div class="num"><b>${d.nightShare}<small>%</small></b><span>${C.night}</span></div>
@@ -270,15 +270,52 @@
       <p class="places">${C.trend(sgn(d.trend), d.foreignShare2025, c1)}</p>
       ${d.places && d.places.length ? `<p class="places">${C.places(d.places.slice(0, 3).map(p => nm(p[0])).join(' · '))}</p>` : ''}
       ${d.ri && d.ri.length ? `<p class="places">${C.ri(d.ri.slice(0, 3).map(r => nm(r[0])).join(' · '))}</p>` : ''}
-      <div class="cardbtns"><button class="btn ghost" data-vs="A">${C.left}</button><button class="btn ghost" data-vs="B">${C.right}</button></div>`;
-    $('#card').querySelectorAll('[data-vs]').forEach(b => b.addEventListener('click', () => {
-      $('#vs' + b.dataset.vs).value = name; renderVs(true); go('vs');
-    }));
+`;
+    side.classList.add('has-dong');
+    sheetHead();
+    if (narrow() && !side.classList.contains('open')) { side.classList.remove('bump'); void side.offsetWidth; side.classList.add('bump'); }
     paint();
     try { gtag('event', 'page_view', { page_title: name + ' · 제주 숙소 동네', page_path: '/jeju-stay/d/' + name, page_location: location.origin + '/jeju-stay/d/' + encodeURIComponent(name) }); } catch (e) {}
     if (fromMap) track('dong_open', { dong: name, metric });
   }
   $('#card').innerHTML = `<p class="hint">${U.card.hint}</p><a class="cta small" href="#pick" data-cta="card">${U.card.cta}</a>`;
+
+  // ---------- 아래 패널(폭 900px 미만) ----------
+  // 지도 화면에서 설명·동네 카드를 화면 아래에 붙여 둔다. 손잡이 줄은 늘 보이고, 누르거나 끌어 올리면 펼친다
+  const side = $('#side'), narrow = () => innerWidth < 900;
+  const sheet = open => { side.classList.toggle('open', open); sheetHead(); };
+  function sheetHead() {
+    const C = U.card, d = selected && byName[selected], o = side.classList.contains('open');
+    $('#sheethead').innerHTML = `<span class="grip" aria-hidden="true"></span>
+      <button type="button" class="shtoggle" aria-expanded="${o}"><b>${d ? nm(d.name) : C.sheet}</b><small>${d ? nm(d.city) : C.sheetN}</small>
+        <span class="shsub">${d ? C.sheetSub(rankOf('visitNative', d), d.nightShare) : C.sheetHint}</span></button>
+      ${d ? `<button type="button" class="btn vsgo" data-vsgo="${d.name}">${C.vs}</button>` : ''}
+      <span class="shmore" aria-hidden="true">${o ? C.close + ' ▾' : C.open + ' ▴'}</span>`;
+  }
+  sheetHead();
+  {
+    let y0 = null, moved = false;
+    const h = $('#sheethead');
+    h.addEventListener('pointerdown', e => { if (e.target.closest('.vsgo')) return; y0 = e.clientY; moved = false; });
+    h.addEventListener('pointermove', e => { if (y0 != null && Math.abs(e.clientY - y0) > 8) moved = true; });
+    h.addEventListener('pointerup', e => {
+      if (y0 == null) return;
+      const dy = e.clientY - y0; y0 = null;
+      const o = side.classList.contains('open'), want = moved ? dy < 0 : !o;
+      if (want !== o) { sheet(want); track('sheet', { open: want ? 1 : 0, how: moved ? 'drag' : 'tap' }); }
+    });
+    h.addEventListener('pointercancel', () => { y0 = null; });
+  }
+  // 동네 카드의 '다른 동네와 비교': 이 동네를 왼쪽에 넣고 비교 화면으로 간다. 오른쪽은 지금 고른 동네와 다른 곳
+  document.addEventListener('click', e => {
+    const b = e.target.closest('[data-vsgo]'); if (!b) return;
+    const n = b.dataset.vsgo, A = $('#vsA').value, B = $('#vsB').value;
+    $('#vsB').value = B !== n ? B : A !== n ? A : n === '애월읍' ? '조천읍' : '애월읍';
+    $('#vsA').value = n;
+    track('vs_from_card', { dong: n, from: b.closest('#sheethead') ? 'sheet' : 'card' });
+    renderVs(true); go('vs');
+    $('#vsB').classList.add('ask'); setTimeout(() => $('#vsB').classList.remove('ask'), 2400);
+  });
   // 첫 화면·빈 카드의 추천 버튼
   document.addEventListener('click', e => { const c = e.target.closest('[data-cta]'); if (c) track('cta_click', { from: c.dataset.cta }); });
   // 첫 화면 입구 카드: 지도 카드는 같은 화면이라 해시 대신 지도까지 내린다
@@ -311,7 +348,7 @@
   let after = null;
   const openCard = (n, from) => {
     select(n, false); track('dong_open', { dong: n, from });
-    after = () => { if (innerWidth < 900) $('#card').scrollIntoView({ block: 'start' }); };
+    after = () => { if (narrow()) sheet(true); };
     go('map');
   };
   function runQuiz(log) {
@@ -478,6 +515,7 @@
     document.querySelectorAll('main>.view').forEach(s => s.classList.toggle('on', s.id === v));
     document.querySelectorAll('.topnav a').forEach(a => a.classList.toggle('on', a.dataset.v === v));
     document.body.dataset.view = v;
+    sheet(false);
     scrollTo(0, 0);
     if (v === 'map') paint();
     if (after) { const f = after; after = null; requestAnimationFrame(f); }

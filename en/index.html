@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Jeju Neighborhoods by Data — where to stay, two-area comparison, quieter oreum</title>
+<title>Jeju Neighborhoods by Data — neighborhood map, two-area comparison, where to stay, quieter oreum</title>
 <meta name="description" content="Compare Jeju&#x27;s 43 towns and neighborhoods with mobile, card and navigation data from the Jeju Tourism Organization: find where to stay in 3 questions, compare two areas, see which months oreum are quieter, and download tables for organizations.">
-<meta property="og:title" content="Jeju Neighborhoods by Data — where to stay, two-area comparison, quieter oreum">
+<meta property="og:title" content="Jeju Neighborhoods by Data — neighborhood map, two-area comparison, where to stay, quieter oreum">
 <meta property="og:description" content="Compare Jeju&#x27;s 43 towns and neighborhoods with mobile, card and navigation data from the Jeju Tourism Organization: find where to stay in 3 questions, compare two areas, see which months oreum are quieter, and download tables for organizations.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://kangraemin.github.io/jeju-stay/en/">
@@ -45,16 +45,16 @@ gtag('config', 'G-F0MT1BRZX2', { page_title: 'en map' });
   <div class="hero-head">
     <p class="eyebrow">43 neighborhoods · 156.9M tourist visits</p>
     <h1>Pick your Jeju neighborhood by the numbers</h1>
-    <p class="lede">Compare Jeju's 43 neighborhoods using mobile-location, card-spending and car-navigation data from the Jeju Tourism Organization, then choose where to stay and when to visit.</p>
+    <p class="lede">Using mobile-location, card-spending and car-navigation data from the Jeju Tourism Organization: see Jeju's 43 neighborhoods on a map, compare two side by side, and choose where to stay and when to visit the oreum.</p>
   </div>
   <nav class="doors" aria-label="What you can do">
-    <a class="door main" href="#pick" data-hero="pick" data-cta="hero"><b>Find where to stay</b><span>3 questions, 3 neighborhoods that fit you</span></a>
-    <a class="door" href="#vs" data-hero="vs"><b>Compare two areas</b><span>Aewol vs Hamdeok in bar charts</span></a>
-    <a class="door" href="#oreum" data-hero="oreum"><b>When oreum are quieter</b><span>Volcanic hills by month, quieter picks</span></a>
     <a class="door" href="#map" data-hero="map"><b>Map of 43 areas</b><span>7 metrics, details for each area</span></a>
+    <a class="door" href="#vs" data-hero="vs"><b>Compare two areas</b><span>Aewol vs Hamdeok in bar charts</span></a>
+    <a class="door" href="#pick" data-hero="pick" data-cta="hero"><b>Find where to stay</b><span>3 questions, 3 neighborhoods that fit you</span></a>
+    <a class="door" href="#oreum" data-hero="oreum"><b>When oreum are quieter</b><span>Volcanic hills by month, quieter picks</span></a>
     <a class="door" href="#story" data-hero="story"><b>Jeju by the numbers</b><span>5 surprising findings</span></a>
+    <p class="doorlinks"><a href="d/" data-hero="dongs">All 43 neighborhoods</a> · <a href="for-org/" data-hero="org">Tables &amp; CSV for organizations</a></p>
   </nav>
-  <p class="doorlinks"><a href="d/" data-hero="dongs">All 43 neighborhoods</a> · <a href="for-org/" data-hero="org">Tables &amp; CSV for organizations</a></p>
   <div id="follow" class="follow" hidden></div>
 
   <div class="chips" role="tablist" aria-label="Map metric">
@@ -73,9 +73,12 @@ gtag('config', 'G-F0MT1BRZX2', { page_title: 'en map' });
       <div id="tip" class="tip" hidden></div>
       <div id="legend" class="legend"></div>
     </div>
-    <aside class="side">
-      <div id="insight" class="insight" aria-live="polite"></div>
-      <div id="card" class="card" aria-live="polite"></div>
+    <aside class="side" id="side">
+      <div id="sheethead" class="sheethead"></div>
+      <div class="sheetbody">
+        <div id="insight" class="insight" aria-live="polite"></div>
+        <div id="card" class="card" aria-live="polite"></div>
+      </div>
     </aside>
   </div>
 </section>
