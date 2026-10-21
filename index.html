@@ -39,24 +39,25 @@ gtag('config', 'G-F0MT1BRZX2', { page_title: '제주 숙소 동네' });
 <body>
 <header class="top">
   <a class="brand" href="#">제주 동네 지도</a>
-  <nav class="topnav" aria-label="화면"><a href="#map" data-v="map">지도</a><a href="#pick" data-v="pick">추천</a><a href="#vs" data-v="vs">비교</a><a href="#oreum" data-v="oreum">오름</a><a href="#story" data-v="story">이야기</a><a href="#how" data-v="how">데이터</a></nav>
+  <nav class="topnav" aria-label="화면"><a href="#map" data-v="map">홈</a><a href="#pick" data-v="pick">추천</a><a href="#vs" data-v="vs">비교</a><a href="#oreum" data-v="oreum">오름</a><a href="#story" data-v="story">이야기</a><a href="#how" data-v="how">데이터</a></nav>
 </header>
 
 <main>
 <section class="hero view" id="map">
+  <div class="intro">
   <div class="hero-head">
-    <p class="eyebrow">43개 읍면동 · 관광객 방문 1억 5,687만 회</p>
     <h1>제주 동네, 데이터로 고르기</h1>
     <p class="lede">제주 43개 동네, 어디가 붐비고 어디가 한적한지 제주관광공사 데이터로 보여 줘요.</p>
   </div>
   <nav class="doors" aria-label="할 수 있는 일">
-    <a class="door" href="#map" data-hero="map"><b>43개 동네 지도</b><span>지표 7개로 색칠, 동네별 상세</span></a>
-    <a class="door" href="#vs" data-hero="vs"><b>두 동네 비교</b><span>애월 vs 함덕, 막대그래프로 비교</span></a>
-    <a class="door" href="#pick" data-hero="pick" data-cta="hero"><b>숙소 동네 찾기</b><span>질문 3개로 나한테 맞는 동네 3곳</span></a>
-    <a class="door" href="#oreum" data-hero="oreum"><b>오름, 언제 덜 붐빌까</b><span>달마다 붐비는 정도와 한산한 오름</span></a>
-    <a class="door" href="#story" data-hero="story"><b>숫자로 보니 의외인 제주</b><span>매일 새 이야기 5개</span></a>
+    <a class="door" href="#pick" data-hero="pick" data-cta="hero"><i class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 11l8-6 8 6v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg></i><b>숙소 동네 찾기</b><span>내 여행 스타일에 맞는 동네 3곳 추천</span></a>
+    <a class="door" href="#map" data-hero="map"><i class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21s-6-5.6-6-10a6 6 0 0 1 12 0c0 4.4-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/></svg></i><b>43개 동네 지도</b><span>붐비는 곳과 한적한 곳을 색으로 보기</span></a>
+    <a class="door" href="#vs" data-hero="vs"><i class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 20V10M12 20V4M17 20v-6"/></svg></i><b>두 동네 비교</b><span>고민되는 두 곳을 나란히 놓고 보기</span></a>
+    <a class="door" href="#oreum" data-hero="oreum"><i class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 19l6-9 4 5 3-4 5 8z"/></svg></i><b>오름, 언제 덜 붐빌까</b><span>달마다 붐비는 정도와 한적한 대안</span></a>
+    <a class="door" href="#story" data-hero="story"><i class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h5a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H4z"/><path d="M20 5h-5a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h6z"/></svg></i><b>숫자로 보니 의외인 제주</b><span>매일 새로 열리는 짧은 이야기 5개</span></a>
     <p class="doorlinks"><a href="d/" data-hero="dongs">43개 동네 비교표</a> · <a href="for-org/" data-hero="org">기관·사업자용 표와 CSV</a></p>
   </nav>
+  </div>
   <div id="follow" class="follow" hidden></div>
 
   <div class="chips" role="tablist" aria-label="지도 지표">

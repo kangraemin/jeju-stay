@@ -647,3 +647,205 @@ html[data-hd="c"] .door .dmini.dpick{height:auto}
 .story.tease .tz b{color:var(--tfg)}
 /* 중국어는 띄어쓰기가 없어 keep-all이면 줄이 안 바뀌고 카드 밖으로 넘친다 */
 html[data-l^="zh"] *{word-break:normal}
+
+/* 10/21 덜어내기(hd=r, 기본): 첫 화면 = 제목·한 줄 소개·오늘의 숫자 하나·목록 행 5개.
+   주황은 화면당 1~2곳(오늘의 숫자, 지도 상위 5곳 테두리)만, 글자 크기는 28/16/14 세 단계 */
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .brand::before{display:none}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .brand{font-size:16px}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .topnav a{font-size:14px}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .hero{padding-top:24px}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .intro{display:flex;flex-direction:column}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .hero h1{font-size:28px;line-height:1.3;font-weight:800;letter-spacing:-.03em}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .hero .lede{font-size:16px;line-height:1.5;color:var(--ink2);margin-top:8px}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .hband{display:block;position:relative;margin-top:28px;padding:20px 44px 20px 20px;border-radius:16px;background:var(--surface);color:var(--ink);border:1px solid var(--line);box-shadow:none;text-decoration:none}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .hband>small{display:block;font-size:14px;font-weight:400;color:var(--ink2)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .hband>b{display:block;margin-top:8px;font-size:28px;font-weight:800;line-height:1.2;letter-spacing:-.03em;color:var(--accent-ink)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .hband>em{display:block;margin-top:6px;font-style:normal;font-size:16px;font-weight:400;line-height:1.5;color:var(--ink)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .hband::after{content:"›";position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:24px;font-weight:400;color:var(--muted)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .doors{display:block;margin:20px -16px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .door{display:grid;grid-template-columns:36px minmax(0,1fr) 12px;column-gap:14px;row-gap:2px;align-items:center;padding:14px 16px;border:0;border-radius:0;box-shadow:none;background:none;min-height:0;color:var(--ink)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .door{position:relative}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .door+.door::before{content:"";position:absolute;left:66px;right:0;top:0;height:1px;background:var(--line)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .door:hover{background-color:var(--chip)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .door .ic{grid-row:1 / 3;width:36px;height:36px;border-radius:10px;background:var(--chip);display:grid;place-items:center;color:var(--ink2)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .door .ic svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .door b{grid-column:2;font-size:16px;font-weight:600;letter-spacing:-.01em;line-height:1.4}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .door b::after{content:none}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .door span{grid-column:2;font-size:14px;line-height:1.4;color:var(--ink2);text-wrap:pretty}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .door::after{content:"›";grid-column:3;grid-row:1 / 3;font-size:22px;line-height:1;color:var(--muted)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .doorlinks{display:block;border:0;padding:20px 2px 0;font-size:14px;line-height:1.6;text-align:center;color:var(--ink2)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .doorlinks a{color:inherit}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .maph{font-size:16px;font-weight:600;letter-spacing:-.01em;margin:0 0 0;padding-top:40px}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .maph small{font-size:14px;font-weight:400;color:var(--ink2);margin-top:4px}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .chips{margin-top:14px}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .chips button{font-size:14px;font-weight:600}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .legend{font-size:14px}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .legend .lg5{font-weight:400;color:var(--ink2)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .top5{margin:28px 0 4px}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .top5 h3{font-size:14px;font-weight:400;color:var(--ink2);margin:0 0 10px}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .top5 button{padding:12px 14px;gap:10px}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .top5 b{width:24px;height:24px;background:var(--chip);color:var(--ink);font-size:14px;font-weight:600}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .top5 span{font-size:16px;font-weight:600}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .top5 small{font-size:14px;font-weight:400;color:var(--ink2)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .top5 .t5go{margin-top:16px;padding:14px;border-radius:14px;background:var(--ink);color:var(--bg);font-size:16px;font-weight:600}
+@media (max-width:719px){
+  /* 첫 화면엔 소개만 — 지도 제목·칩은 스크롤해야 나오고 아래 탭바에 걸리지 않는다 */
+  html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .intro{min-height:calc(100svh - 52px - 24px)}
+  html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .topnav a{font-size:14px}
+}
+@media (min-width:900px){
+  html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .hero{padding-top:48px}
+  html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:48px;align-items:start}
+  html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .hero-head,html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .hband{grid-column:1}
+  html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .doors{grid-column:2;grid-row:1 / span 3;margin-top:0}
+  html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .hero h1{font-size:28px}
+  html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .maph{padding-top:56px}
+}
+/* 이야기 화면도 같은 원칙: 숫자는 검정, 주황은 오늘 첫 숫자 하나, 깨알 도식(타일) 뺌 */
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .sec-head h2{font-size:28px;line-height:1.3}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .sec-head p{font-size:16px}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .story{box-shadow:none;border-radius:16px;padding:20px}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .story .k{font-size:14px;font-weight:400;color:var(--ink2);background:none;padding:0;border-radius:0}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .story .big{font-size:28px;font-weight:800;letter-spacing:-.03em;color:var(--ink);line-height:1.2}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .story h3{font-size:16px;font-weight:600;line-height:1.5}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .story .sp{font-size:14px}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .story .src{font-size:14px}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .stgo{font-size:14px;font-weight:600;color:var(--ink)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .story.cover{background:var(--surface);border:1px solid var(--line);padding:20px}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .story.cover h3{font-size:16px}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .story.cover .big{font-size:28px;color:var(--accent-ink)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .story.tease{--tbg:var(--surface);--tfg:var(--ink);background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .story.tease>.k{font-size:14px;font-weight:400;color:var(--ink2);padding-right:96px}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .qcd{top:20px;right:20px;background:var(--chip);color:var(--ink2);font-size:14px;font-weight:400}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .story.tease h3{font-size:16px;color:var(--ink)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .story.tease .tz{font-size:14px;color:var(--ink2)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .story.tease .tz b{color:inherit;font-weight:inherit}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .qopts button{border:1px solid var(--line2);color:var(--ink);font-size:16px;font-weight:400;border-radius:12px}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .qopts button.on{background:var(--ink);border-color:var(--ink);color:var(--surface)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .qnote{font-size:14px;color:var(--ink2)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .gres{font-size:14px;font-weight:600}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .tileh{font-size:16px;font-weight:600;margin:12px 0 0}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .tiles{gap:10px}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .stile{box-shadow:none;padding:16px;gap:8px;border-radius:16px}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .stile .tiny{display:none}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .stile b{font-size:28px;font-weight:800;color:var(--ink);letter-spacing:-.03em;line-height:1.2}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .stile span{font-size:14px;font-weight:400;color:var(--ink2)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .stile.on,html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .smini.on{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .sday>h3{font-size:16px;font-weight:600}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .sday>h3 .sno{display:block;margin:2px 0 0;font-size:14px;font-weight:400;color:var(--ink2)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .sday.mine>h3{color:var(--ink)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .dsh{font-size:14px;font-weight:400;color:var(--ink2)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .dstrip small,html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .dstrip span{font-size:14px;font-weight:600;color:inherit;letter-spacing:0}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .dstrip button[aria-selected="true"] small{color:inherit}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .shelfh{font-size:16px;font-weight:600}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .shelf h4{font-size:14px;font-weight:400;color:var(--ink2)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .shelf h4 .hn{font-size:14px;font-weight:400;color:var(--ink2)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .smini{box-shadow:none}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .smini b{font-size:28px;font-weight:800;color:var(--ink);letter-spacing:-.03em;line-height:1.2}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .smini span{font-size:14px;font-weight:400;color:var(--ink2)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .hband>em{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .insight .big{font-size:28px;line-height:1.2}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .insight .big small{font-size:inherit;font-weight:inherit;margin-left:0}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .insight p{font-size:14px}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .insight p strong{color:inherit;font-weight:inherit}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .cta.small{background:var(--ink);color:var(--bg);font-size:16px;font-weight:600}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .foot,html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .foot.dongs{font-size:14px}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .maphs{font-size:14px;color:var(--ink2);margin-top:4px}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .maph{font-weight:600}
+@media (min-width:900px){html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .doors{margin:0;border-top:1px solid var(--line)}}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .jeju .lbl{font-weight:600}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .jeju .lbl tspan.v{display:none}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .legend>span[style]{display:none}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .legend .lg5{font-weight:400}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .legend .lg5{display:none}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .brand,html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .shmore{font-weight:600}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .story:not(.tease) .k,html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .story .src,html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .story.tease .qcd,html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .story.tease .tz{display:none}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .story.tease{border:0;border-radius:0;background:none;box-shadow:none;padding:24px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .story.tease>.k{padding-right:0}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .sday>.sno{display:block;margin:-6px 0 12px;font-size:14px;font-weight:400;color:var(--ink2)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .dh .dn,html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .pr .dn{font-size:14px;font-weight:600;color:var(--ink)}
+@media (max-width:719px){html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .top{position:static}}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .foot strong{font-weight:600}
+/* r: 이야기 도식 — 주황 없이 잉크/회색, 글자 14px, 범례는 색 글자 대신 작은 네모 */
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .story .sp{display:none}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .vt{font-size:14px;font-weight:400}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .vt.vb{fill:var(--ink);font-weight:600}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .vl{font-size:14px;color:var(--ink2);display:flex;align-items:center;flex-wrap:wrap;gap:6px 8px}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .vl i{width:10px;height:10px;border-radius:2px;display:inline-block}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .vl i.k0{background:var(--ink)}html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .vl i.k1{background:var(--s-tour)}html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .vl i.kx{background:var(--line2)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .vl i.k1{margin-left:8px}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .mhi{fill:var(--ink)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .ar0{fill:color-mix(in srgb,var(--ink) 10%,transparent)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .ln0{stroke:var(--ink)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .waf i.on{background:var(--ink)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .dr.win .db i{background:var(--ink)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .dr.foe .db i,html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .dr.rest .db i{background:var(--line2)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .dr .dn,html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .dr.win .dn,html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .dr.foe .dn,html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .dr.rest .dn{font-size:14px;font-weight:600;color:var(--ink)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) #card .cta.small{background:none;color:var(--ink);padding:12px 0;border-radius:0;text-align:left;margin:0}
+/* r: 판정 1회차 지적 — 시트는 동네를 고른 뒤에만, 상위 5곳 1열·테두리 없음, 가벼운 탭, 이야기 머리말 줄이기 */
+@media (max-width:899px){html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .side:not(.has-dong){display:none}}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .jeju path.hot5{stroke:var(--line);stroke-width:.6}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .mapbox,html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .mapbox:has(.lg5){padding-bottom:44px}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .jeju .inset{stroke:var(--line2);stroke-dasharray:none}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .jeju .insetlbl{font-size:14px;fill:var(--ink2)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .top5 h3{font-size:16px;font-weight:600;color:var(--ink)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .top5 ol{grid-template-columns:1fr;gap:0}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .topnav a.on{background:none;color:var(--ink);font-weight:800}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .topnav a{color:var(--muted);font-weight:600;font-size:14px}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .dsh,html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .sday>.sno{display:none}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .dstrip button span{display:none}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .dstrip .dlock{color:var(--ink2)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .dr.foe .db i,html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .dr.rest .db i{background:color-mix(in srgb,var(--ink) 32%,transparent)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .top5 button{border:0;border-top:1px solid var(--line);border-radius:0;background:none;padding:12px 2px}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .top5 li:last-child button{border-bottom:1px solid var(--line)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .top5 button small{margin-left:auto}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .shmore{color:var(--ink2)}
+/* r: 판정 2회차 지적 — 첫 화면 최소 높이 빼기(빈칸), 범례를 지도 바로 아래로, 추자면 상자 없애기, 칩 줄바꿈, 탭바 불투명, 고른 동네 시트만큼 아래 여백 */
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .legend{position:static;padding:6px 12px 2px}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .mapbox,html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .mapbox:has(.lg5){padding-bottom:10px}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .jeju .inset{display:none}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .chips{flex-wrap:wrap;overflow:visible;-webkit-mask-image:none;mask-image:none;margin:14px 0 0;padding:0}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .dstrip .dlock{border-style:solid}
+@media (max-width:899px){
+  html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .intro{min-height:0}
+  html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .maph{padding-top:56px}
+  body:has(.side.has-dong){padding-bottom:150px}
+}
+@media (max-width:719px){
+  html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .topnav{background:var(--bg);backdrop-filter:none;-webkit-backdrop-filter:none}
+  html[lang="en"]:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .topnav a{font-size:13px;letter-spacing:-.01em}
+}
+/* r: 판정 3회차 지적 — 칩은 한 줄 가로 넘김, 범례에 없는 흐린 색 없애기, 고른 동네 테두리, 날짜 칩과 겹치는 지난 이야기 줄·내일 칩 숨김 */
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .chips{flex-wrap:nowrap;overflow-x:auto;margin:14px -16px 0;padding:2px 16px 4px;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 32px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 32px),transparent)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .chips button{flex:none}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .jeju.t5 path:not(.hot5):not(.sel){opacity:1}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .jeju path.sel,html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .jeju path.hot5.sel{stroke:var(--ink);stroke-width:3.2}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .shelfh,html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .shelf,html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .dstrip .dlock{display:none}
+@media (max-width:899px){html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .maph{padding-top:64px}}
+@media (max-width:899px){html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .doors a{padding-right:34px}}
+@media (max-width:899px){html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .maph{padding-top:0;margin-top:64px}}
+/* r: 판정 4회차 지적 — 막대는 한 색(길이로만 비교), 퀴즈 보기는 칩, 아래 시트는 떠 있는 창으로 */
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .dr .db i,html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .dr.win .db i,html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .dr.foe .db i,html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .dr.rest .db i{background:var(--ink2)}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .tease .qopts button{border:0;background:var(--chip);color:var(--ink);border-radius:999px;font-weight:600}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .tease .qopts button.on{background:var(--ink);color:var(--bg)}
+@media (max-width:899px){html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .side{border-top:0;border-radius:16px 16px 0 0;box-shadow:0 -6px 20px rgba(0,0,0,.12)}}
+@media (max-width:899px){html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .intro{padding-bottom:24px;margin:0 -16px;padding-left:16px;padding-right:16px;border-bottom:8px solid var(--chip)} html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .maph{margin-top:32px}}
+/* r: 판정 5회차 지적 — 범례는 섬 아래 빈 바다 자리에, 이름표 흰 테두리 얇게, 고른 동네로 내려갈 때 시트 높이만큼 띄움 */
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .legend{position:absolute;left:auto;right:8px;bottom:8px;padding:0;width:auto}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .mapbox,html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .mapbox:has(.lg5){padding-bottom:4px}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .jeju .lbl{stroke-width:2px}
+@media (max-width:899px){html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .mapbox{scroll-margin-bottom:150px}}
+/* r: 판정 6회차 — 시트 이름 단어 중간 끊김 방지, 고른 동네는 지도에서 강조색 테두리 하나로 */
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .shtoggle b{white-space:nowrap}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .jeju path.sel{stroke:var(--accent);stroke-width:3.5}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .jeju.t5 path.hot5:not(.sel){stroke:var(--ink);stroke-width:1.6}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .mapbox,html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .mapbox:has(.lg5){padding-bottom:14px}
+/* r: 판정 7회차 — 고른 동네 강조가 .hot5.sel 규칙에 밀리던 것, 시트 시 이름 줄 끊김, 첫 화면 아래 빈 회색 띠 */
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .jeju path.sel,html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .jeju path.hot5.sel{stroke:var(--accent);stroke-width:3.5}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .jeju.t5 path.hot5:not(.sel){stroke:var(--stroke);stroke-width:.6}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .shtoggle small{display:block;margin:2px 0 0;white-space:nowrap}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .intro{border-bottom:0}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .jeju .selring{fill:none;stroke:var(--accent);stroke-width:2.5;vector-effect:non-scaling-stroke;pointer-events:none}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .jeju path.sel,html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .jeju path.hot5.sel{stroke:var(--ink);stroke-width:1.5}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .jeju.selbig path.sel{stroke:var(--ink);stroke-width:3}
+html:not([data-hd="a"]):not([data-hd="b"]):not([data-hd="c"]) .jeju.selbig path.sel{stroke:var(--accent);stroke-width:3}

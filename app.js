@@ -24,7 +24,7 @@
   dongs.forEach(d => { d.summerIdx = d.summer5; });
   const sgn = v => (v >= 0 ? '+' : '') + v + '%';
   const top1 = d => d.countries && d.countries[0];
-  $('.eyebrow').textContent = U.eyebrow(man(total));
+  const eb = $('.eyebrow'); if (eb) eb.textContent = U.eyebrow(man(total));
   const P = (d, v) => [nm(d.name), v]; // 문구 함수에 넘기는 [이름, 값]
 
   // validated with dataviz validate_palette.js (ordinal, light #fbfbf9 / dark #131413)
@@ -32,7 +32,9 @@
     blue: { light: ['#d6e6fa', '#94bff1', '#4b91e4', '#1f5fb0', '#0d366b'], dark: ['#184f95', '#256abf', '#3987e5', '#6da7ec', '#b7d3f6'] },
     orange: { light: ['#fcdcc9', '#f5a179', '#eb6834', '#b9461c', '#682508'], dark: ['#8a3412', '#b9461c', '#eb6834', '#f39a6e', '#fbd0b6'] },
     div: { light: ['#1c5cab', '#6da7ec', '#e4e3de', '#ef8e8a', '#b8302f'], dark: ['#256abf', '#184f95', '#3a3b38', '#9c3534', '#d34544'] },
+    blueDarkR: ['#2a313b', '#26405f', '#24548a', '#2468b8', '#2f7fe0'], // r 다크: 적음=배경에 가까운 회청, 많음=진한 파랑 (판정자 '연한 색이 많음이라 거꾸로' 반복 지적)
   };
+  const HDR = !/[?&]hd=[abc]\b/.test(location.search);
 
   const LH = U.lohi;
   const METRICS = {
@@ -86,6 +88,10 @@
     if (m.mid != null) {
       return { breaks: [vals[0], 35, 45, 55, 65, vals.at(-1)], cls: v => v < 35 ? 0 : v < 45 ? 1 : v < 55 ? 2 : v < 65 ? 3 : 4 };
     }
+    if (HDR && key === 'visitNative') { // r: 가장 진한 칸 = 제목의 '5곳'만, 나머지 38곳은 4단계 (판정자 '진한 칸이 9곳이라 5곳이 안 보임')
+      const t5 = vals.at(-5), rest = vals.slice(0, -5), q = [0.25, 0.5, 0.75].map(p => rest[Math.floor(p * rest.length)]);
+      return { breaks: [vals[0], ...q, t5, vals.at(-1)], cls: v => v >= t5 ? 4 : q.filter(x => v >= x).length };
+    }
     const q = [0.2, 0.4, 0.6, 0.8].map(p => vals[Math.floor(p * vals.length)]);
     return { breaks: [vals[0], ...q, vals.at(-1)], cls: v => q.filter(x => v >= x).length };
   }
@@ -128,6 +134,8 @@
       const c = [...geo.shapes[key].c], name = nm(key);
       const half = Math.max(name.length, String(v).length * .6) * fs * .55;
       c[0] = Math.min(Math.max(c[0], half + 4), geo.w - half - 4);
+      const ring = key === selected && map.svg.querySelector('.selring');
+      if (ring) continue; // 고리를 그린 작은 동네는 이름·값이 아래 시트에 있으니 지도 이름표를 빼서 고리·이웃 이름표와 겹치지 않게
       const t = document.createElementNS(NS, 'text');
       t.setAttribute('class', 'lbl');
       t.setAttribute('text-anchor', 'middle');
@@ -141,7 +149,7 @@
   const TOP5 = new Set(sorted('visitNative').slice(0, 5).map(d => d.name));
   function paint() {
     const m = METRICS[metric];
-    const ramp = RAMP[m.ramp][dark() ? 'dark' : 'light'];
+    const ramp = HDR && dark() && m.ramp === 'blue' ? RAMP.blueDarkR : RAMP[m.ramp][dark() ? 'dark' : 'light'];
     const { breaks, cls } = classes(m.key, m);
     for (const d of dongs) {
       const p = main.paths[d.name];
@@ -150,6 +158,14 @@
       p.classList.toggle('sel', d.name === selected);
       p.classList.toggle('hot5', metric === 'visit' && TOP5.has(d.name)); // 제목 '5곳에'를 지도에서 바로 보이게
       if (d.name === selected || (metric === 'visit' && TOP5.has(d.name))) p.parentNode.insertBefore(p, main.layer);
+    }
+    main.svg?.querySelector('.selring')?.remove();
+    const sc = (main.svg.clientWidth || geo.w) / geo.w, sb = HDR && selected && main.paths[selected] && main.paths[selected].getBBox();
+    main.svg.classList.toggle('selbig', !!sb && Math.max(sb.width, sb.height) * sc >= 40);
+    if (sb && Math.max(sb.width, sb.height) * sc < 40) { // 화면에서 작은 동네만 — 큰 동네는 진한 테두리로 충분 // r: 작은 동네도 어디를 골랐는지 보이게 둘레에 고리 하나 (판정 8회차 3명 공통)
+      const b = main.paths[selected].getBBox(), c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      c.setAttribute('class', 'selring'); c.setAttribute('cx', b.x + b.width / 2); c.setAttribute('cy', b.y + b.height / 2); c.setAttribute('r', Math.max(b.width, b.height) / 2 + 14 / sc); // 화면에서 14px 바깥
+      main.svg.insertBefore(c, main.layer); // 이름표 층 아래 → 글자 테두리가 고리를 가림
     }
     $('#jeju').classList.toggle('t5', metric === 'visit'); // 상위 5곳 외는 흐리게 → 몰림이 보이게
     const s = sorted(m.key);
@@ -416,7 +432,7 @@
   const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const dlab = n => { const d = new Date(n * 864e5); return ST.date(d.getUTCMonth() + 1, d.getUTCDate(), d.getUTCDay()); };
   // 시안 고르기(검사용): ?sd=a|b|c 이야기 화면, ?hd=a|b 첫 화면
-  const QS = new URLSearchParams(location.search), SD = QS.get('sd') || 'd', HD = QS.get('hd') || 'c';
+  const QS = new URLSearchParams(location.search), SD = QS.get('sd') || 'd', HD = QS.get('hd') || 'r', HC = HD === 'c' || HD === 'r'; // r = 10/21 덜어낸 첫 화면(목록 행 + 오늘의 숫자 하나)
   const STRIP = SD === 'b' || SD === 'd', SHELF = SD === 'a' || SD === 'd';
   document.documentElement.dataset.hd = HD;
   if (QS.get('dr')) document.documentElement.dataset.dr = '1'; // 시안: 입구를 가로 한 줄로(지도가 첫 화면에)
@@ -440,13 +456,13 @@
     duel(v, alt) {
       const L = labs(v), [a, b, k] = v.duel, A = v.v[a], B = v.v[b], r = A / B;
       // 차 그림: 몇 분의 1이거나, 하루에 대결이 여럿이면 둘째마다(막대만 이어지지 않게). 큰 쪽 10대, 끝 한 대는 잘라서
-      if ((k === 'less' && r <= 0.2) || (alt && k === 'more' && r >= 1.25)) {
+      if (HD !== 'r' && ((k === 'less' && r <= 0.2) || (alt && k === 'more' && r >= 1.25))) { // r: 차 그림(작은 svg 여러 개) 대신 막대
         const m = Math.max(A, B), cars = x => { const n = x / m * 10, f = n % 1; return CAR.repeat(Math.floor(n)) + (f > .05 ? `<span class="cfr"><span class="cg">${CAR}</span><span class="cf" style="width:${(f * 100).toFixed(0)}%">${CAR.replace('class="car"', `class="car" style="width:${(100 / f).toFixed(1)}%"`)}</span></span>` : ''); };
-        return `<div class="pict"><div class="pr win"><span class="dn">${esc(L[a])}</span><b class="dv">${fmtN(A)}${ST.carU}</b><span class="cars">${cars(A)}</span></div>
-          <div class="pr foe"><span class="dn">${esc(L[b])}</span><b class="dv">${fmtN(B)}${ST.carU}</b><span class="cars">${cars(B)}</span></div></div>`;
+        return `<div class="pict"><div class="pr win">${HD === 'r' ? `<span class="dn">${esc(L[a])} ${fmtN(A)}${ST.carU}</span>` : `<span class="dn">${esc(L[a])}</span><b class="dv">${fmtN(A)}${ST.carU}</b>`}<span class="cars">${cars(A)}</span></div>
+          <div class="pr foe">${HD === 'r' ? `<span class="dn">${esc(L[b])} ${fmtN(B)}${ST.carU}</span>` : `<span class="dn">${esc(L[b])}</span><b class="dv">${fmtN(B)}${ST.carU}</b>`}<span class="cars">${cars(B)}</span></div></div>`;
       }
       const mx = Math.max(A, B);
-      const row = (n, x, c) => `<div class="dr ${c}"><div class="dh"><span class="dn">${esc(n)}</span><b class="dv">${fmtN(x)}${ST.carU}</b></div><div class="db"><i style="width:${(x / mx * 100).toFixed(1)}%"></i></div></div>`;
+      const row = (n, x, c) => `<div class="dr ${c}"><div class="dh">${HD === 'r' ? `<span class="dn">${esc(n)} ${fmtN(x)}${ST.carU}</span>` : `<span class="dn">${esc(n)}</span><b class="dv">${fmtN(x)}${ST.carU}</b>`}</div><div class="db"><i style="width:${(x / mx * 100).toFixed(1)}%"></i></div></div>`;
       return `<div class="duel">${row(L[a], A, 'win')}${row(L[b], B, 'foe')}</div>`;
     },
     months(v) { // 12달 막대 + 평소(=1) 기준선, 강조 달만 주황
@@ -466,15 +482,18 @@
         <path d="M${X(0)} 84 L${pts(v.s[0]).join(' L')} L${X(23)} 84Z" class="ar0"/><path d="M${pts(v.s[0]).join(' L')}" class="ln0"/>
         ${v.s[1] ? `<path d="M${pts(v.s[1]).join(' L')}" class="ln1"/>` : ''}
         ${[0, 6, 12, 18].map(h => `<text x="${X(h)}" y="100" class="vt"${h ? ' text-anchor="middle"' : ''}>${U.hour(h)}</text>`).join('')}</svg>
-        <p class="vl"><span class="k0">●</span> ${esc(L[0])} &nbsp;<span class="k1">●</span> ${esc(L[1] || '')}</p>`;
+        ${HD === 'r' ? `<p class="vl"><i class="k0"></i>${esc(L[0])}${L[1] ? `<i class="k1"></i>${esc(L[1])}` : ''}</p>` : `<p class="vl"><span class="k0">●</span> ${esc(L[0])} &nbsp;<span class="k1">●</span> ${esc(L[1] || '')}</p>`}`;
     },
     split(v) { // 100칸 와플
       const L = labs(v);
       return `<div class="wafw"><div class="waf">${Array.from({ length: 100 }, (_, i) => `<i${i < v.v ? ' class="on"' : ''}></i>`).join('')}</div>
-        <p class="vl"><span class="k0">■</span> ${esc(L[0])} ${v.v}%<br><span class="kx">■</span> ${esc(L[1])} ${Math.round((100 - v.v) * 10) / 10}%</p></div>`;
+        ${HD === 'r' ? `<p class="vl"><i class="k0"></i>${esc(L[0])} ${v.v}%</p><p class="vl"><i class="kx"></i>${esc(L[1])} ${Math.round((100 - v.v) * 10) / 10}%</p>` : `<p class="vl"><span class="k0">■</span> ${esc(L[0])} ${v.v}%<br><span class="kx">■</span> ${esc(L[1])} ${Math.round((100 - v.v) * 10) / 10}%</p>`}</div>`;
     },
     bars(v) { // 대결 아닌 막대: 작은 정수면 점 줄(한 점=한 곳), 아니면 순위 막대
       const L = labs(v), mx = Math.max(...v.v);
+      if (HD === 'r') { // r: 점 줄 대신 막대 3줄, 이름·값 한 조각. '공항 다음' 이야기는 공항 줄을 빼고 셋
+        const ix = (v.v.length > 3 && v.lab.ko[0] === '제주국제공항' ? [1, 2, 3] : [0, 1, 2]).filter(i => i < v.v.length), m3 = Math.max(...ix.map(i => v.v[i]));
+        return `<div class="duel">${ix.map((i, j) => `<div class="dr ${j ? 'rest' : 'win'}"><div class="dh"><span class="dn">${esc(L[i])} ${fmtN(v.v[i])}${v.u || ''}</span></div><div class="db"><i style="width:${(v.v[i] / m3 * 100).toFixed(1)}%"></i></div></div>`).join('')}</div>`; }
       if (v.v.every(x => Number.isInteger(x) && x <= 30)) return `<div class="dots">${v.v.map((x, i) => `<div class="dt-r${i ? '' : ' win'}"><span class="dn">${esc(L[i])}</span><span class="ds">${'<i></i>'.repeat(x)}</span><b>${x}</b></div>`).join('')}</div>`;
       return `<div class="duel">${v.v.map((x, i) => `<div class="dr ${i ? 'rest' : 'win'}"><div class="dh"><span class="dn">${esc(L[i])}</span><b class="dv">${fmtN(x)}${v.u}</b></div><div class="db"><i style="width:${(x / mx * 100).toFixed(1)}%"></i></div></div>`).join('')}</div>`;
     },
@@ -542,8 +561,8 @@
     if (!SP) return;
     const D = StoryDays(SP), seen = [D.today, ...D.past].flatMap(D.ids);
     // 지도에서 고른 동네 이야기(이미 열린 것만, 2개까지) — 내일 이야기는 미리 안 보여 준다
-    const mine = selected ? [...new Set(seen)].filter(id => (SP.stories[id].dongs || []).includes(selected)).slice(0, 2) : [];
     const today = dayIds(D, D.today), nPast = D.past.length * SP.per;
+    const mine = selected ? [...new Set(seen)].filter(id => (SP.stories[id].dongs || []).includes(selected) && !today.includes(id)).slice(0, 2) : []; // 오늘 카드와 겹치면 두 번 보이므로 뺀다
     let past = '';
     if (SHELF) past = D.past.length ? `<h3 class="shelfh">${esc(ST.shelf)}</h3>` + D.past.filter(n => !STRIP || n !== selDay).map(n => `<section class="shelf" data-day="${D.ymd(n)}"><h4>${esc(dlab(n))}<span class="hn">${SP.per} ›</span></h4><div class="rail">${dayIds(D, n).map(mini).join('')}</div><div class="shopen"></div></section>`).join('') : '';
     else if (SD === 'b') past = '';
@@ -551,7 +570,7 @@
       : `<button type="button" class="pastmore">${esc(ST.moreBtn(nPast))}</button>`;
     $('#stories').innerHTML = (mine.length ? `<div class="sday mine"><h3>${esc(ST.mine(nm(selected)))}</h3><div class="stories">${mine.map(id => card(id, SP)).join('')}</div></div>` : '') +
       (STRIP ? strip(D) : '') +
-      `<div class="sday"><h3>${esc(STRIP && selDay != null && selDay !== D.today ? dlab(selDay) : ST.today(dlab(D.today)))}<span class="sno">No.${(STRIP && selDay != null ? selDay - D.today : 0) + D.no}</span></h3><div class="stories">${dayCards(STRIP && selDay != null ? dayIds(D, selDay) : today, tease(dayIds(D, D.today + 1)[0], D.today + 1))}</div></div>` + past;
+      `<div class="sday"><h3>${esc(STRIP && selDay != null && selDay !== D.today ? dlab(selDay) : ST.today(dlab(D.today)))}${HD === 'r' ? '</h3>' : ''}<span class="sno">No.${(STRIP && selDay != null ? selDay - D.today : 0) + D.no}</span>${HD === 'r' ? '' : '</h3>'}<div class="stories">${dayCards(STRIP && selDay != null ? dayIds(D, selDay) : today, tease(dayIds(D, D.today + 1)[0], D.today + 1))}</div></div>` + past;
     renderHomeStory(D);
   }
   // 하루 카드: 커버 크게 → 내일 맞히기 → 나머지는 숫자+제목 타일(누르면 아래 펼침, 대결은 차 그림)
@@ -559,7 +578,7 @@
     `<h4 class="tileh">${esc(ST.tiles(ids.length - 1))}</h4><div class="tiles">${ids.slice(1).map(id => { const s = SP.stories[id], t = s.t[SL] || s.t.ko;
       return `<button type="button" class="stile ty-${tyOf(s)}" data-tid="${id}"><b>${esc(bigOf(s))}</b>${tiny(s)}<span>${esc(t.h)}</span></button>`; }).join('')}</div><div class="tileopen"></div>`;
   const md = n => { const d = new Date(n * 864e5); return `${d.getUTCMonth() + 1}/${d.getUTCDate()}`; };
-  const strip = D => `<div class="dwrap"><p class="dsh">${esc(ST.stripH)}</p><div class="dstrip" role="tablist">${[...D.past].reverse().concat(D.today).map(n => `<button type="button" role="tab" data-day="${n}" aria-selected="${n === (selDay ?? D.today)}"><small>${md(n)}</small><span>${esc(bigOf(SP.stories[dayIds(D, n)[0]]))}</span></button>`).join('')}<button type="button" class="dlock" data-go="tease"><small>${md(D.today + 1)}</small><span>🔒 ?</span></button></div></div>`;
+  const strip = D => `<div class="dwrap"><p class="dsh">${esc(ST.stripH)}</p><div class="dstrip" role="tablist">${[...D.past].reverse().concat(D.today).map(n => `<button type="button" role="tab" data-day="${n}" aria-selected="${n === (selDay ?? D.today)}"><small>${md(n)}</small><span>${esc(bigOf(SP.stories[dayIds(D, n)[0]]))}</span></button>`).join('')}<button type="button" class="dlock" data-go="tease"><small>${md(D.today + 1)}</small><span>?</span></button></div></div>`;
   const openStory = id => {
     const g = SP.stories[id].link;
     track('story_open', { id, to: g.v });
@@ -616,22 +635,22 @@
       pick: [DT.pick, `<span class="dmini dpick" aria-hidden="true"><b class="on">${esc(DT.q3go)} →</b></span>`],
       oreum: sb ? [DT.oreum(nm(sb.name), r1(sb.season[9])), `<svg preserveAspectRatio="xMinYMid meet" class="dmini dore" viewBox="0 0 120 42" aria-hidden="true">${sb.season.map((x, i) => `<rect x="${i * 10 + 1}" y="${28 - x / 2.5 * 27}" width="8" height="${x / 2.5 * 27}" rx="1.5" class="${i === 9 ? 'b1' : 'b0'}"/>`).join('')}<text x="1" y="40" font-size="11" class="mt">${esc(U.month(1))}</text><text x="95" y="40" font-size="11" text-anchor="middle" class="mt on">${esc(U.month(10))}</text></svg>`] : null,
     };
-    for (const [k, v] of Object.entries(T)) { const d = document.querySelector(`.door[data-hero="${k}"]`); if (d && v) d.insertAdjacentHTML('beforeend', `<em class="dt">${nobr(esc(v[0]))}</em>${v[1]}`); }
+    if (HD !== 'r') for (const [k, v] of Object.entries(T)) { const d = document.querySelector(`.door[data-hero="${k}"]`); if (d && v) d.insertAdjacentHTML('beforeend', `<em class="dt">${nobr(esc(v[0]))}</em>${v[1]}`); }
     if (HD === 'a') $('.hero-head').insertAdjacentHTML('afterend', '<div id="hcover" class="hcover"></div>');
-    if (HD === 'c') $('.hero-head').insertAdjacentHTML('afterend', '<a id="hband" class="hband" href="#story" data-hero="band"></a>');
+    if (HC) $('.hero-head').insertAdjacentHTML('afterend', '<a id="hband" class="hband" href="#story" data-hero="band"></a>');
     // 지도 제목 = 지도 입구에 있던 의외인 숫자(모바일은 지도 입구 카드를 빼고 이 제목으로 대신)
-    if (HD === 'c') $('.chips').insertAdjacentHTML('beforebegin', `<h2 class="maph">${nobr(esc(DT.map(p5)))}<small>${esc(ST.mapH)}</small></h2>`);
-    if (HD === 'c') $('.stage').after($('.doorlinks'));
+    if (HC) $('.chips').insertAdjacentHTML('beforebegin', HD === 'r' ? `<h2 class="maph">${nobr(esc(DT.map(p5)))}</h2><p class="maphs">${esc(ST.mapH)}</p>` : `<h2 class="maph">${nobr(esc(DT.map(p5)))}<small>${esc(ST.mapH)}</small></h2>`);
+    if (HC) $('.stage').after($('.doorlinks'));
     // 지도 아래 빈자리 = 제목 '5곳'의 순위표(누르면 그 동네 선택)
     // 칸 %는 합이 제목(p5)과 같게 큰 나머지부터 올림
     const raw = s5.map(d => d.visitNative / total * 1000), fl = raw.map(Math.floor);
     raw.map((x, i) => [x - fl[i], i]).sort((a, b) => b[0] - a[0]).slice(0, Math.round(p5 * 10) - sum(fl)).forEach(([, i]) => fl[i]++);
     const pc5 = fl.map(x => (x / 10).toFixed(1));
-    if (HD === 'c') $('.stage').insertAdjacentHTML('afterend', `<div class="top5"><h3>${esc(DT.rank)}</h3><ol>${s5.map((d, i) => `<li><button type="button" data-t5="${d.name}"><b>${i + 1}</b><span>${esc(nm(d.name))}</span><small>${pc5[i]}%</small></button></li>`).join('')}</ol><a class="t5go" href="#pick">${esc(DT.next)}</a></div>`);
-    document.addEventListener('click', e => { const t = e.target.closest('[data-t5]'); if (!t) return; select(t.dataset.t5); track('top5', { dong: t.dataset.t5 }); $('.mapbox').scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+    if (HC) $('.stage').insertAdjacentHTML('afterend', `<div class="top5"><h3>${esc(HD === 'r' ? ST.top5 : DT.rank)}</h3><ol>${s5.map((d, i) => `<li><button type="button" data-t5="${d.name}"><b>${i + 1}</b><span>${esc(nm(d.name))}</span><small>${pc5[i]}%</small></button></li>`).join('')}</ol><a class="t5go" href="#pick">${esc(DT.next)}</a></div>`);
+    document.addEventListener('click', e => { const t = e.target.closest('[data-t5]'); if (!t) return; select(t.dataset.t5); track('top5', { dong: t.dataset.t5 }); const mb = $('.mapbox'), r = HD === 'r' && narrow(); if (r) mb.style.scrollMarginBottom = innerHeight - $('#side').getBoundingClientRect().top + 12 + 'px'; mb.scrollIntoView({ behavior: 'smooth', block: r ? 'end' : 'center' }); }); // r: 지도 아래 끝을 아래 시트(언어마다 높이 다름) 바로 위에 맞춤
     // 비교 입구는 입구 그림과 같은 두 동네로 연다
     $('.door[data-hero="vs"]').addEventListener('click', () => { $('#vsA').value = B.name; $('#vsB').value = A.name; renderVs(); }); // 표·CSV 링크는 지도 아래로(여행자 흐름 안 끊게)
-    if (HD === 'c') $('#hband').addEventListener('click', () => track('hero_card', { card: 'band' }));
+    if (HC) $('#hband').addEventListener('click', () => track('hero_card', { card: 'band' }));
     // 아래 동네 패널은 지도가 화면에 들어올 때만(첫 화면 입구를 가리지 않게)
     if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => document.body.classList.toggle('mapin', e.isIntersecting)), { rootMargin: '0px 0px -40% 0px' }).observe($('.stage'));
     else document.body.classList.add('mapin');
@@ -641,7 +660,9 @@
     const sd = document.querySelector('.door[data-hero="story"]'); if (!sd) return;
     sd.querySelectorAll('.dt,.dmini').forEach(x => x.remove());
     const id0 = dayIds(D, D.today)[0], s0 = SP.stories[id0];
-    if (HD === 'c') {
+    if (HD === 'r') { // 오늘의 숫자 하나만 — 퀴즈는 이야기 화면에서
+      $('#hband').innerHTML = `<small>${esc(ST.cover)}</small><b>${esc(bigOf(s0))}</b><em>${esc((s0.t[SL] || s0.t.ko).h)}</em>`;
+    } else if (HD === 'c') {
       $('#hband').innerHTML = `<small>${esc(ST.cover)} · No.${D.no}</small><b>${esc(bigOf(s0))}</b><em>${nobr(esc((s0.t[SL] || s0.t.ko).h))}</em>`;
       const Q = quizOf(dayIds(D, D.today + 1)[0]);
       $('#hband').insertAdjacentHTML('beforeend', `<i class="hq"><small>${esc(ST.dt.qz)}</small>${esc(Q.q)} <u>${esc(ST.dt.ans)}</u></i>`); // 모바일은 이야기 입구 대신 띠에 내일 문제
