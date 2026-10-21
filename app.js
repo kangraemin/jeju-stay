@@ -281,6 +281,11 @@
   $('#card').innerHTML = `<p class="hint">${U.card.hint}</p><a class="cta small" href="#pick" data-cta="card">${U.card.cta}</a>`;
   // 첫 화면·빈 카드의 추천 버튼
   document.addEventListener('click', e => { const c = e.target.closest('[data-cta]'); if (c) track('cta_click', { from: c.dataset.cta }); });
+  // 첫 화면 입구 카드: 지도 카드는 같은 화면이라 해시 대신 지도까지 내린다
+  document.querySelectorAll('[data-hero]').forEach(a => a.addEventListener('click', e => {
+    track('hero_card', { card: a.dataset.hero });
+    if (a.dataset.hero === 'map' && document.body.dataset.view === 'map') { e.preventDefault(); $('.chips').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  }));
 
   // ---------- quiz ----------
   const pin = buildMap($('#pinmap'));

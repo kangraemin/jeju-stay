@@ -1,7 +1,16 @@
-# 제주, 어디에 묵을까
-> 제주관광공사 제주관광빅데이터플랫폼의 이동통신(SKT)·카드(BC)·내비게이션(티맵) 데이터로 제주 43개 읍면동을 비교해 숙소 동네 고르기를 돕는 개인 비영리 웹페이지.
+# 제주 동네, 데이터로 고르기
+> 제주관광공사 제주관광빅데이터플랫폼의 이동통신(SKT)·카드(BC)·내비게이션(티맵) 데이터로 제주 43개 읍면동을 비교해 어디에 묵을지, 두 동네 중 어디가 나은지, 오름은 언제 덜 붐비는지 정하도록 돕는 개인 비영리 웹 서비스. (옛 이름: 제주, 어디에 묵을까)
 
-- 메인(지도·추천 퀴즈·두 동네 비교): https://kangraemin.github.io/jeju-stay/
+## 할 수 있는 일
+- 질문 3개로 숙소 동네 찾기(맞는 동네 3곳과 숙소 지도): https://kangraemin.github.io/jeju-stay/#pick
+- 두 동네 비교(지표를 막대로 나란히, 링크 공유): https://kangraemin.github.io/jeju-stay/#vs
+- 오름 달별 붐빔·도민 비율·덜 붐비는 대안: https://kangraemin.github.io/jeju-stay/#oreum
+- 지표 7개(관광객 방문·저녁 소비·관광지 vs 생활권·숙소·여름 붐빔·2019년 대비·외국인)로 색칠한 43개 동네 지도: https://kangraemin.github.io/jeju-stay/
+- 데이터로 본 제주 다섯 가지 이야기: https://kangraemin.github.io/jeju-stay/#story
+- 4개 언어(한국어·English·简体·繁體)
+
+## 페이지
+- 메인(위 기능 전부): https://kangraemin.github.io/jeju-stay/
 - 43개 읍면동 비교표: https://kangraemin.github.io/jeju-stay/d/
 - 동네별 페이지: https://kangraemin.github.io/jeju-stay/d/<동네이름>.html (예: https://kangraemin.github.io/jeju-stay/d/%EC%95%A0%EC%9B%94%EC%9D%8D.html)
 - 기관·사업자용 표(조건 바꿔 보기, 저녁 체류 공백 동네, 달별 오름 분산 안내 문안, 동네별 붐비는 달과 가까운 대안, CSV): https://kangraemin.github.io/jeju-stay/for-org/ (English https://kangraemin.github.io/jeju-stay/en/for-org/, 简体 https://kangraemin.github.io/jeju-stay/zh/for-org/, 繁體 https://kangraemin.github.io/jeju-stay/zh-tw/for-org/)

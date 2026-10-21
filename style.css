@@ -40,7 +40,19 @@ button,select{font:inherit;color:inherit}
 .hero{max-width:1200px;margin:0 auto;padding:20px 16px 8px}
 .eyebrow{font-size:13px;color:var(--accent-ink);font-weight:600;margin-bottom:6px}
 .hero h1{font-size:clamp(28px,7.4vw,44px);line-height:1.15;font-weight:800;letter-spacing:-.035em}
-.chips{display:flex;gap:8px;overflow-x:auto;margin:16px -16px 0;padding:2px 16px 4px;scrollbar-width:none}
+.hero .lede{margin-top:8px;font-size:15px;line-height:1.5;color:var(--ink2);max-width:640px}
+.doors{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.door{display:flex;flex-direction:column;gap:2px;padding:11px 13px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--ink);text-decoration:none;box-shadow:var(--shadow);min-height:44px}
+.door b{font-size:15px;font-weight:700;letter-spacing:-.02em}
+.door span{font-size:12.5px;line-height:1.35;color:var(--ink2)}
+.door:hover{border-color:var(--line2)}
+.door.main{grid-column:1/-1;background:#c24a17;border-color:#c24a17;color:#fff;padding:13px 16px}
+.door.main b{font-size:17px}
+.door.main b::after{content:" →"}
+.door.main span{color:#fff;opacity:.9}
+.doorlinks{margin-top:10px;font-size:13px;color:var(--muted)}
+.doorlinks a{color:var(--ink2)}
+.chips{scroll-margin-top:60px;display:flex;gap:8px;overflow-x:auto;margin:16px -16px 0;padding:2px 16px 4px;scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
 .chips button{flex:none;border:1px solid var(--line2);background:var(--surface);padding:8px 14px;border-radius:999px;font-size:14px;font-weight:600;color:var(--ink2);cursor:pointer;transition:background .15s,color .15s,border-color .15s}
 .chips button[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
@@ -245,6 +257,10 @@ button,select{font:inherit;color:inherit}
   .pickgrid{grid-template-columns:420px 1fr;grid-template-areas:"b m" "p m" "q m";align-items:start}
   .best{grid-area:b}.quiz{grid-area:q}.pickmap{grid-area:m;align-self:start}.picks{grid-area:p}
   .cta{display:inline-flex;min-width:420px;margin-top:18px}
+  .cta.small{display:block;min-width:0}
+  .side{grid-template-columns:minmax(0,1fr)}
+  .doors{grid-template-columns:1.3fr repeat(4,1fr);margin-top:18px}
+  .door.main{grid-column:auto}
 
   .fly{max-width:760px}
   .vspick{max-width:760px}
