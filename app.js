@@ -151,6 +151,7 @@
       p.classList.toggle('hot5', metric === 'visit' && TOP5.has(d.name)); // 제목 '5곳에'를 지도에서 바로 보이게
       if (d.name === selected || (metric === 'visit' && TOP5.has(d.name))) p.parentNode.insertBefore(p, main.layer);
     }
+    $('#jeju').classList.toggle('t5', metric === 'visit'); // 상위 5곳 외는 흐리게 → 몰림이 보이게
     const s = sorted(m.key);
     const pick = m.mid != null || m.steps ? [s[0], s[1], s.at(-1)] : s.slice(0, 3);
     if (selected && !pick.includes(byName[selected])) pick.push(byName[selected]);
@@ -524,7 +525,9 @@
       <div class="viz" aria-hidden="true">${vizOf(s, alt)}</div><p class="sp">${esc(t.p)}</p>
       <div class="st-f"><span class="src">${esc(t.src)}</span><button class="stgo" type="button" data-sid="${id}">${ST.go[g.v]}</button></div></article>`;
   };
-  const cut = h => { const w = h.split(' '); return w.slice(0, Math.max(2, Math.ceil(w.length * .45))).join(' ') + ' …'; };
+  const cut = h => { // 중국어는 띄어쓰기가 없어 글자 30%로 자른다(반전이 새지 않게)
+    if (/^zh/.test(LG)) return h.slice(0, Math.max(6, Math.round(h.length * .3))) + '…';
+    const w = h.split(' '); return w.slice(0, Math.max(2, Math.ceil(w.length * .45))).join(' ') + ' …'; };
   const tease = (id, n) => {
     const Q = quizOf(id), my = guesses()[id];
     const left = 24 - Math.floor((Date.now() + 9 * 36e5) % 864e5 / 36e5);
@@ -610,7 +613,7 @@
     const T = {
       map: [DT.map(p5), `<svg preserveAspectRatio="xMinYMid meet" class="dmini dmap" viewBox="0 0 ${geo.w} ${geo.h}" aria-hidden="true">${Object.entries(geo.shapes).filter(([, s]) => !s.inset).map(([k, s]) => `<path d="${s.d}"${hot.has(k) ? ' class="hot"' : ''}/>`).join('')}</svg>`],
       vs: [DT.vs(nm(B.name), nm(A.name), B.nightShare, A.nightShare), bar2(B.nightShare, A.nightShare, nm(B.name), nm(A.name))],
-      pick: [DT.pick, `<span class="dmini dpick" aria-hidden="true"><b class="on">${esc(DT.q3go)}</b></span>`],
+      pick: [DT.pick, `<span class="dmini dpick" aria-hidden="true"><b class="on">${esc(DT.q3go)} →</b></span>`],
       oreum: sb ? [DT.oreum(nm(sb.name), r1(sb.season[9])), `<svg preserveAspectRatio="xMinYMid meet" class="dmini dore" viewBox="0 0 120 42" aria-hidden="true">${sb.season.map((x, i) => `<rect x="${i * 10 + 1}" y="${28 - x / 2.5 * 27}" width="8" height="${x / 2.5 * 27}" rx="1.5" class="${i === 9 ? 'b1' : 'b0'}"/>`).join('')}<text x="1" y="40" font-size="11" class="mt">${esc(U.month(1))}</text><text x="95" y="40" font-size="11" text-anchor="middle" class="mt on">${esc(U.month(10))}</text></svg>`] : null,
     };
     for (const [k, v] of Object.entries(T)) { const d = document.querySelector(`.door[data-hero="${k}"]`); if (d && v) d.insertAdjacentHTML('beforeend', `<em class="dt">${nobr(esc(v[0]))}</em>${v[1]}`); }
@@ -624,7 +627,7 @@
     const raw = s5.map(d => d.visitNative / total * 1000), fl = raw.map(Math.floor);
     raw.map((x, i) => [x - fl[i], i]).sort((a, b) => b[0] - a[0]).slice(0, Math.round(p5 * 10) - sum(fl)).forEach(([, i]) => fl[i]++);
     const pc5 = fl.map(x => (x / 10).toFixed(1));
-    if (HD === 'c') $('.stage').insertAdjacentHTML('afterend', `<div class="top5"><h3>${esc(DT.rank)}</h3><ol>${s5.map((d, i) => `<li><button type="button" data-t5="${d.name}"><b>${i + 1}</b><span>${esc(nm(d.name))}</span><small>${pc5[i]}%</small></button></li>`).join('')}</ol><a class="t5go" href="#pick">${esc(DT.q3go)} →</a></div>`);
+    if (HD === 'c') $('.stage').insertAdjacentHTML('afterend', `<div class="top5"><h3>${esc(DT.rank)}</h3><ol>${s5.map((d, i) => `<li><button type="button" data-t5="${d.name}"><b>${i + 1}</b><span>${esc(nm(d.name))}</span><small>${pc5[i]}%</small></button></li>`).join('')}</ol><a class="t5go" href="#pick">${esc(DT.next)}</a></div>`);
     document.addEventListener('click', e => { const t = e.target.closest('[data-t5]'); if (!t) return; select(t.dataset.t5); track('top5', { dong: t.dataset.t5 }); $('.mapbox').scrollIntoView({ behavior: 'smooth', block: 'center' }); });
     // 비교 입구는 입구 그림과 같은 두 동네로 연다
     $('.door[data-hero="vs"]').addEventListener('click', () => { $('#vsA').value = B.name; $('#vsB').value = A.name; renderVs(); }); // 표·CSV 링크는 지도 아래로(여행자 흐름 안 끊게)

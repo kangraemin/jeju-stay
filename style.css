@@ -639,3 +639,11 @@ html[data-hd="c"] .door .dmini.dpick{height:auto}
 .dore .mt{fill:var(--muted);font-weight:700}.dore .mt.on{fill:var(--accent);font-weight:900}
 .top5 .t5go{display:block;margin-top:10px;padding:12px 14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;text-align:center;text-decoration:none}
 .hband>.hq small{display:block;font-size:11px;font-weight:800;opacity:.75;margin-bottom:2px;letter-spacing:.02em}
+/* v16: 알약 화살표 하나, 지도 상위 5곳 외 흐리게 */
+.dpick b::after{content:none}
+.jeju.t5 path:not(.hot5):not(.sel){opacity:.45}
+/* 최종 점검: 떡밥 상자는 라이트 모드에서도 어두운 바탕 → 글자는 상자 글자색 */
+.story.tease .tz{color:color-mix(in srgb,var(--tfg) 70%,transparent)}
+.story.tease .tz b{color:var(--tfg)}
+/* 중국어는 띄어쓰기가 없어 keep-all이면 줄이 안 바뀌고 카드 밖으로 넘친다 */
+html[data-l^="zh"] *{word-break:normal}
