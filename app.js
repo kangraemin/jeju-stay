@@ -395,28 +395,86 @@
     runQuiz(true);
   }));
 
-  // ---------- stories ----------
-  {
-    const u = byName['우도면'], j = byName['정방동'];
-    const o = data.oreum, ot = sum(o.map(x => x.aut)), top = [...o].sort((a, b) => b.aut - a.aut)[0];
-    const ae = byName['애월읍'], jo = byName['조천읍'];
-    const tr = [...dongs].filter(d => d.visit2025 > 1e6).sort((a, b) => b.trend - a.trend), up = tr[0], dn = tr.at(-1);
-    const nh = byName['노형동'], ih = byName['이호동'];
-    const mini = (d, color) => {
-      const t = sum(d.hourTour) || 1, a = d.hourTour.map(x => x / t * 100), mx = Math.max(...u.hourTour.map(x => x / sum(u.hourTour) * 100), ...j.hourTour.map(x => x / sum(j.hourTour) * 100));
-      const X = i => i / 23 * 136 + 2, Y = v => 40 - v / mx * 36;
-      return `<path d="${a.map((v, i) => (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(v).toFixed(1)).join('')}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>`;
-    };
-    const pct = (d, c) => (d.countries.find(x => x[0] === c) || [0, 0])[1];
-    $('#stories').innerHTML = U.story({
-      u: u.nightShare, j: j.nightShare,
-      svg: `<svg viewBox="0 0 140 44" style="width:100%;margin-top:10px;overflow:visible" aria-hidden="true"><rect x="${18 / 23 * 136 + 2}" y="2" width="${5 / 23 * 136}" height="40" rx="2" fill="var(--chip)"/>${mini(u, 'var(--s-tour)')}${mini(j, 'var(--accent)')}</svg>`,
-      on: o.filter(x => x.aut > 0).length, top: nm(top.name), tp: (top.aut / ot * 100).toFixed(1), ot: ot.toLocaleString(), ta: top.aut.toLocaleString(),
-      aev: man(ae.visitNative), jov: man(jo.visitNative), aen: ae.nightShare, jon: jo.nightShare, aes: val('stay', ae), jos: val('stay', jo),
-      up: nm(up.name), dn: nm(dn.name), upv: sgn(up.trend), dnv: sgn(dn.trend), udo: sgn(byName['우도면'].trend), ss: sgn(byName['성산읍'].trend),
-      cn: pct(nh, '중국'), tw: pct(ih, '대만'),
-    });
+  // ---------- stories: 오늘의 제주 숫자 ----------
+  // 고르는 규칙(StoryDays)과 그리는 화면(renderStories)을 나눠 둔다 — 화면 모양이 바뀌어도 날짜→이야기 배정은 그대로.
+  // stories.json: start(첫날, KST) · from(목록에 보이기 시작하는 날) · per(하루 개수) · order(배정 순서) · stories(id→글·그림·링크)
+  const StoryDays = SP => {
+    const day = ymd => Date.UTC(+ymd.slice(0, 4), +ymd.slice(5, 7) - 1, +ymd.slice(8, 10)) / 864e5;
+    const ymd = n => new Date(n * 864e5).toISOString().slice(0, 10);
+    const q = new URLSearchParams(location.search).get('day'); // ?day=2026-10-25 로 다른 날 미리 보기(검사용)
+    const today = q && /^\d{4}-\d\d-\d\d$/.test(q) ? day(q) : Math.floor((Date.now() + 9 * 36e5) / 864e5); // KST 날짜
+    const L = SP.order.length, per = SP.per, cycle = Math.floor(L / per), s0 = day(SP.start);
+    const ids = n => Array.from({ length: per }, (_, k) => SP.order[(((n - s0) * per + k) % L + L) % L]);
+    const first = Math.max(day(SP.from || SP.start), today - cycle + 1); // 한 바퀴 넘게 지난 날은 안 보인다(같은 이야기 두 번 안 나오게)
+    return { today, ymd, ids, past: Array.from({ length: Math.max(0, today - first) }, (_, i) => today - 1 - i) };
+  };
+  const storiesP = fetch(ROOT + 'stories.json').then(r => r.json()).catch(() => null);
+  const ST = U.st, SL = LG;
+  const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const dlab = n => { const d = new Date(n * 864e5); return ST.date(d.getUTCMonth() + 1, d.getUTCDate(), d.getUTCDay()); };
+  // 작은 그림: 320폭 SVG, 색은 테마 변수
+  const VIZ = {
+    hour(v) { // 24시간 두 줄(%)
+      const mx = Math.max(...v.s.flat()), X = i => 8 + i / 23 * 304, Y = x => 70 - x / mx * 60, C = ['var(--accent)', 'var(--s-tour)'];
+      const ln = (a, c) => `<path d="${a.map((x, i) => (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(x).toFixed(1)).join('')}" fill="none" stroke="${c}" stroke-width="2.5" stroke-linejoin="round"/>`;
+      return `<svg viewBox="0 0 320 96"><rect x="${X((v.hl || [18])[0])}" y="6" width="${X((v.hl || [18, 23])[1]) - X((v.hl || [18])[0])}" height="64" rx="3" fill="var(--chip)"/>${v.s.map((a, i) => ln(a, C[i])).join('')}
+        ${[0, 6, 12, 18].map(h => `<text x="${X(h)}" y="88" class="vt">${U.hour(h)}</text>`).join('')}</svg>
+        <p class="vl">${v.lab[SL].map((n, i) => `<span style="color:${C[i]}">━</span> ${esc(n)}`).join(' &nbsp;')}</p>`;
+    },
+    split(v) { // 한 줄 100% 막대
+      return `<svg viewBox="0 0 320 30"><rect x="0" y="4" width="320" height="22" rx="6" fill="var(--chip)"/><rect x="0" y="4" width="${v.v * 3.2}" height="22" rx="6" fill="var(--accent)"/></svg>
+        <p class="vl"><span style="color:var(--accent)">■</span> ${esc(v.lab[SL][0])} ${v.v}% &nbsp;<span style="color:var(--ink2)">■</span> ${esc(v.lab[SL][1])} ${Math.round((100 - v.v) * 10) / 10}%</p>`;
+    },
+    bars(v) { // 가로 막대(첫 막대 강조)
+      const mx = Math.max(...v.v), h = 26;
+      return `<svg viewBox="0 0 320 ${v.v.length * h}">${v.v.map((x, i) => `<text x="0" y="${i * h + 16}" class="vt l">${esc(v.lab[SL][i])}</text>
+        <rect x="118" y="${i * h + 5}" width="${Math.max(2, x / mx * 140)}" height="14" rx="4" fill="${i ? 'var(--line)' : 'var(--accent)'}"/>
+        <text x="${122 + x / mx * 140}" y="${i * h + 16}" class="vt l">${x.toLocaleString()}${v.u}</text>`).join('')}</svg>`;
+    },
+    pm(v) { // 늘고 줄고(가운데 0)
+      const mx = Math.max(...v.v.map(Math.abs)), h = 26;
+      return `<svg viewBox="0 0 320 ${v.v.length * h}"><line x1="210" x2="210" y1="0" y2="${v.v.length * h}" stroke="var(--line)"/>${v.v.map((x, i) => {
+        const w = Math.abs(x) / mx * 70; return `<text x="0" y="${i * h + 16}" class="vt l">${esc(v.lab[SL][i])}</text>
+        <rect x="${x < 0 ? 210 - w : 210}" y="${i * h + 5}" width="${w}" height="14" rx="4" fill="${x < 0 ? 'var(--s-local)' : 'var(--accent)'}"/>
+        <text x="${x < 0 ? 206 - w : 214 + w}" y="${i * h + 16}" class="vt l" text-anchor="${x < 0 ? 'end' : 'start'}">${sgn(x)}</text>`; }).join('')}</svg>`;
+    },
+    months(v) { // 12달 막대(강조 달)
+      const mx = Math.max(...v.v), w = 320 / 12;
+      return `<svg viewBox="0 0 320 84">${v.v.map((x, i) => `<rect x="${i * w + 3}" y="${64 - x / mx * 58}" width="${w - 6}" height="${x / mx * 58}" rx="3" fill="${v.hi.includes(i + 1) ? 'var(--accent)' : 'var(--line)'}"/>
+        <text x="${i * w + w / 2}" y="80" class="vt" text-anchor="middle">${i + 1}</text>`).join('')}</svg>`;
+    },
+  };
+  const card = (id, S) => {
+    const s = S.stories[id]; if (!s) return '';
+    const t = s.t[SL] || s.t.ko, g = s.link;
+    return `<article class="story" id="st-${id}"><p class="k">${esc(t.k)}</p><h3>${esc(t.h)}</h3><div class="big">${esc(t.big)}</div>
+      <p>${esc(t.p)}</p><div class="viz" aria-hidden="true">${VIZ[s.viz.type] ? VIZ[s.viz.type](s.viz) : ''}</div>
+      <div class="st-f"><span class="src">${esc(t.src)}</span><button class="stgo" type="button" data-sid="${id}">${ST.go[g.v]}</button></div></article>`;
+  };
+  let SP = null;
+  function renderStories() {
+    if (!SP) return;
+    const D = StoryDays(SP), seen = [D.today, ...D.past].flatMap(D.ids);
+    // 지도에서 고른 동네 이야기(이미 열린 것만, 2개까지) — 내일 이야기는 미리 안 보여 준다
+    const mine = selected ? [...new Set(seen)].filter(id => (SP.stories[id].dongs || []).includes(selected)).slice(0, 2) : [];
+    $('#stories').innerHTML = (mine.length ? `<div class="sday mine"><h3>${esc(ST.mine(nm(selected)))}</h3><div class="stories">${mine.map(id => card(id, SP)).join('')}</div></div>` : '') +
+      `<div class="sday"><h3>${esc(ST.today(dlab(D.today)))}</h3><div class="stories">${D.ids(D.today).map(id => card(id, SP)).join('')}</div></div>` +
+      `<div class="story lock"><p class="k">${esc(ST.lock(dlab(D.today + 1)))}</p><h3>${esc((SP.stories[D.ids(D.today + 1)[0]].t[SL] || {}).h || '')}</h3><p>${esc(ST.lockP)}</p></div>` +
+      D.past.map(n => `<details class="sday past" data-day="${D.ymd(n)}"><summary><b>${esc(dlab(n))}</b><span>${esc(ST.past(SP.per))}</span></summary><div class="stories">${D.ids(n).map(id => card(id, SP)).join('')}</div></details>`).join('');
   }
+  $('#stories').addEventListener('click', e => {
+    const b = e.target.closest('.stgo'); if (!b) return;
+    const id = b.dataset.sid, g = SP.stories[id].link;
+    track('story_open', { id, to: g.v });
+    if (g.v === 'vs') { $('#vsA').value = g.a; $('#vsB').value = g.b; renderVs(true); go('vs'); }
+    else if (g.v === 'oreum') { go('oreum'); const o = document.querySelector(`.oseg button[data-o="${g.o}"]`); if (o) o.click(); }
+    else {
+      const mb = document.querySelector(`.chips button[data-m="${g.m}"]`); if (mb) mb.click();
+      go('map'); if (g.d && byName[g.d]) setTimeout(() => select(g.d, false), 0);
+    }
+  });
+  $('#stories').addEventListener('toggle', e => { if (e.target.open) track('story_more', { date: e.target.dataset.day }); }, true);
+  storiesP.then(j => { SP = j; renderStories(); });
 
   // ---------- compare (butterfly) ----------
   const ROWS = [
@@ -520,6 +578,7 @@
     if (v === 'map') paint();
     if (after) { const f = after; after = null; requestAnimationFrame(f); }
     if (v === 'pick') runQuiz(false);
+    if (v === 'story') renderStories();
     track('view', { view: v });
   };
   const fromHash = () => show(location.hash === '#oreum-local' ? 'oreum' : location.hash.slice(1));

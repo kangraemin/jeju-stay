@@ -6,7 +6,7 @@
 - 두 동네 비교(지표를 막대로 나란히, 링크 공유): https://kangraemin.github.io/jeju-stay/#vs
 - 오름 달별 붐빔·도민 비율·덜 붐비는 대안: https://kangraemin.github.io/jeju-stay/#oreum
 - 지표 7개(관광객 방문·저녁 소비·관광지 vs 생활권·숙소·여름 붐빔·2019년 대비·외국인)로 색칠한 43개 동네 지도: https://kangraemin.github.io/jeju-stay/
-- 데이터로 본 제주 다섯 가지 이야기: https://kangraemin.github.io/jeju-stay/#story
+- 숫자로 보니 의외인 제주(매일 새 이야기 5개, 날짜별로 쌓임): https://kangraemin.github.io/jeju-stay/#story
 - 4개 언어(한국어·English·简体·繁體)
 
 ## 페이지

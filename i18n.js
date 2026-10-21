@@ -42,23 +42,10 @@ const KO = {
     stay: (s, r) => `관광객 소비 중 숙박 ${s}% · 방문 ${r}위`, eat: (e, n) => `관광객 소비 중 음식점 ${e}% · 저녁 ${n}%`,
     night: (n, r) => `저녁 소비 ${n}% · 방문 ${r}위`, vibe: (t, r) => `매출 중 관광객 ${t}% · 방문 ${r}위`, base: (r, n) => `관광객 방문 ${r}위 · 저녁 소비 ${n}%`,
   },
-  story: (S) => `
-      <article class="story"><p class="k">저녁</p><h3>우도는 해 지면 조용하고,<br>서귀포 정방동은 그때부터</h3>
-        <div class="big">${S.u}%<small>vs</small> ${S.j}%</div>
-        <p>관광객 카드 소비 중 저녁 6시 이후 비중. 우도면 vs 정방동.</p>${S.svg}
-        <p class="capt"><span style="color:var(--s-tour)">━</span> 우도면 &nbsp;<span style="color:var(--accent)">━</span> 정방동 · 0~23시, 회색 띠 18~24시</p></article>
-      <article class="story"><p class="k">가을 오름</p><h3>오름 ${S.on}곳 가운데<br>${S.top} 한 곳이</h3>
-        <div class="big">${S.tp}%<small>차량 도착</small></div>
-        <p>2025년 10~11월 티맵 차량 도착 ${S.ot}대 중 ${S.ta}대. 덜 붐비는 대안은 아래 오름 섹션에.</p></article>
-      <article class="story"><p class="k">애월 vs 함덕</p><h3>방문은 애월이 많고,<br>숙박 비중은 조천이 높다</h3>
-        <div class="big">${S.aev}<small>vs</small> ${S.jov}</div>
-        <p>1년 관광객 방문 애월읍 vs 조천읍(함덕). 저녁 소비 비중은 ${S.aen}% vs ${S.jon}%, 숙박 비중은 ${S.aes}% vs ${S.jos}%.</p></article>
-      <article class="story"><p class="k">2019 → 2025</p><h3>${S.up}은 늘고,<br>${S.dn}은 줄었다</h3>
-        <div class="big">${S.upv}<small>vs</small> ${S.dnv}</div>
-        <p>코로나 전 2019년과 2025년 관광객 방문 비교. 우도면 ${S.udo}, 성산읍 ${S.ss}도 줄었습니다.</p></article>
-      <article class="story"><p class="k">외국인</p><h3>중국인은 노형·연동,<br>대만인은 이호동</h3>
-        <div class="big">${S.cn}%<small>vs</small> ${S.tw}%</div>
-        <p>최근 1년 외국인 카드 소비 중 노형동의 중국 비중, 이호동의 대만 비중. 외국인 입도객은 2025년 224만 명으로 2019년(173만 명)을 넘었습니다.</p></article>`,
+  st: { // 오늘의 제주 숫자(날마다 5개)
+    date: (m, d, w) => `${m}/${d} (${'일월화수목금토'[w]})`, today: t => `오늘의 제주 숫자 · ${t}`, lock: t => `🔒 내일 ${t} 공개`, lockP: '큰 숫자는 내일 열려요.',
+    past: n => `이야기 ${n}개 보기`, go: { map: '지도에서 보기 ›', vs: '비교로 보기 ›', oreum: '오름에서 보기 ›' }, mine: n => `지도에서 고른 ${n} 이야기`,
+  },
   rows: ['관광객 방문(1년)', '가을(10~11월) 방문 비중', '저녁 6시 이후 소비', '매출 중 관광객 몫', '관광객 소비 중 음식점', '관광객 소비 중 숙박', '방문 중 외국인(2025)'],
   barNote: '막대 길이는 43개 동네 중 최댓값 기준', shareTitle: '제주 동네 비교', copied: '링크를 복사했어요', collate: 'ko',
   oreum: {
@@ -112,23 +99,10 @@ const EN = {
     stay: (s, r) => `Lodging ${s}% of tourist spending · visits #${r}`, eat: (e, n) => `Restaurants ${e}% of tourist spending · evening ${n}%`,
     night: (n, r) => `Evening spending ${n}% · visits #${r}`, vibe: (t, r) => `Tourists ${t}% of card sales · visits #${r}`, base: (r, n) => `Tourist visits #${r} · evening spending ${n}%`,
   },
-  story: (S) => `
-      <article class="story"><p class="k">Evening</p><h3>Udo goes quiet at sunset,<br>Jeongbang-dong wakes up</h3>
-        <div class="big">${S.u}%<small>vs</small> ${S.j}%</div>
-        <p>Share of tourist card spending after 6 pm. Udo-myeon vs Jeongbang-dong.</p>${S.svg}
-        <p class="capt"><span style="color:var(--s-tour)">━</span> Udo-myeon &nbsp;<span style="color:var(--accent)">━</span> Jeongbang-dong · 0–23h, gray band 6 pm–midnight</p></article>
-      <article class="story"><p class="k">Autumn oreum</p><h3>Of ${S.on} oreum (volcanic cones),<br>${S.top} alone gets</h3>
-        <div class="big">${S.tp}%<small>of cars</small></div>
-        <p>${S.ta} of ${S.ot} cars arriving by T map navigation in Oct–Nov 2025. Less crowded picks are in the Oreum tab.</p></article>
-      <article class="story"><p class="k">Aewol vs Hamdeok</p><h3>Aewol gets more visits,<br>Jocheon more lodging spend</h3>
-        <div class="big">${S.aev}<small>vs</small> ${S.jov}</div>
-        <p>Tourist visits in a year: Aewol-eup vs Jocheon-eup (Hamdeok). Evening spending ${S.aen}% vs ${S.jon}%, lodging ${S.aes}% vs ${S.jos}%.</p></article>
-      <article class="story"><p class="k">2019 → 2025</p><h3>${S.up} grew,<br>${S.dn} shrank</h3>
-        <div class="big">${S.upv}<small>vs</small> ${S.dnv}</div>
-        <p>Tourist visits in 2025 compared with pre-COVID 2019. Udo-myeon ${S.udo} and Seongsan-eup ${S.ss} also fell.</p></article>
-      <article class="story"><p class="k">Foreign visitors</p><h3>Chinese visitors in Nohyeong and Yeon-dong,<br>Taiwanese in Iho-dong</h3>
-        <div class="big">${S.cn}%<small>vs</small> ${S.tw}%</div>
-        <p>Last 12 months of foreign card spending: China's share in Nohyeong-dong, Taiwan's share in Iho-dong. Foreign arrivals to Jeju hit 2.24 million in 2025, above 2019 (1.73 million).</p></article>`,
+  st: { // today's Jeju number (5 a day)
+    date: (m, d, w) => `${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][w]}, ${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][m - 1]} ${d}`, today: t => `Today’s Jeju numbers · ${t}`, lock: t => `🔒 Opens tomorrow, ${t}`, lockP: 'The number opens tomorrow.',
+    past: n => `See ${n} stories`, go: { map: 'See on the map ›', vs: 'Compare ›', oreum: 'See oreum ›' }, mine: n => `Stories about ${n}, picked on the map`,
+  },
   rows: ['Tourist visits (1 yr)', 'Autumn (Oct–Nov) share', 'Spending after 6 pm', 'Tourist share of sales', 'Restaurants in tourist spend', 'Lodging in tourist spend', 'Foreign share of visits (2025)'],
   barNote: 'Bar length relative to the max among 43 neighborhoods', shareTitle: 'Jeju neighborhood comparison', copied: 'Link copied', collate: 'en',
   oreum: {
@@ -182,23 +156,10 @@ const EN = {
     stay: (s, r) => `游客消费中住宿${s}% · 到访第${r}`, eat: (e, n) => `游客消费中餐饮${e}% · 晚间${n}%`,
     night: (n, r) => `晚间消费${n}% · 到访第${r}`, vibe: (t, r) => `销售额中游客${t}% · 到访第${r}`, base: (r, n) => `游客到访第${r} · 晚间消费${n}%`,
   },
-  story: (S) => `
-      <article class="story"><p class="k">晚上</p><h3>牛岛天黑就安静，<br>西归浦正房洞从那时开始热闹</h3>
-        <div class="big">${S.u}%<small>vs</small> ${S.j}%</div>
-        <p>游客刷卡消费中晚上6点以后的占比。牛岛面 vs 正房洞。</p>${S.svg}
-        <p class="capt"><span style="color:var(--s-tour)">━</span> 牛岛面 &nbsp;<span style="color:var(--accent)">━</span> 正房洞 · 0–23时，灰色带18–24时</p></article>
-      <article class="story"><p class="k">秋天的火山锥</p><h3>${S.on}座火山锥（Oreum）中，<br>${S.top}一处就占</h3>
-        <div class="big">${S.tp}%<small>车辆到达</small></div>
-        <p>2025年10–11月T map导航到达${S.ot}辆中的${S.ta}辆。人少的选择在火山锥页面。</p></article>
-      <article class="story"><p class="k">涯月 vs 咸德</p><h3>到访涯月多，<br>住宿占比朝天高</h3>
-        <div class="big">${S.aev}<small>vs</small> ${S.jov}</div>
-        <p>一年游客到访：涯月邑 vs 朝天邑（咸德）。晚间消费${S.aen}% vs ${S.jon}%，住宿${S.aes}% vs ${S.jos}%。</p></article>
-      <article class="story"><p class="k">2019 → 2025</p><h3>${S.up}增加，<br>${S.dn}减少</h3>
-        <div class="big">${S.upv}<small>vs</small> ${S.dnv}</div>
-        <p>疫情前2019年与2025年游客到访对比。牛岛面${S.udo}、城山邑${S.ss}也减少了。</p></article>
-      <article class="story"><p class="k">外国人</p><h3>中国游客在老衡·莲洞，<br>台湾游客在梨湖洞</h3>
-        <div class="big">${S.cn}%<small>vs</small> ${S.tw}%</div>
-        <p>最近1年外国人刷卡消费中，老衡洞的中国占比和梨湖洞的台湾占比。2025年入境济州的外国人达224万人，超过2019年（173万人）。</p></article>`,
+  st: { // 今日济州数字（每天5条）
+    date: (m, d, w) => `${m}月${d}日（周${'日一二三四五六'[w]}）`, today: t => `今日济州数字 · ${t}`, lock: t => `🔒 明天 ${t} 公开`, lockP: '数字明天揭晓。',
+    past: n => `查看${n}条`, go: { map: '在地图上看 ›', vs: '对比看看 ›', oreum: '看火山锥 ›' }, mine: n => `地图上选的${n}的故事`,
+  },
   rows: ['游客到访（1年）', '秋季（10–11月）到访占比', '晚上6点后消费', '销售额中游客占比', '游客消费中餐饮', '游客消费中住宿', '到访中外国人（2025）'],
   barNote: '条形长度以43个地区中的最大值为基准', shareTitle: '济州地区对比', copied: '已复制链接', collate: 'zh',
   oreum: {
@@ -252,23 +213,10 @@ const ZHTW = {
     stay: (s, r) => `遊客消費中住宿${s}% · 到訪第${r}`, eat: (e, n) => `遊客消費中餐飲${e}% · 晚間${n}%`,
     night: (n, r) => `晚間消費${n}% · 到訪第${r}`, vibe: (t, r) => `銷售額中遊客${t}% · 到訪第${r}`, base: (r, n) => `遊客到訪第${r} · 晚間消費${n}%`,
   },
-  story: (S) => `
-      <article class="story"><p class="k">晚上</p><h3>牛島天黑就安靜，<br>西歸浦正房洞從那時開始熱鬧</h3>
-        <div class="big">${S.u}%<small>vs</small> ${S.j}%</div>
-        <p>遊客刷卡消費中晚上6點以後的佔比。牛島面 vs 正房洞。</p>${S.svg}
-        <p class="capt"><span style="color:var(--s-tour)">━</span> 牛島面 &nbsp;<span style="color:var(--accent)">━</span> 正房洞 · 0–23時，灰色帶18–24時</p></article>
-      <article class="story"><p class="k">秋天的火山錐</p><h3>${S.on}座火山錐（Oreum）中，<br>${S.top}一處就佔</h3>
-        <div class="big">${S.tp}%<small>車輛到達</small></div>
-        <p>2025年10–11月T map導航到達${S.ot}輛中的${S.ta}輛。人少的選擇在火山錐頁面。</p></article>
-      <article class="story"><p class="k">涯月 vs 咸德</p><h3>到訪涯月多，<br>住宿佔比朝天高</h3>
-        <div class="big">${S.aev}<small>vs</small> ${S.jov}</div>
-        <p>一年遊客到訪：涯月邑 vs 朝天邑（咸德）。晚間消費${S.aen}% vs ${S.jon}%，住宿${S.aes}% vs ${S.jos}%。</p></article>
-      <article class="story"><p class="k">2019 → 2025</p><h3>${S.up}增加，<br>${S.dn}減少</h3>
-        <div class="big">${S.upv}<small>vs</small> ${S.dnv}</div>
-        <p>疫情前2019年與2025年遊客到訪對比。牛島面${S.udo}、城山邑${S.ss}也減少了。</p></article>
-      <article class="story"><p class="k">外國人</p><h3>中國遊客在老衡·蓮洞，<br>臺灣遊客在梨湖洞</h3>
-        <div class="big">${S.cn}%<small>vs</small> ${S.tw}%</div>
-        <p>最近1年外國人刷卡消費中，老衡洞的中國佔比和梨湖洞的臺灣佔比。2025年入境濟州的外國人達224萬人，超過2019年（173萬人）。</p></article>`,
+  st: { // 今日濟州數字（每天5條）
+    date: (m, d, w) => `${m}月${d}日（周${'日一二三四五六'[w]}）`, today: t => `今日濟州數字 · ${t}`, lock: t => `🔒 明天 ${t} 公開`, lockP: '數字明天揭曉。',
+    past: n => `檢視${n}條`, go: { map: '在地圖上看 ›', vs: '對比看看 ›', oreum: '看火山錐 ›' }, mine: n => `地圖上選的${n}的故事`,
+  },
   rows: ['遊客到訪（1年）', '秋季（10–11月）到訪佔比', '晚上6點後消費', '銷售額中遊客佔比', '遊客消費中餐飲', '遊客消費中住宿', '到訪中外國人（2025）'],
   barNote: '條形長度以43個地區中的最大值為基準', shareTitle: '濟州地區對比', copied: '已複製連結', collate: 'zh',
   oreum: {
