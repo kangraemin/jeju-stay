@@ -29,8 +29,8 @@
 
   // validated with dataviz validate_palette.js (ordinal, light #fbfbf9 / dark #131413)
   const RAMP = {
-    blue: { light: ['#86b6ef', '#3987e5', '#256abf', '#184f95', '#0d366b'], dark: ['#184f95', '#256abf', '#3987e5', '#6da7ec', '#b7d3f6'] },
-    orange: { light: ['#f39a6e', '#eb6834', '#c9501f', '#9a3a13', '#682508'], dark: ['#8a3412', '#b9461c', '#eb6834', '#f39a6e', '#fbd0b6'] },
+    blue: { light: ['#d6e6fa', '#94bff1', '#4b91e4', '#1f5fb0', '#0d366b'], dark: ['#184f95', '#256abf', '#3987e5', '#6da7ec', '#b7d3f6'] },
+    orange: { light: ['#fcdcc9', '#f5a179', '#eb6834', '#b9461c', '#682508'], dark: ['#8a3412', '#b9461c', '#eb6834', '#f39a6e', '#fbd0b6'] },
     div: { light: ['#1c5cab', '#6da7ec', '#e4e3de', '#ef8e8a', '#b8302f'], dark: ['#256abf', '#184f95', '#3a3b38', '#9c3534', '#d34544'] },
   };
 
@@ -138,6 +138,7 @@
     }
   }
 
+  const TOP5 = new Set(sorted('visitNative').slice(0, 5).map(d => d.name));
   function paint() {
     const m = METRICS[metric];
     const ramp = RAMP[m.ramp][dark() ? 'dark' : 'light'];
@@ -147,14 +148,15 @@
       if (!p) continue;
       p.style.fill = ramp[cls(val(m.key, d))];
       p.classList.toggle('sel', d.name === selected);
-      if (d.name === selected) p.parentNode.insertBefore(p, main.layer);
+      p.classList.toggle('hot5', metric === 'visit' && TOP5.has(d.name)); // 제목 '5곳에'를 지도에서 바로 보이게
+      if (d.name === selected || (metric === 'visit' && TOP5.has(d.name))) p.parentNode.insertBefore(p, main.layer);
     }
     const s = sorted(m.key);
     const pick = m.mid != null || m.steps ? [s[0], s[1], s.at(-1)] : s.slice(0, 3);
     if (selected && !pick.includes(byName[selected])) pick.push(byName[selected]);
     labels(main, pick.map(d => [d.name, m.fmt(d)]));
     const f = v => m.key === 'visitNative' ? man(v) : m.key === 'summerIdx' || m.key === 'trend' ? sgn(Math.round(v)) : m.key === 'foreignShare2025' ? v + '%' : Math.round(v) + '%';
-    $('#legend').innerHTML = `<span>${m.lo}</span><span class="ramp">${ramp.map((c, i) => `<i style="background:${c}" title="${f(breaks[i])}~${f(breaks[i + 1])}"></i>`).join('')}</span><span>${m.hi}</span><span style="margin-left:auto">${f(breaks[0])} ~ ${f(breaks[5])}</span>`;
+    $('#legend').innerHTML = `<span>${m.lo}</span><span class="ramp">${ramp.map((c, i) => `<i style="background:${c}" title="${f(breaks[i])}~${f(breaks[i + 1])}"></i>`).join('')}</span><span>${m.hi}</span><span style="margin-left:auto">${f(breaks[0])} ~ ${f(breaks[5])}</span>${metric === 'visit' ? `<span class="lg5"><i></i>${esc(U.st.top5)}</span>` : ''}`;
     $('#insight').innerHTML = m.insight();
   }
 
@@ -406,65 +408,157 @@
     const L = SP.order.length, per = SP.per, cycle = Math.floor(L / per), s0 = day(SP.start);
     const ids = n => Array.from({ length: per }, (_, k) => SP.order[(((n - s0) * per + k) % L + L) % L]);
     const first = Math.max(day(SP.from || SP.start), today - cycle + 1); // 한 바퀴 넘게 지난 날은 안 보인다(같은 이야기 두 번 안 나오게)
-    return { today, ymd, ids, past: Array.from({ length: Math.max(0, today - first) }, (_, i) => today - 1 - i) };
+    return { today, ymd, ids, no: today - s0 + 1, past: Array.from({ length: Math.max(0, today - first) }, (_, i) => today - 1 - i) };
   };
   const storiesP = fetch(ROOT + 'stories.json').then(r => r.json()).catch(() => null);
   const ST = U.st, SL = LG;
   const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const dlab = n => { const d = new Date(n * 864e5); return ST.date(d.getUTCMonth() + 1, d.getUTCDate(), d.getUTCDay()); };
-  // 작은 그림: 320폭 SVG, 색은 테마 변수
+  // 시안 고르기(검사용): ?sd=a|b|c 이야기 화면, ?hd=a|b 첫 화면
+  const QS = new URLSearchParams(location.search), SD = QS.get('sd') || 'd', HD = QS.get('hd') || 'c';
+  const STRIP = SD === 'b' || SD === 'd', SHELF = SD === 'a' || SD === 'd';
+  document.documentElement.dataset.hd = HD;
+  if (QS.get('dr')) document.documentElement.dataset.dr = '1'; // 시안: 입구를 가로 한 줄로(지도가 첫 화면에)
+  const fmtN = x => x.toLocaleString(LG === 'ko' ? 'ko-KR' : 'en-US');
+  const r1 = x => Math.round(x * 10) / 10;
+  const labs = v => v.lab[SL] || v.lab.ko;
+  // 카드 큰 숫자: 대결 이야기는 배수(×1.2·7분의 1), 나머지는 원래 숫자
+  const bigOf = s => {
+    const v = s.viz, t = s.t[SL] || s.t.ko;
+    if (!v.duel) return t.big;
+    const [a, b, k] = v.duel, r = v.v[a] / v.v[b];
+    // 차이가 1.15배 안쪽이면 배수 대신 대수 차이(1.0배 더 많다는 어색함 방지)
+    return k === 'more' ? (r < 1.15 ? ST.diff(fmtN(v.v[a] - v.v[b])) : ST.ratio(r1(r))) : k === 'same' ? ST.same : fracOf(s) || Math.round(r * 100) + '%';
+  };
+  // 제목이 'N분의 1'이면 큰 숫자도 같은 말로(제목 7분의 1인데 숫자 14%로 엇갈리던 것)
+  const fracOf = s => { const m = /(\d+)분의 1/.exec(s.t.ko.h); return m ? ST.frac(m[1]) : '';
+  };
+  const CAR = '<svg class="car" viewBox="0 0 24 14" aria-hidden="true"><path d="M4.5 3.2C5 2 5.8 1.5 7 1.5h9.6c1.1 0 1.9.5 2.4 1.6L20.6 6c1.4.3 2.4 1.4 2.4 2.8V11h-2.2a2.6 2.6 0 0 0-5.2 0H8.4a2.6 2.6 0 0 0-5.2 0H1V8.8C1 7.4 2 6.3 3.3 6zM6.4 6h5V3.3H7.2c-.4 0-.7.2-.8.5zm6.9 0h5.2l-1-2.2c-.2-.3-.5-.5-.9-.5h-3.3z"/><circle cx="5.8" cy="11.4" r="2.1"/><circle cx="18.2" cy="11.4" r="2.1"/></svg>';
+  // 이야기 그림: 유형마다 다른 모양, 색은 테마 변수(주황=이긴 쪽·주인공, 파랑=다들 아는 곳)
   const VIZ = {
-    hour(v) { // 24시간 두 줄(%)
-      const mx = Math.max(...v.s.flat()), X = i => 8 + i / 23 * 304, Y = x => 70 - x / mx * 60, C = ['var(--accent)', 'var(--s-tour)'];
-      const ln = (a, c) => `<path d="${a.map((x, i) => (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(x).toFixed(1)).join('')}" fill="none" stroke="${c}" stroke-width="2.5" stroke-linejoin="round"/>`;
-      return `<svg viewBox="0 0 320 96"><rect x="${X((v.hl || [18])[0])}" y="6" width="${X((v.hl || [18, 23])[1]) - X((v.hl || [18])[0])}" height="64" rx="3" fill="var(--chip)"/>${v.s.map((a, i) => ln(a, C[i])).join('')}
-        ${[0, 6, 12, 18].map(h => `<text x="${X(h)}" y="88" class="vt">${U.hour(h)}</text>`).join('')}</svg>
-        <p class="vl">${v.lab[SL].map((n, i) => `<span style="color:${C[i]}">━</span> ${esc(n)}`).join(' &nbsp;')}</p>`;
+    duel(v, alt) {
+      const L = labs(v), [a, b, k] = v.duel, A = v.v[a], B = v.v[b], r = A / B;
+      // 차 그림: 몇 분의 1이거나, 하루에 대결이 여럿이면 둘째마다(막대만 이어지지 않게). 큰 쪽 10대, 끝 한 대는 잘라서
+      if ((k === 'less' && r <= 0.2) || (alt && k === 'more' && r >= 1.25)) {
+        const m = Math.max(A, B), cars = x => { const n = x / m * 10, f = n % 1; return CAR.repeat(Math.floor(n)) + (f > .05 ? `<span class="cfr"><span class="cg">${CAR}</span><span class="cf" style="width:${(f * 100).toFixed(0)}%">${CAR.replace('class="car"', `class="car" style="width:${(100 / f).toFixed(1)}%"`)}</span></span>` : ''); };
+        return `<div class="pict"><div class="pr win"><span class="dn">${esc(L[a])}</span><b class="dv">${fmtN(A)}${ST.carU}</b><span class="cars">${cars(A)}</span></div>
+          <div class="pr foe"><span class="dn">${esc(L[b])}</span><b class="dv">${fmtN(B)}${ST.carU}</b><span class="cars">${cars(B)}</span></div></div>`;
+      }
+      const mx = Math.max(A, B);
+      const row = (n, x, c) => `<div class="dr ${c}"><div class="dh"><span class="dn">${esc(n)}</span><b class="dv">${fmtN(x)}${ST.carU}</b></div><div class="db"><i style="width:${(x / mx * 100).toFixed(1)}%"></i></div></div>`;
+      return `<div class="duel">${row(L[a], A, 'win')}${row(L[b], B, 'foe')}</div>`;
     },
-    split(v) { // 한 줄 100% 막대
-      return `<svg viewBox="0 0 320 30"><rect x="0" y="4" width="320" height="22" rx="6" fill="var(--chip)"/><rect x="0" y="4" width="${v.v * 3.2}" height="22" rx="6" fill="var(--accent)"/></svg>
-        <p class="vl"><span style="color:var(--accent)">■</span> ${esc(v.lab[SL][0])} ${v.v}% &nbsp;<span style="color:var(--ink2)">■</span> ${esc(v.lab[SL][1])} ${Math.round((100 - v.v) * 10) / 10}%</p>`;
+    months(v) { // 12달 막대 + 평소(=1) 기준선, 강조 달만 주황
+      const mx = Math.max(...v.v, 1.2), w = 320 / 12, H = 76, Y = x => 92 - x / mx * H;
+      return `<svg viewBox="0 0 356 112">${v.v.map((x, i) => { const hi = v.hi.includes(i + 1);
+        return `<rect x="${i * w + 3}" y="${Y(x)}" width="${w - 6}" height="${92 - Y(x)}" rx="3" class="${hi ? 'mhi' : 'mlo'}"/>` +
+          (hi ? `<text x="${i * w + w / 2}" y="${Math.min(Y(x), Y(1)) - 5}" class="vt vb" text-anchor="middle">${x.toFixed(2)}</text>` : '') +
+          `<text x="${i * w + w / 2}" y="107" class="vt${hi ? ' vb' : ''}" text-anchor="middle">${i + 1}</text>`; }).join('')}
+        <line x1="0" x2="322" y1="${Y(1)}" y2="${Y(1)}" class="avg"/><text x="325" y="${Y(1) + 4}" class="vt avgl">${esc(ST.avg)}</text></svg>`;
     },
-    bars(v) { // 가로 막대(첫 막대 강조)
-      const mx = Math.max(...v.v), h = 26;
-      return `<svg viewBox="0 0 320 ${v.v.length * h}">${v.v.map((x, i) => `<text x="0" y="${i * h + 16}" class="vt l">${esc(v.lab[SL][i])}</text>
-        <rect x="118" y="${i * h + 5}" width="${Math.max(2, x / mx * 140)}" height="14" rx="4" fill="${i ? 'var(--line)' : 'var(--accent)'}"/>
-        <text x="${122 + x / mx * 140}" y="${i * h + 16}" class="vt l">${x.toLocaleString()}${v.u}</text>`).join('')}</svg>`;
+    hour(v) { // 24시간: 저녁(18시~) 띠 + 첫 줄 면, 둘째 줄 선
+      const mx = Math.max(...v.s.flat()), X = i => 6 + i / 23 * 308, Y = x => 84 - x / mx * 68;
+      const pts = a => a.map((x, i) => X(i).toFixed(1) + ' ' + Y(x).toFixed(1));
+      const L = labs(v);
+      return `<svg viewBox="0 0 320 104"><rect x="${X(18)}" y="8" width="${X(23) - X(18) + 6}" height="76" class="nightb"/>
+        <text x="${X(18) + 4}" y="20" class="vt">${esc(ST.night)}</text>
+        <path d="M${X(0)} 84 L${pts(v.s[0]).join(' L')} L${X(23)} 84Z" class="ar0"/><path d="M${pts(v.s[0]).join(' L')}" class="ln0"/>
+        ${v.s[1] ? `<path d="M${pts(v.s[1]).join(' L')}" class="ln1"/>` : ''}
+        ${[0, 6, 12, 18].map(h => `<text x="${X(h)}" y="100" class="vt"${h ? ' text-anchor="middle"' : ''}>${U.hour(h)}</text>`).join('')}</svg>
+        <p class="vl"><span class="k0">●</span> ${esc(L[0])} &nbsp;<span class="k1">●</span> ${esc(L[1] || '')}</p>`;
     },
-    pm(v) { // 늘고 줄고(가운데 0)
-      const mx = Math.max(...v.v.map(Math.abs)), h = 26;
-      return `<svg viewBox="0 0 320 ${v.v.length * h}"><line x1="210" x2="210" y1="0" y2="${v.v.length * h}" stroke="var(--line)"/>${v.v.map((x, i) => {
-        const w = Math.abs(x) / mx * 70; return `<text x="0" y="${i * h + 16}" class="vt l">${esc(v.lab[SL][i])}</text>
-        <rect x="${x < 0 ? 210 - w : 210}" y="${i * h + 5}" width="${w}" height="14" rx="4" fill="${x < 0 ? 'var(--s-local)' : 'var(--accent)'}"/>
-        <text x="${x < 0 ? 206 - w : 214 + w}" y="${i * h + 16}" class="vt l" text-anchor="${x < 0 ? 'end' : 'start'}">${sgn(x)}</text>`; }).join('')}</svg>`;
+    split(v) { // 100칸 와플
+      const L = labs(v);
+      return `<div class="wafw"><div class="waf">${Array.from({ length: 100 }, (_, i) => `<i${i < v.v ? ' class="on"' : ''}></i>`).join('')}</div>
+        <p class="vl"><span class="k0">■</span> ${esc(L[0])} ${v.v}%<br><span class="kx">■</span> ${esc(L[1])} ${Math.round((100 - v.v) * 10) / 10}%</p></div>`;
     },
-    months(v) { // 12달 막대(강조 달)
-      const mx = Math.max(...v.v), w = 320 / 12;
-      return `<svg viewBox="0 0 320 84">${v.v.map((x, i) => `<rect x="${i * w + 3}" y="${64 - x / mx * 58}" width="${w - 6}" height="${x / mx * 58}" rx="3" fill="${v.hi.includes(i + 1) ? 'var(--accent)' : 'var(--line)'}"/>
-        <text x="${i * w + w / 2}" y="80" class="vt" text-anchor="middle">${i + 1}</text>`).join('')}</svg>`;
+    bars(v) { // 대결 아닌 막대: 작은 정수면 점 줄(한 점=한 곳), 아니면 순위 막대
+      const L = labs(v), mx = Math.max(...v.v);
+      if (v.v.every(x => Number.isInteger(x) && x <= 30)) return `<div class="dots">${v.v.map((x, i) => `<div class="dt-r${i ? '' : ' win'}"><span class="dn">${esc(L[i])}</span><span class="ds">${'<i></i>'.repeat(x)}</span><b>${x}</b></div>`).join('')}</div>`;
+      return `<div class="duel">${v.v.map((x, i) => `<div class="dr ${i ? 'rest' : 'win'}"><div class="dh"><span class="dn">${esc(L[i])}</span><b class="dv">${fmtN(x)}${v.u}</b></div><div class="db"><i style="width:${(x / mx * 100).toFixed(1)}%"></i></div></div>`).join('')}</div>`;
     },
   };
-  const card = (id, S) => {
+  // 하루 5개 보여 주는 순서: 대결을 맨 앞(커버)에 두고 다른 모양과 번갈아(배정은 그대로, 순서만)
+  // 맨 앞(커버)은 그날 가장 센 숫자 — 1.2배 같은 약한 차이를 첫 카드로 두지 않는다
+  const pow = s => { const v = s.viz;
+    if (v.duel) { const [a, b, k] = v.duel, r = v.v[a] / v.v[b]; return k === 'more' ? r : k === 'less' ? 1 / r : 1.2; }
+    const big = s.t.ko.big, m = /([\d.]+)\s*배/.exec(big); return m ? +m[1] : /[월시]$/.test(big) ? 1.5 : 2.2; };
+  const dayIds = (D, n) => { const ids = [...D.ids(n)].sort((x, y) => pow(SP.stories[y]) - pow(SP.stories[x])), out = [ids.shift()],
+      du = ids.filter(id => SP.stories[id].viz.duel), ot = ids.filter(id => !SP.stories[id].viz.duel), dl = !!SP.stories[out[0]].viz.duel;
+    while (du.length || ot.length) { const a = dl ? ot : du, b = dl ? du : ot; if (a.length) out.push(a.shift()); if (b.length) out.push(b.shift()); } return out; };
+  const vizOf = (s, alt) => s.viz.duel ? VIZ.duel(s.viz, alt) : VIZ[s.viz.type] ? VIZ[s.viz.type](s.viz) : '';
+  const tyOf = s => s.viz.duel ? 'duel' : s.viz.type;
+  // 숫자 덩이(N분의 1·35.5%가)는 줄에서 안 갈라지게
+  const nobr = h => h.replace(/(\d[\d,.]*\s?(?:분의\s?\d+|%|배|곳|대)\S{0,2})/g, '<span class="nb">$1</span>');
+  // 타일용 작은 그림(모양별로 한 눈에): 대결·막대=막대, 달=12칸, 시간=선, 나눔=띠
+  const tiny = s => { const v = s.viz, sv = b => `<svg class="tiny" viewBox="0 0 120 34" preserveAspectRatio="xMinYMid meet" aria-hidden="true">${b}</svg>`;
+    const hb = a => { const m = Math.max(...a); return sv(a.slice(0, 3).map((x, i) => `<rect x="0" y="${i * 12}" height="8" rx="3" width="${Math.max(3, x / m * 120)}" class="${i ? 'b0' : 'b1'}"/>`).join('')); };
+    if (v.duel) { const [a, b] = v.duel; return hb([v.v[a], v.v[b]]); }
+    if (v.type === 'months') { const m = Math.max(...v.v); return sv(v.v.map((x, i) => `<rect x="${i * 10 + 1}" y="${34 - x / m * 32}" width="8" height="${x / m * 32}" rx="1.5" class="${v.hi.includes(i + 1) ? 'b1' : 'b0'}"/>`).join('')); }
+    if (v.type === 'hour') { const a = v.s[0], m = Math.max(...a); return sv(`<path d="M${a.map((x, i) => `${(i / 23 * 118 + 1).toFixed(1)} ${(32 - x / m * 30).toFixed(1)}`).join(' L')}" class="tl"/>`); }
+    if (v.type === 'split') return sv(`<rect x="0" y="10" height="14" rx="4" width="120" class="b0"/><rect x="0" y="10" height="14" rx="4" width="${v.v * 1.2}" class="b1"/>`);
+    if (v.type === 'bars') return hb(v.v);
+    return ''; };
+  // 내일 맞히기: 대결은 라벨로 문제를 만들고, 나머지는 stories.json q
+  const quizOf = id => {
+    const s = SP.stories[id];
+    if (s.q) {
+      const o = s.q.o;
+      return { q: s.q.t[SL] || s.q.t.ko, ans: s.q.a,
+        opts: o.m ? o.m.map(U.month) : o.h ? o.h.map(U.hour) : o.x ? o.x.map(ST.ratio) : o.n ? o.n.map(nm) : o.t || o[SL] || o.ko };
+    }
+    const v = s.viz, L = labs(v), [a, b, k] = v.duel;
+    if (k === 'more') return { q: ST.more(L[b], L[a]), opts: [L[b], L[a]], ans: 1 };
+    if (k === 'same') return { q: ST.sameQ(L[a], L[b]), opts: ST.sameO(L[b]), ans: 1 };
+    const c = Math.round(v.v[a] / v.v[b] * 10), set = c <= 2 ? [c, c + 3, c + 6] : [Math.max(1, c - 3), c, c + 3];
+    return { q: ST.less(L[a], L[b]), opts: set.map(ST.cars), ans: set.indexOf(c) };
+  };
+  const GK = 'jeju-guess';
+  const guesses = () => { try { return JSON.parse(localStorage.getItem(GK)) || {}; } catch (e) { return {}; } };
+  const card = (id, S, cover, alt) => {
     const s = S.stories[id]; if (!s) return '';
-    const t = s.t[SL] || s.t.ko, g = s.link;
-    return `<article class="story" id="st-${id}"><p class="k">${esc(t.k)}</p><h3>${esc(t.h)}</h3><div class="big">${esc(t.big)}</div>
-      <p>${esc(t.p)}</p><div class="viz" aria-hidden="true">${VIZ[s.viz.type] ? VIZ[s.viz.type](s.viz) : ''}</div>
+    const t = s.t[SL] || s.t.ko, g = s.link, my = guesses()[id];
+    let res = '';
+    if (my != null) { const Q = quizOf(id); res = `<p class="gres ${my === Q.ans ? 'ok' : 'no'}">${esc(my === Q.ans ? ST.right : ST.wrong(Q.opts[Q.ans]))}</p>`; }
+    return `<article class="story ty-${tyOf(s)}${cover ? ' cover' : ''}" id="st-${id}"><p class="k">${esc(t.k)}</p><div class="big">${esc(bigOf(s))}</div><h3>${esc(t.h)}</h3>${res}
+      <div class="viz" aria-hidden="true">${vizOf(s, alt)}</div><p class="sp">${esc(t.p)}</p>
       <div class="st-f"><span class="src">${esc(t.src)}</span><button class="stgo" type="button" data-sid="${id}">${ST.go[g.v]}</button></div></article>`;
   };
-  let SP = null;
+  const cut = h => { const w = h.split(' '); return w.slice(0, Math.max(2, Math.ceil(w.length * .45))).join(' ') + ' …'; };
+  const tease = (id, n) => {
+    const Q = quizOf(id), my = guesses()[id];
+    const left = 24 - Math.floor((Date.now() + 9 * 36e5) % 864e5 / 36e5);
+    return `<div class="story tease" data-qid="${id}"><p class="k">${esc(ST.tease(dlab(n)))}</p><span class="qcd">${esc(ST.left(left))}</span><p class="tz">${esc(ST.tz)} <b>${esc(cut((SP.stories[id].t[SL] || SP.stories[id].t.ko).h))}</b></p><h3>${esc(Q.q)}</h3>
+      <div class="qopts">${Q.opts.map((o, i) => `<button type="button" data-qi="${i}"${my === i ? ' class="on"' : ''}>${esc(o)}</button>`).join('')}</div>
+      <p class="qnote">${esc(my != null ? ST.picked(Q.opts[my]) : ST.guess)}</p></div>`;
+  };
+  const mini = id => { const s = SP.stories[id], t = s.t[SL] || s.t.ko;
+    return `<button type="button" class="smini ty-${tyOf(s)}" data-mid="${id}"><b>${esc(bigOf(s))}</b><span>${esc(t.h)}</span></button>`; };
+  let SP = null, pastOpen = false, selDay = null;
   function renderStories() {
     if (!SP) return;
     const D = StoryDays(SP), seen = [D.today, ...D.past].flatMap(D.ids);
     // 지도에서 고른 동네 이야기(이미 열린 것만, 2개까지) — 내일 이야기는 미리 안 보여 준다
     const mine = selected ? [...new Set(seen)].filter(id => (SP.stories[id].dongs || []).includes(selected)).slice(0, 2) : [];
+    const today = dayIds(D, D.today), nPast = D.past.length * SP.per;
+    let past = '';
+    if (SHELF) past = D.past.length ? `<h3 class="shelfh">${esc(ST.shelf)}</h3>` + D.past.filter(n => !STRIP || n !== selDay).map(n => `<section class="shelf" data-day="${D.ymd(n)}"><h4>${esc(dlab(n))}<span class="hn">${SP.per} ›</span></h4><div class="rail">${dayIds(D, n).map(mini).join('')}</div><div class="shopen"></div></section>`).join('') : '';
+    else if (SD === 'b') past = '';
+    else past = !D.past.length ? '' : pastOpen ? D.past.map(n => `<div class="sday past"><h3>${esc(dlab(n))}</h3><div class="stories">${dayIds(D, n).map(id => card(id, SP)).join('')}</div></div>`).join('')
+      : `<button type="button" class="pastmore">${esc(ST.moreBtn(nPast))}</button>`;
     $('#stories').innerHTML = (mine.length ? `<div class="sday mine"><h3>${esc(ST.mine(nm(selected)))}</h3><div class="stories">${mine.map(id => card(id, SP)).join('')}</div></div>` : '') +
-      `<div class="sday"><h3>${esc(ST.today(dlab(D.today)))}</h3><div class="stories">${D.ids(D.today).map(id => card(id, SP)).join('')}</div></div>` +
-      `<div class="story lock"><p class="k">${esc(ST.lock(dlab(D.today + 1)))}</p><h3>${esc((SP.stories[D.ids(D.today + 1)[0]].t[SL] || {}).h || '')}</h3><p>${esc(ST.lockP)}</p></div>` +
-      D.past.map(n => `<details class="sday past" data-day="${D.ymd(n)}"><summary><b>${esc(dlab(n))}</b><span>${esc(ST.past(SP.per))}</span></summary><div class="stories">${D.ids(n).map(id => card(id, SP)).join('')}</div></details>`).join('');
+      (STRIP ? strip(D) : '') +
+      `<div class="sday"><h3>${esc(STRIP && selDay != null && selDay !== D.today ? dlab(selDay) : ST.today(dlab(D.today)))}<span class="sno">No.${(STRIP && selDay != null ? selDay - D.today : 0) + D.no}</span></h3><div class="stories">${dayCards(STRIP && selDay != null ? dayIds(D, selDay) : today, tease(dayIds(D, D.today + 1)[0], D.today + 1))}</div></div>` + past;
+    renderHomeStory(D);
   }
-  $('#stories').addEventListener('click', e => {
-    const b = e.target.closest('.stgo'); if (!b) return;
-    const id = b.dataset.sid, g = SP.stories[id].link;
+  // 하루 카드: 커버 크게 → 내일 맞히기 → 나머지는 숫자+제목 타일(누르면 아래 펼침, 대결은 차 그림)
+  const dayCards = (ids, tz) => card(ids[0], SP, true) + (tz || '') +
+    `<h4 class="tileh">${esc(ST.tiles(ids.length - 1))}</h4><div class="tiles">${ids.slice(1).map(id => { const s = SP.stories[id], t = s.t[SL] || s.t.ko;
+      return `<button type="button" class="stile ty-${tyOf(s)}" data-tid="${id}"><b>${esc(bigOf(s))}</b>${tiny(s)}<span>${esc(t.h)}</span></button>`; }).join('')}</div><div class="tileopen"></div>`;
+  const md = n => { const d = new Date(n * 864e5); return `${d.getUTCMonth() + 1}/${d.getUTCDate()}`; };
+  const strip = D => `<div class="dwrap"><p class="dsh">${esc(ST.stripH)}</p><div class="dstrip" role="tablist">${[...D.past].reverse().concat(D.today).map(n => `<button type="button" role="tab" data-day="${n}" aria-selected="${n === (selDay ?? D.today)}"><small>${md(n)}</small><span>${esc(bigOf(SP.stories[dayIds(D, n)[0]]))}</span></button>`).join('')}<button type="button" class="dlock" data-go="tease"><small>${md(D.today + 1)}</small><span>🔒 ?</span></button></div></div>`;
+  const openStory = id => {
+    const g = SP.stories[id].link;
     track('story_open', { id, to: g.v });
     if (g.v === 'vs') { $('#vsA').value = g.a; $('#vsB').value = g.b; renderVs(true); go('vs'); }
     else if (g.v === 'oreum') { go('oreum'); const o = document.querySelector(`.oseg button[data-o="${g.o}"]`); if (o) o.click(); }
@@ -472,8 +566,101 @@
       const mb = document.querySelector(`.chips button[data-m="${g.m}"]`); if (mb) mb.click();
       go('map'); if (g.d && byName[g.d]) setTimeout(() => select(g.d, false), 0);
     }
+  };
+  const onGuess = e => {
+    const b = e.target.closest('.tease [data-qi]'); if (!b) return false;
+    const id = b.closest('.tease').dataset.qid, i = +b.dataset.qi, G = guesses();
+    G[id] = i; try { localStorage.setItem(GK, JSON.stringify(G)); } catch (er) {}
+    track('story_guess', { id, pick: i });
+    renderStories(); return true;
+  };
+  $('#stories').addEventListener('click', e => {
+    if (onGuess(e)) return;
+    const sp = e.target.closest('.story.cover .sp'); if (sp) { sp.classList.toggle('open'); return; }
+    const tl = e.target.closest('.stile');
+    if (tl) { // 오늘 나머지 타일: 누르면 타일 아래 그 카드(다시 누르면 닫힘)
+      const box = tl.parentElement.nextElementSibling, on = tl.classList.contains('on');
+      tl.parentElement.querySelectorAll('.stile').forEach(x => x.classList.remove('on'));
+      box.innerHTML = on ? '' : card(tl.dataset.tid, SP, false, true);
+      if (!on) { tl.classList.add('on'); box.firstElementChild.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); track('story_tile', { id: tl.dataset.tid }); }
+      return;
+    }
+    const m = e.target.closest('.smini');
+    if (m) { // 지난 이야기 선반: 누르면 그 카드가 선반 아래 펼쳐진다(다시 누르면 닫힘)
+      const sh = m.closest('.shelf'), box = sh.querySelector('.shopen'), on = m.classList.contains('on');
+      sh.querySelectorAll('.smini').forEach(x => x.classList.remove('on'));
+      box.innerHTML = on ? '' : card(m.dataset.mid, SP);
+      if (!on) { m.classList.add('on'); sh.scrollIntoView({ block: 'start', behavior: 'smooth' }); track('story_more', { date: sh.dataset.day, id: m.dataset.mid }); }
+      return;
+    }
+    if (e.target.closest('.dlock')) { $('#stories .tease').scrollIntoView({ block: 'center', behavior: 'smooth' }); track('story_more', { date: 'lock' }); return; }
+    const dd = e.target.closest('.dstrip [data-day]');
+    if (dd) { selDay = +dd.dataset.day; track('story_more', { date: 'strip', n: selDay }); renderStories(); return; }
+    if (e.target.closest('.pastmore')) { pastOpen = true; track('story_more', { date: 'all' }); renderStories(); return; }
+    const b = e.target.closest('.stgo'); if (b) openStory(b.dataset.sid);
   });
-  $('#stories').addEventListener('toggle', e => { if (e.target.open) track('story_more', { date: e.target.dataset.day }); }, true);
+
+  // ---------- 첫 화면 입구 맛보기: 입구마다 안에 든 가장 의외인 숫자 하나 + 작은 그림 ----------
+  (() => {
+    const DT = ST.dt, s5 = sorted('visitNative').slice(0, 5), hot = new Set(s5.map(d => d.name));
+    const p5 = (sum(s5.map(d => d.visitNative)) / total * 100).toFixed(1);
+    const pk = sorted('nightShare').slice(0, 3);
+    const A = byName['애월읍'], B = byName['연동'], sb = (data.oreum || []).find(o => o.name === '새별오름');
+    const bar2 = (x, y, a, b) => { const m = Math.max(x, y), W = 84; return `<svg preserveAspectRatio="xMinYMid meet" class="dmini dvs" viewBox="0 0 200 40" aria-hidden="true"><text x="0" y="13" class="dl">${esc(a)}</text><rect x="62" y="3" height="13" rx="3" width="${x / m * W}" class="b1"/><text x="${66 + x / m * W}" y="14" class="dl dv1">${x}%</text><text x="0" y="34" class="dl">${esc(b)}</text><rect x="62" y="24" height="13" rx="3" width="${y / m * W}" class="b0"/><text x="${66 + y / m * W}" y="35" class="dl">${y}%</text></svg>`; };
+    const T = {
+      map: [DT.map(p5), `<svg preserveAspectRatio="xMinYMid meet" class="dmini dmap" viewBox="0 0 ${geo.w} ${geo.h}" aria-hidden="true">${Object.entries(geo.shapes).filter(([, s]) => !s.inset).map(([k, s]) => `<path d="${s.d}"${hot.has(k) ? ' class="hot"' : ''}/>`).join('')}</svg>`],
+      vs: [DT.vs(nm(B.name), nm(A.name), B.nightShare, A.nightShare), bar2(B.nightShare, A.nightShare, nm(B.name), nm(A.name))],
+      pick: [DT.pick, `<span class="dmini dpick" aria-hidden="true"><b class="on">${esc(DT.q3go)}</b></span>`],
+      oreum: sb ? [DT.oreum(nm(sb.name), r1(sb.season[9])), `<svg preserveAspectRatio="xMinYMid meet" class="dmini dore" viewBox="0 0 120 42" aria-hidden="true">${sb.season.map((x, i) => `<rect x="${i * 10 + 1}" y="${28 - x / 2.5 * 27}" width="8" height="${x / 2.5 * 27}" rx="1.5" class="${i === 9 ? 'b1' : 'b0'}"/>`).join('')}<text x="1" y="40" font-size="11" class="mt">${esc(U.month(1))}</text><text x="95" y="40" font-size="11" text-anchor="middle" class="mt on">${esc(U.month(10))}</text></svg>`] : null,
+    };
+    for (const [k, v] of Object.entries(T)) { const d = document.querySelector(`.door[data-hero="${k}"]`); if (d && v) d.insertAdjacentHTML('beforeend', `<em class="dt">${nobr(esc(v[0]))}</em>${v[1]}`); }
+    if (HD === 'a') $('.hero-head').insertAdjacentHTML('afterend', '<div id="hcover" class="hcover"></div>');
+    if (HD === 'c') $('.hero-head').insertAdjacentHTML('afterend', '<a id="hband" class="hband" href="#story" data-hero="band"></a>');
+    // 지도 제목 = 지도 입구에 있던 의외인 숫자(모바일은 지도 입구 카드를 빼고 이 제목으로 대신)
+    if (HD === 'c') $('.chips').insertAdjacentHTML('beforebegin', `<h2 class="maph">${nobr(esc(DT.map(p5)))}<small>${esc(ST.mapH)}</small></h2>`);
+    if (HD === 'c') $('.stage').after($('.doorlinks'));
+    // 지도 아래 빈자리 = 제목 '5곳'의 순위표(누르면 그 동네 선택)
+    // 칸 %는 합이 제목(p5)과 같게 큰 나머지부터 올림
+    const raw = s5.map(d => d.visitNative / total * 1000), fl = raw.map(Math.floor);
+    raw.map((x, i) => [x - fl[i], i]).sort((a, b) => b[0] - a[0]).slice(0, Math.round(p5 * 10) - sum(fl)).forEach(([, i]) => fl[i]++);
+    const pc5 = fl.map(x => (x / 10).toFixed(1));
+    if (HD === 'c') $('.stage').insertAdjacentHTML('afterend', `<div class="top5"><h3>${esc(DT.rank)}</h3><ol>${s5.map((d, i) => `<li><button type="button" data-t5="${d.name}"><b>${i + 1}</b><span>${esc(nm(d.name))}</span><small>${pc5[i]}%</small></button></li>`).join('')}</ol><a class="t5go" href="#pick">${esc(DT.q3go)} →</a></div>`);
+    document.addEventListener('click', e => { const t = e.target.closest('[data-t5]'); if (!t) return; select(t.dataset.t5); track('top5', { dong: t.dataset.t5 }); $('.mapbox').scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+    // 비교 입구는 입구 그림과 같은 두 동네로 연다
+    $('.door[data-hero="vs"]').addEventListener('click', () => { $('#vsA').value = B.name; $('#vsB').value = A.name; renderVs(); }); // 표·CSV 링크는 지도 아래로(여행자 흐름 안 끊게)
+    if (HD === 'c') $('#hband').addEventListener('click', () => track('hero_card', { card: 'band' }));
+    // 아래 동네 패널은 지도가 화면에 들어올 때만(첫 화면 입구를 가리지 않게)
+    if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => document.body.classList.toggle('mapin', e.isIntersecting)), { rootMargin: '0px 0px -40% 0px' }).observe($('.stage'));
+    else document.body.classList.add('mapin');
+  })();
+  // 첫 화면 이야기: hd=a는 오늘 첫 이야기를 크게(+이야기 입구엔 내일 맞히기), hd=b는 이야기 입구에 오늘 숫자
+  function renderHomeStory(D) {
+    const sd = document.querySelector('.door[data-hero="story"]'); if (!sd) return;
+    sd.querySelectorAll('.dt,.dmini').forEach(x => x.remove());
+    const id0 = dayIds(D, D.today)[0], s0 = SP.stories[id0];
+    if (HD === 'c') {
+      $('#hband').innerHTML = `<small>${esc(ST.cover)} · No.${D.no}</small><b>${esc(bigOf(s0))}</b><em>${nobr(esc((s0.t[SL] || s0.t.ko).h))}</em>`;
+      const Q = quizOf(dayIds(D, D.today + 1)[0]);
+      $('#hband').insertAdjacentHTML('beforeend', `<i class="hq"><small>${esc(ST.dt.qz)}</small>${esc(Q.q)} <u>${esc(ST.dt.ans)}</u></i>`); // 모바일은 이야기 입구 대신 띠에 내일 문제
+      const qid = dayIds(D, D.today + 1)[0], my = guesses()[qid];
+      sd.dataset.qid = qid;
+      sd.insertAdjacentHTML('beforeend', `<em class="dt">${esc(Q.q)}</em><span class="dqo">${Q.opts.map((o, i) => `<span role="button" data-hq="${i}"${my === i ? ' class="on"' : ''}>${esc(o)}</span>`).join('')}</span><span class="dq">?</span>`);
+    } else if (HD === 'a') {
+      $('#hcover').innerHTML = `<p class="hck">${esc(ST.today(dlab(D.today)))}</p>` + card(id0, SP, true);
+      const Q = quizOf(dayIds(D, D.today + 1)[0]);
+      sd.insertAdjacentHTML('beforeend', `<em class="dt">${esc(Q.q)}</em><span class="dq">?</span>`);
+    } else {
+      sd.insertAdjacentHTML('beforeend', `<em class="dt">${esc((s0.t[SL] || s0.t.ko).h)}</em><span class="dq">${esc(bigOf(s0))}</span>`);
+    }
+  }
+  document.addEventListener('click', e => { const h = e.target.closest('#hcover .stgo'); if (h) openStory(h.dataset.sid); });
+  // 홈에서 고른 답은 이야기 화면 맞히기와 같은 기록
+  document.addEventListener('click', e => {
+    const o = e.target.closest('.door [data-hq]'); if (!o) return;
+    const id = o.closest('.door').dataset.qid, G = guesses(); G[id] = +o.dataset.hq;
+    try { localStorage.setItem(GK, JSON.stringify(G)); } catch (er) {}
+    track('story_guess', { id, pick: +o.dataset.hq, from: 'home' });
+  }, true);
   storiesP.then(j => { SP = j; renderStories(); });
 
   // ---------- compare (butterfly) ----------
